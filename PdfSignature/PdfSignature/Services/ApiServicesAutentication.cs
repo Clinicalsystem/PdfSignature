@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace PdfSignature.Services
 {
-    public class AutenticationServices
+    public class ApiServicesAutentication
     {
         public static async Task<response> Login(Login user)
         {
@@ -118,13 +118,13 @@ namespace PdfSignature.Services
 
         public static async Task<bool> Register(RegisterUser user)
         {
-            bool respuesta = true;
+            bool respuesta;
             try
             {
                 Login oUser = new Login()
                 {
-                    Email = user.Email,
-                    Password = user.Password
+                    email = user.Email,
+                    password = user.Password
                 };
 
                 HttpClient client = new HttpClient();
@@ -135,10 +135,11 @@ namespace PdfSignature.Services
                 if (response.StatusCode.Equals(HttpStatusCode.OK))
                 {
                     string jsonResult = await response.Content.ReadAsStringAsync();
-                    ResponseAuthentication oResponse = JsonConvert.DeserializeObject<ResponseAuthentication>(jsonResult);
-                    if (oResponse != null)
+                    ResponseAuthentication responseAuthentication = JsonConvert.DeserializeObject<ResponseAuthentication>(jsonResult);
+                    if (responseAuthentication != null)
                     {
-                        //respuesta = await ApiServiceFirebase.RegisterUser(user, oResponse);
+                        AppSettings.AuthenticationUser = responseAuthentication;
+                        respuesta = await ApiServiceFireBase.RegisterUser(user, responseAuthentication);
                     }
                     else
                     {
@@ -147,6 +148,7 @@ namespace PdfSignature.Services
                 }
                 else
                 {
+                    string jsonResult = await response.Content.ReadAsStringAsync();
                     respuesta = false;
                 }
             }

@@ -1,4 +1,5 @@
 ﻿using PdfSignature.Modelos.Autentication;
+using PdfSignature.Services;
 using PdfSignature.Validators;
 using PdfSignature.Validators.Rules;
 using Xamarin.Forms;
@@ -117,15 +118,27 @@ namespace PdfSignature.ViewModels
         /// Invoked when the Log In button is clicked.
         /// </summary>
         /// <param name="obj">The Object</param>
-        private void LoginClicked(object obj)
+        private async void LoginClicked(object obj)
         {
             if(this.AreFieldsValid())
             {
                 Login user = new Login()
                 {
-                    Email = Email.ToString(),
-                    Password = Password.ToString()
+                    email = Email.ToString(),
+                    password = Password.ToString()
                 };
+
+                var response = await ApiServicesAutentication.Login(user);
+
+                if(response.Success)
+                {
+                    //ingreso a la vista.
+                }
+                else
+                {
+                    
+                }
+
             }
         }
 

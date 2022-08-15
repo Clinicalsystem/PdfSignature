@@ -11,6 +11,7 @@ namespace PdfSignature.Views
         public LoginPage()
         {
             this.InitializeComponent();
+            
         }
 
         /// <summary>

@@ -1,4 +1,6 @@
-﻿using PdfSignature.Validators;
+﻿using PdfSignature.Modelos.Autentication;
+using PdfSignature.Services;
+using PdfSignature.Validators;
 using PdfSignature.Validators.Rules;
 using Xamarin.Forms;
 using Xamarin.Forms.Internals;
@@ -119,9 +121,9 @@ namespace PdfSignature.ViewModels
         /// </summary>
         private void AddValidationRules()
         {
-            this.Name.Validations.Add(new IsNotNullOrEmptyRule<string> { ValidationMessage = "Name Required" });
-            this.Password.Item1.Validations.Add(new IsNotNullOrEmptyRule<string> { ValidationMessage = "Password Required" });
-            this.Password.Item2.Validations.Add(new IsNotNullOrEmptyRule<string> { ValidationMessage = "Re-enter Password" });
+            this.Name.Validations.Add(new IsNotNullOrEmptyRule<string> { ValidationMessage = "El nombre es requerido" });
+            this.Password.Item1.Validations.Add(new IsNotNullOrEmptyRule<string> { ValidationMessage = "El password requerido" });
+            this.Password.Item2.Validations.Add(new IsNotNullOrEmptyRule<string> { ValidationMessage = "Reingrese el password" });
         }
 
         /// <summary>
@@ -137,11 +139,22 @@ namespace PdfSignature.ViewModels
         /// Invoked when the Sign Up button is clicked.
         /// </summary>
         /// <param name="obj">The Object</param>
-        private void SignUpClicked(object obj)
+        private async void SignUpClicked(object obj)
         {
             if (this.AreFieldsValid())
             {
-                // Do something
+                var User = new RegisterUser()
+                {
+                    Email = Email.ToString(),
+                    Password = Password.Item1.ToString(),
+                    UserName = Name.ToString()
+                };
+
+                var resgister =  await ApiServicesAutentication.Register(User);
+                if (resgister)
+                {
+                    this.Name.Validations.Add(new IsNotNullOrEmptyRule<string> { ValidationMessage = "Usuario Registrado Exitosamente" });
+                }
             }
         }
 
