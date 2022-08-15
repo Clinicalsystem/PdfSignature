@@ -1,3 +1,12 @@
+using Syncfusion.SfRating.XForms.iOS;
+using Syncfusion.ListView.XForms.iOS;
+using Syncfusion.XForms.iOS.ComboBox;
+using Syncfusion.XForms.iOS.TextInputLayout;
+using Syncfusion.XForms.iOS.Core;
+using Syncfusion.XForms.iOS.Border;
+using Syncfusion.XForms.iOS.Graphics;
+using Syncfusion.XForms.iOS.TabView;
+using Syncfusion.XForms.iOS.Buttons;
 using Foundation;
 using System;
 using System.Collections.Generic;
@@ -26,6 +35,17 @@ namespace PdfSignature.iOS
         public override bool FinishedLaunching(UIApplication app, NSDictionary options)
         {
             global::Xamarin.Forms.Forms.Init();
+            SfRatingRenderer.Init();
+            SfListViewRenderer.Init();
+            SfComboBoxRenderer.Init();
+            SfTextInputLayoutRenderer.Init();
+            SfAvatarViewRenderer.Init();
+            SfSegmentedControlRenderer.Init();
+            SfRadioButtonRenderer.Init();
+            SfGradientViewRenderer.Init();
+            SfBorderRenderer.Init();
+            SfTabViewRenderer.Init();
+            SfButtonRenderer.Init();
             
 			SfPdfDocumentViewRenderer.Init(); 
 			

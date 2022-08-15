@@ -1,3 +1,11 @@
+using Syncfusion.SfRating.XForms.UWP;
+using Syncfusion.ListView.XForms.UWP;
+using Syncfusion.XForms.UWP.ComboBox;
+using Syncfusion.XForms.UWP.TextInputLayout;
+using Syncfusion.XForms.UWP.TabView;
+using Syncfusion.XForms.UWP.Graphics;
+using Syncfusion.XForms.UWP.Border;
+using Syncfusion.XForms.UWP.Buttons;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -65,6 +73,17 @@ namespace PdfSignature.UWP
                 rootFrame.NavigationFailed += OnNavigationFailed;
 
 				List<Assembly> assembliesToInclude = new List<Assembly>();
+                    assembliesToInclude.Add(typeof(SfButtonRenderer).GetTypeInfo().Assembly);
+                    assembliesToInclude.Add(typeof(SfBorderRenderer).GetTypeInfo().Assembly);
+                    assembliesToInclude.Add(typeof(SfGradientViewRenderer).GetTypeInfo().Assembly);
+                    assembliesToInclude.Add(typeof(SfTabViewRenderer).GetTypeInfo().Assembly);
+                    assembliesToInclude.Add(typeof(SfListViewRenderer).GetTypeInfo().Assembly);
+                    assembliesToInclude.Add(typeof(SfRatingRenderer).GetTypeInfo().Assembly);
+                    assembliesToInclude.Add(typeof(SfRadioButtonRenderer).GetTypeInfo().Assembly);
+                    assembliesToInclude.Add(typeof(SfSegmentedControlRenderer).GetTypeInfo().Assembly);
+                    assembliesToInclude.Add(typeof(SfTextInputLayoutRenderer).GetTypeInfo().Assembly);
+                    assembliesToInclude.Add(typeof(SfComboBoxRenderer).GetTypeInfo().Assembly);
+                
 
 				assembliesToInclude.Add(typeof(SfRangeSliderRenderer).GetTypeInfo().Assembly);
 

@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.2.32630.192
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PdfSignature", "PdfSignature\PdfSignature.csproj", "{DC332686-742F-4D44-A8BE-F605C0D10A49}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PdfSignature", "PdfSignature\PdfSignature.csproj", "{DC332686-742F-4D44-A8BE-F605C0D10A49}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PdfSignature.Android", "PdfSignature.Android\PdfSignature.Android.csproj", "{F9E8AD2A-BDAC-44F7-BAE6-1E9E1438E847}"
 EndProject
