@@ -60,49 +60,49 @@ namespace PdfSignature.Services
 
         }
 
-        //public static async Task<response> PasswordReset(PasswordReset passwordReset)
-        //{
+        public static async Task<response> PasswordReset(PasswordReset passwordReset)
+        {
 
-        //    try
-        //    {
+            try
+            {
 
-        //        HttpClient client = new HttpClient();
-        //        string body = JsonConvert.SerializeObject(passwordReset);
-        //        StringContent content = new StringContent(body, Encoding.UTF8, "application/json");
-        //        string apiUri = string.Concat(AppSettings.ApiUrlGoogleApis, $"accounts:sendOobCode?key={AppSettings.KeyAplication}");
+                HttpClient client = new HttpClient();
+                string body = JsonConvert.SerializeObject(passwordReset);
+                StringContent content = new StringContent(body, Encoding.UTF8, "application/json");
+                
 
-        //        HttpResponseMessage response = await client.PostAsync(apiUri, content);
-        //        if (response.StatusCode.Equals(HttpStatusCode.OK))
-        //        {
-        //            string jsonResult = await response.Content.ReadAsStringAsync();
-        //            EmailFireBase oResponse = JsonConvert.DeserializeObject<EmailFireBase>(jsonResult);
+                HttpResponseMessage response = await client.PostAsync(AppSettings.ApiAuthentication(UriApi.PasswordReset), content);
+                if (response.StatusCode.Equals(HttpStatusCode.OK))
+                {
+                    string jsonResult = await response.Content.ReadAsStringAsync();
+                    PasswordReset oResponse = JsonConvert.DeserializeObject<PasswordReset>(jsonResult);
 
 
-        //            return new response { Success = true, Message = "Se ha enviado un correo para restablecer su contraseña, revise su bandeja o spam.", Object = oResponse, Status = 200 };
-        //        }
-        //        else
-        //        {
-        //            string jsonResult = await response.Content.ReadAsStringAsync();
-        //            var oResponse = JsonConvert.DeserializeObject<RootError>(jsonResult);
-        //            string Message = string.Empty;
-        //            if (oResponse.error.message.Contains("EMAIL_NOT_FOUND"))
-        //            {
-        //                Message = "No existe registro de usuario correspondiente a este correo. Es posible que el usuario haya sido eliminado o este mal escrito el correo.";
-        //            }
-        //            else
-        //            {
-        //                Message = oResponse.error.message;
-        //            }
-        //            return new response { Success = false, Message = Message, Object = oResponse, Status = 400 };
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return new response { Success = false, Message = ex.Message, Status = 401 };
+                    return new response { Success = true, Message = "Se ha enviado un correo para restablecer su contraseña, revise su bandeja o spam.", Object = oResponse, Status = 200 };
+                }
+                else
+                {
+                    string jsonResult = await response.Content.ReadAsStringAsync();
+                    var oResponse = JsonConvert.DeserializeObject<RootError>(jsonResult);
+                    string Message = string.Empty;
+                    if (oResponse.error.message.Contains("EMAIL_NOT_FOUND"))
+                    {
+                        Message = "No existe registro de usuario correspondiente a este correo. Es posible que el usuario haya sido eliminado o este mal escrito el correo.";
+                    }
+                    else
+                    {
+                        Message = oResponse.error.message;
+                    }
+                    return new response { Success = false, Message = Message, Object = oResponse, Status = 400 };
+                }
+            }
+            catch (Exception ex)
+            {
+                return new response { Success = false, Message = ex.Message, Status = 401 };
 
-        //    }
+            }
 
-        //}
+        }
 
         public static void Logout()
         {

@@ -72,15 +72,15 @@ namespace PdfSignature.ViewModels
         /// Invoked when an back button is clicked.
         /// </summary>
         /// <param name="obj">The Object</param>
-        private void BackButtonClicked(object obj)
+        private async void BackButtonClicked(object obj)
         {
             if (Device.RuntimePlatform == Device.UWP && Application.Current.MainPage.Navigation.NavigationStack.Count > 1)
             {
-                Application.Current.MainPage.Navigation.PopAsync();
+                await App.GlobalNavigation.PopToRootAsync();
             }
             else if (Device.RuntimePlatform != Device.UWP && Application.Current.MainPage.Navigation.NavigationStack.Count > 0)
             {
-                Application.Current.MainPage.Navigation.PopAsync();
+                await App.GlobalNavigation.PopToRootAsync();
             }
         }
 

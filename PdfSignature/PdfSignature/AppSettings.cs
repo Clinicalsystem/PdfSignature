@@ -21,12 +21,17 @@ namespace PdfSignature
             switch (uriApi)
             {
                 case UriApi.Loging:
-                    return UrlGoogleApis + "accounts:signInWithPassword?key=" + KeyAplication;
+                    return  $"{UrlGoogleApis}accounts:signInWithPassword?key={KeyAplication}";
 
                 case UriApi.Sign:
-                    return UrlGoogleApis + "accounts:signUp?key=" + KeyAplication;
+                    return $"{UrlGoogleApis}accounts:signUp?key={KeyAplication}";
+
                 case UriApi.Token:
-                    return UrlGoogleApis + "token?key=" + KeyAplication;
+                    return $"{UrlGoogleApis}token?key={KeyAplication}";
+
+                case UriApi.PasswordReset:
+                    return $"{UrlGoogleApis}accounts:sendOobCode?key={KeyAplication}";
+
                 default:
                     return String.Empty;
 
@@ -39,6 +44,7 @@ namespace PdfSignature
     {
         Token,
         Loging,
-        Sign
+        Sign,
+        PasswordReset
     }
 }

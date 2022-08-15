@@ -2,6 +2,7 @@
 using PdfSignature.Services;
 using PdfSignature.Validators;
 using PdfSignature.Validators.Rules;
+using PdfSignature.Views;
 using Xamarin.Forms;
 using Xamarin.Forms.Internals;
 
@@ -155,9 +156,9 @@ namespace PdfSignature.ViewModels
         /// Invoked when the Forgot Password button is clicked.
         /// </summary>
         /// <param name="obj">The Object</param>
-        private void ForgotPasswordClicked(object obj)
+        private async void ForgotPasswordClicked(object obj)
         {
-            // Do something
+            await App.GlobalNavigation.PushAsync(new ForgotPasswordPage(), true);
         }
 
         /// <summary>

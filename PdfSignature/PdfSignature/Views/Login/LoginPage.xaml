@@ -27,7 +27,7 @@
         </ResourceDictionary>
     </ContentPage.Resources>
     <ContentPage.Content>
-        <Grid>
+        <Grid BackgroundColor="{DynamicResource PrimaryGradient}">
             <ScrollView Padding="0,16">
                 <ScrollView.HorizontalOptions>
                     <OnIdiom
@@ -124,18 +124,17 @@
                                                     Margin="0,16"
                                                     Command="{Binding ForgotPasswordCommand}"
                                                     FontSize="12"
-                                                    HorizontalOptions="End"
+                                                    HorizontalOptions="EndAndExpand"
                                                     Style="{StaticResource TransparentButtonStyle}"
-                                                    Text="Forgot Password?"
-                                                    TextColor="{DynamicResource Gray-800}"
-                                                    WidthRequest="140" />
+                                                    Text="¿Olvido su Password?"
+                                                    TextColor="{DynamicResource Gray-800}"/>
 
                                                 <!--  Login button  -->
                                                 <buttons:SfButton
                                                     Margin="0,8,0,16"
                                                     Command="{Binding LoginCommand}"
                                                     Style="{StaticResource GradientButtonStyle}"
-                                                    Text="LOG IN"
+                                                    Text="LOGIN"
                                                     WidthRequest="245" />
 
                                             </StackLayout>
@@ -296,6 +295,7 @@
                                 </tabView:SfTabItem>
                             </tabView:SfTabView>
                         </control:CustomShadowFrame>
+                        <!--
                         <Label
                             Grid.Row="6"
                             Margin="0,20,0,0"
@@ -303,7 +303,7 @@
                             Text="Or create an account using social media"
                             TextColor="{DynamicResource Gray-800}" />
 
-                        <!--  Login through facebook account  -->
+                          Login through facebook account  
                         <buttons:SfButton
                             Margin="0,16,0,16"
                             BackgroundColor="{DynamicResource FacebookBlue}"
@@ -332,11 +332,12 @@
                                 </StackLayout>
                             </buttons:SfButton.Content>
                         </buttons:SfButton>
+                        -->
                     </StackLayout>
                 </StackLayout>
             </ScrollView>
 
-            <!--  Close button  -->
+            <!--  Close button  
             <buttons:SfButton
                 Margin="0,4,0,8"
                 Command="{Binding BackButtonCommand}"
@@ -346,6 +347,7 @@
                 Text="{StaticResource Close}"
                 TextColor="{DynamicResource Steel}"
                 VerticalOptions="Start" />
+            -->
 
         </Grid>
     </ContentPage.Content>

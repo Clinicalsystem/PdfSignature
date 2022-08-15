@@ -12,12 +12,18 @@ namespace PdfSignature
 {
     public partial class App : Application
     {
+        public static INavigation GlobalNavigation { get; set; }
+
+        private NavigationPage loginPage { get; set; }
         public App()
         {
             Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("Njg2NzMzQDMyMzAyZTMyMmUzMGtBdElubGRvWGZKRjFZdTN4Q1liSzhiV2h0NFVQbTJkOVJIdkFWRmpla3c9");
             InitializeComponent();
+            loginPage = new NavigationPage(new LoginPage());
 
-            MainPage = new NavigationPage(new LoginPage());
+            GlobalNavigation = loginPage.Navigation;
+
+            MainPage = loginPage;
         }
 
         protected override void OnStart()
