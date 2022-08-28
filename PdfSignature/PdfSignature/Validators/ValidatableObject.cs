@@ -75,12 +75,13 @@ namespace PdfSignature.Validators
             get
             {
                 return this.cleanOnChange;
+                                
             }
 
             set
             {
                 this.cleanOnChange = value;
-                this.NotifyPropertyChanged();
+                NotifyPropertyChanged();
             }
         }
 
@@ -93,6 +94,7 @@ namespace PdfSignature.Validators
             set
             {
                 this.value = value;
+                this.NotifyPropertyChanged();
 
                 if (this.CleanOnChange)
                 {

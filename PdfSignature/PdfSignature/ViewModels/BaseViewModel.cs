@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using PdfSignature.Validators;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
@@ -17,7 +18,10 @@ namespace PdfSignature.ViewModels
         #region Fields
 
         private Command<object> backButtonCommand;
+        private bool isBusy;
 
+        private static bool isCompletet { get; set; }
+       
         #endregion
 
         #region Event handler
@@ -26,6 +30,41 @@ namespace PdfSignature.ViewModels
         /// Occurs when the property is changed.
         /// </summary>
         public event PropertyChangedEventHandler PropertyChanged;
+
+        #endregion
+
+        #region Properties
+
+
+        public static bool IsCompletet
+        {
+            get
+            {
+                return isCompletet;
+            }
+
+            set
+            {
+                if (isCompletet == value)
+                {
+                    return;
+                }
+
+                isCompletet = value;
+            }
+        }
+        public bool IsLook
+        {
+            get
+            {
+                return isBusy;
+            }
+
+            set
+            {
+               this.SetProperty(ref this.isBusy, value);
+            }
+        }
 
         #endregion
 

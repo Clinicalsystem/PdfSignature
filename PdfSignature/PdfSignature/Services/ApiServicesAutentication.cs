@@ -30,7 +30,7 @@ namespace PdfSignature.Services
                     AppSettings.AuthenticationUser = oResponse;
 
 
-                    return new response { Success = true, Message = "Login Exito", Object = oResponse, Status = 200 };
+                    return new response { Success = true, Message = "Te damos la Bienvenida", Object = oResponse, Status = 200 };
                 }
                 else
                 {
@@ -39,11 +39,11 @@ namespace PdfSignature.Services
                     string Message = string.Empty;
                     if (oResponse.error.message.Contains("INVALID_PASSWORD"))
                     {
-                        Message = "Correo o Contraseña Inalida.";
+                        Message = "Contraseña Inalida!.";
                     }
                     else if (oResponse.error.message.Contains("EMAIL_NOT_FOUND"))
                     {
-                        Message = "El correo es invalido.";
+                        Message = "El correo es invalido o no se encuentra registrado.";
                     }
                     else
                     {

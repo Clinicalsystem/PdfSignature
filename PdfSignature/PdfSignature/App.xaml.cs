@@ -12,13 +12,16 @@ namespace PdfSignature
 {
     public partial class App : Application
     {
+        public static string ImageServerPath { get; } = "https://cdn.syncfusion.com/essential-ui-kit-for-xamarin.forms/common/uikitimages/";
         public static INavigation GlobalNavigation { get; set; }
 
         private NavigationPage loginPage { get; set; }
         public App()
         {
             Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("Njg2NzMzQDMyMzAyZTMyMmUzMGtBdElubGRvWGZKRjFZdTN4Q1liSzhiV2h0NFVQbTJkOVJIdkFWRmpla3c9");
+            DependencyService.Register<Services.IMessageService, Services.MessageService>();
             InitializeComponent();
+            
             loginPage = new NavigationPage(new LoginPage());
 
             GlobalNavigation = loginPage.Navigation;

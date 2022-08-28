@@ -27,6 +27,7 @@
         </ResourceDictionary>
     </ContentPage.Resources>
     <ContentPage.Content>
+        <Grid>
         <Grid BackgroundColor="{DynamicResource PrimaryGradient}">
             <ScrollView Padding="0,16">
                 <ScrollView.HorizontalOptions>
@@ -55,7 +56,8 @@
                             Radius="4">
                             <tabView:SfTabView
                                 BackgroundColor="Transparent"
-                                SelectionChanged="TabView_SelectionChanged"
+                                x:Name="tabView"
+                                SelectionChanged="tabView_SelectionChanged"
                                 VisibleHeaderCount="2">
                                 <tabView:SfTabView.SelectionIndicatorSettings>
                                     <tabView:SelectionIndicatorSettings StrokeThickness="3" Color="{DynamicResource PrimaryColor}" />
@@ -131,8 +133,10 @@
 
                                                 <!--  Login button  -->
                                                 <buttons:SfButton
+                                                    x:Name="Login"
                                                     Margin="0,8,0,16"
                                                     Command="{Binding LoginCommand}"
+                                                    IsTabStop="{Binding IsLook, Converter={StaticResource InverseBoolConverter}}"
                                                     Style="{StaticResource GradientButtonStyle}"
                                                     Text="LOGIN"
                                                     WidthRequest="245" />
@@ -166,7 +170,7 @@
                                                     <Grid ColumnDefinitions="*, Auto">
 
                                                         <control:BorderlessEntry
-                                                            x:Name="NameEntry"
+                                                            x:Name="NameEntry" TextChanged="NameEntry_TextChanged"
                                                             Margin="15,0"
                                                             HeightRequest="40"
                                                             Placeholder="Name"
@@ -348,6 +352,11 @@
                 TextColor="{DynamicResource Steel}"
                 VerticalOptions="Start" />
             -->
+
+        </Grid>
+
+
+            <local:_ActivityIndicator IsRunning="{Binding Source={x:Reference Login}, Path=IsTabStop, Converter={StaticResource InverseBoolConverter}}" />
 
         </Grid>
     </ContentPage.Content>

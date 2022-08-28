@@ -83,11 +83,8 @@ namespace PdfSignature.UWP
                     assembliesToInclude.Add(typeof(SfSegmentedControlRenderer).GetTypeInfo().Assembly);
                     assembliesToInclude.Add(typeof(SfTextInputLayoutRenderer).GetTypeInfo().Assembly);
                     assembliesToInclude.Add(typeof(SfComboBoxRenderer).GetTypeInfo().Assembly);
-                
-
-				assembliesToInclude.Add(typeof(SfRangeSliderRenderer).GetTypeInfo().Assembly);
-
-				assembliesToInclude.Add(typeof(SfPdfDocumentViewRenderer).GetTypeInfo().Assembly);
+                    assembliesToInclude.Add(typeof(SfRangeSliderRenderer).GetTypeInfo().Assembly);
+                    assembliesToInclude.Add(typeof(SfPdfDocumentViewRenderer).GetTypeInfo().Assembly);
 
                 Xamarin.Forms.Forms.Init(e, assembliesToInclude);
 

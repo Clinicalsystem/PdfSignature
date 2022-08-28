@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -11,6 +11,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Data\navigation.json" />
     <None Remove="Resources\Fonts\Montserrat-Bold.ttf" />
     <None Remove="Resources\Fonts\Montserrat-Medium.ttf" />
     <None Remove="Resources\Fonts\Montserrat-Regular.ttf" />
@@ -19,6 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Data\navigation.json" />
     <EmbeddedResource Include="Resources\Fonts\Montserrat-Bold.ttf" />
     <EmbeddedResource Include="Resources\Fonts\Montserrat-Medium.ttf" />
     <EmbeddedResource Include="Resources\Fonts\Montserrat-Regular.ttf" />
@@ -28,16 +30,16 @@
 
   <ItemGroup>
     <PackageReference Include="SQLiteNetExtensions" Version="2.1.0" />
-    <PackageReference Include="Syncfusion.Pdf.Net.Core" Version="20.2.0.43" />
-    <PackageReference Include="Syncfusion.Xamarin.Buttons" Version="20.2.0.43" />
-    <PackageReference Include="Syncfusion.Xamarin.Core" Version="20.2.0.43" />
-    <PackageReference Include="Syncfusion.Xamarin.SfComboBox" Version="20.2.0.43" />
-    <PackageReference Include="Syncfusion.Xamarin.SfListView" Version="20.2.0.43" />
-    <PackageReference Include="Syncfusion.Xamarin.SfRating" Version="20.2.0.43" />
-    <PackageReference Include="Syncfusion.Xamarin.SfTabView" Version="20.2.0.43" />
+    <PackageReference Include="Syncfusion.Pdf.Net.Core" Version="20.2.0.45" />
+    <PackageReference Include="Syncfusion.Xamarin.Buttons" Version="20.2.0.45" />
+    <PackageReference Include="Syncfusion.Xamarin.Core" Version="20.2.0.45" />
+    <PackageReference Include="Syncfusion.Xamarin.SfComboBox" Version="20.2.0.45" />
+    <PackageReference Include="Syncfusion.Xamarin.SfListView" Version="20.2.0.45" />
+    <PackageReference Include="Syncfusion.Xamarin.SfRating" Version="20.2.0.45" />
+    <PackageReference Include="Syncfusion.Xamarin.SfTabView" Version="20.2.0.45" />
     <PackageReference Include="Xam.Plugin.Connectivity" Version="3.2.0" />
     <PackageReference Include="Xamarin.Forms" Version="5.0.0.2515" />
-<PackageReference Include="Syncfusion.Xamarin.SfPdfViewer" Version="20.2.0.43" />
+<PackageReference Include="Syncfusion.Xamarin.SfPdfViewer" Version="20.2.0.45" />
 
 
 
@@ -174,6 +176,12 @@
     </EmbeddedResource>
     <EmbeddedResource Update="Views\Login\SimpleEmailEntry.xaml">
       <Generator>MSBuild:Compile</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Views\PDF\PdfView.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Views\_ActivityIndicator.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
   </ItemGroup>
 </Project>

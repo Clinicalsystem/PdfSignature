@@ -1,5 +1,7 @@
-﻿using PdfSignature.Validators;
+﻿using PdfSignature.Services;
+using PdfSignature.Validators;
 using PdfSignature.Validators.Rules;
+using Xamarin.Forms;
 using Xamarin.Forms.Internals;
 
 namespace PdfSignature.ViewModels
@@ -14,6 +16,7 @@ namespace PdfSignature.ViewModels
 
         private ValidatableObject<string> email;
 
+        
         #endregion
 
         #region Constructor
@@ -49,6 +52,7 @@ namespace PdfSignature.ViewModels
                 }
 
                 this.SetProperty(ref this.email, value);
+                
             }
         }
         #endregion

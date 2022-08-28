@@ -3,6 +3,7 @@ using PdfSignature.Services;
 using PdfSignature.Validators;
 using PdfSignature.Validators.Rules;
 using PdfSignature.Views;
+using System.Threading.Tasks;
 using Xamarin.Forms;
 using Xamarin.Forms.Internals;
 
@@ -17,6 +18,10 @@ namespace PdfSignature.ViewModels
         #region Fields
 
         private ValidatableObject<string> password;
+
+        private ValidatableObject<string> streamEmpty = new ValidatableObject<string>();
+
+        private IMessageService _displayAlert;
 
         #endregion
 
@@ -33,11 +38,13 @@ namespace PdfSignature.ViewModels
             this.SignUpCommand = new Command(this.SignUpClicked);
             this.ForgotPasswordCommand = new Command(this.ForgotPasswordClicked);
             this.SocialMediaLoginCommand = new Command(this.SocialLoggedIn);
+            this._displayAlert = DependencyService.Get<IMessageService>();
         }
 
         #endregion
 
         #region property
+
 
         /// <summary>
         /// Gets or sets the property that is bound with an entry that gets the password from user in the login page.
@@ -59,6 +66,8 @@ namespace PdfSignature.ViewModels
                 this.SetProperty(ref this.password, value);
             }
         }
+
+       
 
         #endregion
 
@@ -121,8 +130,9 @@ namespace PdfSignature.ViewModels
         /// <param name="obj">The Object</param>
         private async void LoginClicked(object obj)
         {
-            if(this.AreFieldsValid())
+            if (this.AreFieldsValid())
             {
+               IsLook = true;
                 Login user = new Login()
                 {
                     email = Email.ToString(),
@@ -131,15 +141,26 @@ namespace PdfSignature.ViewModels
 
                 var response = await ApiServicesAutentication.Login(user);
 
-                if(response.Success)
+                if (response.Success)
                 {
                     //ingreso a la vista.
+                    await _displayAlert.ShowAsync(response.Message);
+                    App.Current.MainPage = new NavigationPage(new Views.PDF.PdfView());
+
                 }
                 else
                 {
-                    
+                    if (response.Message.Contains("Contraseña"))
+                    {
+                        Password.IsValid = false;
+                    }
+                    else
+                    {
+                        Email.IsValid = false;
+                    }
+                    await _displayAlert.ShowAsync(response.Message);
                 }
-
+                IsLook = false;
             }
         }
 

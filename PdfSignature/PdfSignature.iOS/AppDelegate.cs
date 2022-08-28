@@ -35,6 +35,7 @@ namespace PdfSignature.iOS
         public override bool FinishedLaunching(UIApplication app, NSDictionary options)
         {
             global::Xamarin.Forms.Forms.Init();
+            Core.Init();
             SfRatingRenderer.Init();
             SfListViewRenderer.Init();
             SfComboBoxRenderer.Init();
@@ -46,10 +47,7 @@ namespace PdfSignature.iOS
             SfBorderRenderer.Init();
             SfTabViewRenderer.Init();
             SfButtonRenderer.Init();
-            
 			SfPdfDocumentViewRenderer.Init(); 
-			
-			
 			SfRangeSliderRenderer.Init(); 
 			
 			LoadApplication(new App());

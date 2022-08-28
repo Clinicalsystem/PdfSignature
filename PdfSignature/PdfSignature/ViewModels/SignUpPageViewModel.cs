@@ -19,6 +19,10 @@ namespace PdfSignature.ViewModels
 
         private ValidatablePair<string> password;
 
+        private ValidatableObject<string> stringEmpty;
+
+        private IMessageService _displayAlert;
+
         #endregion
 
         #region Constructor
@@ -32,6 +36,7 @@ namespace PdfSignature.ViewModels
             this.AddValidationRules();
             this.LoginCommand = new Command(this.LoginClicked);
             this.SignUpCommand = new Command(this.SignUpClicked);
+            this._displayAlert = DependencyService.Get<IMessageService>();
         }
         #endregion
 
@@ -150,12 +155,22 @@ namespace PdfSignature.ViewModels
                     UserName = Name.ToString()
                 };
 
-                var resgister =  await ApiServicesAutentication.Register(User);
-                if (resgister)
+                if (await ApiServicesAutentication.Register(User))
                 {
-                    this.Name.Validations.Add(new IsNotNullOrEmptyRule<string> { ValidationMessage = "Usuario Registrado Exitosamente" });
+                    Email.Value = string.Empty;
+                    Password.Item1.Value = string.Empty;
+                    Password.Item2.Value = string.Empty;
+                    IsCompletet = true;
+                    Name.Value = string.Empty;
+                    await _displayAlert.ShowAsync("Registro Completado");
+                    
+                    
                 }
+                
             }
+            IsCompletet = true;
+            Name.Value = string.Empty;
+
         }
 
         #endregion

@@ -1,4 +1,9 @@
-﻿using Xamarin.Forms;
+﻿using PdfSignature.Services;
+using PdfSignature.ViewModels;
+using Syncfusion.SfPdfViewer.XForms;
+using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
+using Xamarin.Forms;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.Xaml;
 
@@ -11,19 +16,19 @@ namespace PdfSignature.Views
         public LoginPage()
         {
             this.InitializeComponent();
-            
         }
 
         /// <summary>
         /// Invoked when tab view selection items are changed.
         /// </summary>
-        private void TabView_SelectionChanged(object sender, Syncfusion.XForms.TabView.SelectionChangedEventArgs e)
+        private void tabView_SelectionChanged(object sender, Syncfusion.XForms.TabView.SelectionChangedEventArgs e)
         {
+
             if (Device.RuntimePlatform == Device.Android || Device.RuntimePlatform == Device.iOS)
             {
                 if (e.Name == "Sign Up")
                 {
-                    this.frame.HeightRequest = 480;
+                    this.frame.HeightRequest = 460;
                 }
                 else if (e.Name == "Login")
                 {
@@ -31,5 +36,35 @@ namespace PdfSignature.Views
                 }
             }
         }
+       
+
+        private void NameEntry_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if(BaseViewModel.IsCompletet)
+            {
+                tabView.SelectedIndex = 0;
+            }
+
+        }
+
+        
+        protected override void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            base.OnPropertyChanged(propertyName);
+            if(propertyName == "IsBusy")
+            {
+                //activityIndicator.IsRunning = IsBusy;
+            }
+        }
+
+           
+        
+
+        private void Login_Clicked(object sender, System.EventArgs e)
+        {
+            
+        }
+        //correo@correo.cl
+
     }
 }
