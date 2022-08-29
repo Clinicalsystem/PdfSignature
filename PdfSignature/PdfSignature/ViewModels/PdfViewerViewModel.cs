@@ -1,14 +1,13 @@
-﻿using System.IO;
-using System.Reflection;
+﻿using PdfSignature.Helper;
+using PdfSignature.Modelos.Files;
+using Syncfusion.SfPdfViewer.XForms;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
 using System.Windows.Input;
+using Xamarin.Essentials;
 using Xamarin.Forms;
 using Xamarin.Forms.Internals;
-using System.Collections.Generic;
-using Syncfusion.SfPdfViewer.XForms;
-using PdfSignature.Models;
-using PdfSignature.Helper;
-using Xamarin.Essentials;
 
 namespace PdfSignature.ViewModels
 {
@@ -1097,30 +1096,36 @@ namespace PdfSignature.ViewModels
                     return;
                 }
                 m_selectedItem = value;
-                _pdfDocumentStream = new StreamReader(m_selectedItem.FileName).BaseStream;
-                NotifyPropertyChanged("SelectedItem");
-                IsPickerVisible = false;
+                if (File.Exists(m_selectedItem.Path))
+                {
+                    _pdfDocumentStream = new StreamReader(m_selectedItem.Path).BaseStream;
+                    NotifyPropertyChanged("SelectedItem");
+                    IsPickerVisible = false;
+                }
+
+
+
             }
         }
         #endregion
 
         #region Constructor
-        private IList<Document> m_pdfDocumentCollection;
-        public IList<Document> PdfDocumentCollection
+        private ObservableCollection<Document> _pdfDocumentCollection;
+        public ObservableCollection<Document> PdfDocumentCollection
         {
             get
             {
-                if (m_pdfDocumentCollection == null)
+                if (_pdfDocumentCollection == null)
                 {
-                    m_pdfDocumentCollection = new List<Document> { new Document("F# Succinctly"), new Document("GIS Succinctly"), new Document("HTTP Succinctly"), new Document("JavaScript Succinctly"), new Document("Encrypted Document") };
+                    _pdfDocumentCollection = new ObservableCollection<Document>();
                 }
-                return m_pdfDocumentCollection;
+                return _pdfDocumentCollection;
             }
             set
             {
-                if (m_pdfDocumentCollection == value)
+                if (_pdfDocumentCollection == value)
                     return;
-                m_pdfDocumentCollection = value;
+                _pdfDocumentCollection = value;
                 NotifyPropertyChanged("PdfDocumentCollection");
             }
         }
@@ -2253,9 +2258,10 @@ namespace PdfSignature.ViewModels
             try
             {
                 FileResult file = await FilePicker.PickAsync();
-                if(file != null)
+                if (file != null)
                 {
-                    PdfDocumentStream = await file.OpenReadAsync();
+                    Document document = new Document(file);
+                    PdfDocumentStream = document.Stream;
                 }
             }
             catch (System.Exception)

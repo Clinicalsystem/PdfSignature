@@ -120,16 +120,40 @@
                                                     TextColor="{DynamicResource Red}"
                                                     VerticalOptions="FillAndExpand" />
 
-                                                <!--  Forgot password link  -->
-                                                <buttons:SfButton
+                                               
+                                                
+                                                
+                                                <StackLayout Orientation="Horizontal">
+                                                    <buttons:SfCheckBox
+                                                        x:Name="CheckIsRemenber"
+                                                        IsChecked="{Binding IsRemember}"
+                                                        Style="{StaticResource CheckBoxStyle}"
+                                                        FontSize="12"
+                                                        Margin="0,14"
+                                                        TickColor="{StaticResource Gray-Black}"
+                                                        CheckedColor="{StaticResource PrimaryColor}"/>
+                                                    
+                                                    <buttons:SfButton
+                                                    x:Name="labelIsRemember"
+                                                    Margin="-4,16"
+                                                    Command="{Binding IsRememberCommand}"
+                                                    FontSize="12"
+                                                    HorizontalOptions="StartAndExpand"
+                                                    Style="{StaticResource TransparentButtonStyle}"
+                                                    Text="¿Recordar Usuario?"
+                                                    TextColor="{DynamicResource Gray-800}"/>
+
+                                                        <!--  Forgot password link  -->
+                                                        <buttons:SfButton
                                                     x:Name="ForgotPasswordLabel"
                                                     Margin="0,16"
                                                     Command="{Binding ForgotPasswordCommand}"
                                                     FontSize="12"
-                                                    HorizontalOptions="EndAndExpand"
                                                     Style="{StaticResource TransparentButtonStyle}"
                                                     Text="¿Olvido su Password?"
                                                     TextColor="{DynamicResource Gray-800}"/>
+
+                                                    </StackLayout>
 
                                                 <!--  Login button  -->
                                                 <buttons:SfButton

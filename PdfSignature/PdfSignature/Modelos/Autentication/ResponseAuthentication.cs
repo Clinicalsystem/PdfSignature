@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using SQLite;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -7,11 +8,11 @@ namespace PdfSignature.Modelos.Autentication
 {
     public class ResponseAuthentication
     {
-        [JsonProperty("kind")]
-        public string Kind { get; set; }
-
+        [PrimaryKey]
         [JsonProperty("localId")]
         public string LocalId { get; set; }
+        [JsonProperty("kind")]
+        public string Kind { get; set; }
 
         [JsonProperty("email")]
         public string Email { get; set; }
