@@ -39,6 +39,7 @@ namespace PdfSignature.ViewModels
             this.ForgotPasswordCommand = new Command(this.ForgotPasswordClicked);
             this.SocialMediaLoginCommand = new Command(this.SocialLoggedIn);
             this._displayAlert = DependencyService.Get<IMessageService>();
+            this.IsRememberCommand = new Command(this.IsRememberMet) ;
         }
 
         #endregion
@@ -67,12 +68,13 @@ namespace PdfSignature.ViewModels
             }
         }
 
-       
+
 
         #endregion
 
         #region Command
 
+        public Command IsRememberCommand { get; set; }
         /// <summary>
         /// Gets or sets the command that is executed when the Log In button is clicked.
         /// </summary>
@@ -97,6 +99,17 @@ namespace PdfSignature.ViewModels
 
         #region methods
 
+        private void IsRememberMet()
+        {
+            if(IsRemember)
+            {
+                IsRemember = false;
+            }
+            else
+            {
+                IsRemember = true;
+            }
+        }
         /// <summary>
         /// Check the password is null or empty
         /// </summary>
@@ -143,10 +156,12 @@ namespace PdfSignature.ViewModels
 
                 if (response.Success)
                 {
-                    //ingreso a la vista.
+                   
+                    AppSettings.AuthenticationUser = (ResponseAuthentication)response.Object;
+                    IsLook = false;
                     await _displayAlert.ShowAsync(response.Message);
                     App.Current.MainPage = new NavigationPage(new Views.PDF.PdfView());
-
+                    return;
                 }
                 else
                 {
@@ -158,7 +173,9 @@ namespace PdfSignature.ViewModels
                     {
                         Email.IsValid = false;
                     }
+                    IsLook = false;
                     await _displayAlert.ShowAsync(response.Message);
+                    return;
                 }
                 IsLook = false;
             }

@@ -7,6 +7,7 @@ using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using Xamarin.Essentials;
 
 namespace PdfSignature.Services
 {
@@ -25,12 +26,9 @@ namespace PdfSignature.Services
                 if (response.StatusCode.Equals(HttpStatusCode.OK))
                 {
                     string jsonResult = await response.Content.ReadAsStringAsync();
-                    ResponseAuthentication oResponse = JsonConvert.DeserializeObject<ResponseAuthentication>(jsonResult);
-
-                    AppSettings.AuthenticationUser = oResponse;
-
-
-                    return new response { Success = true, Message = "Te damos la Bienvenida", Object = oResponse, Status = 200 };
+                    ResponseAuthentication Response = JsonConvert.DeserializeObject<ResponseAuthentication>(jsonResult);
+                    Response.DateLogin = DateTime.Now;
+                    return new response { Success = true, Message = "Te damos la Bienvenida", Object = Response, Status = 200 };
                 }
                 else
                 {
@@ -107,12 +105,8 @@ namespace PdfSignature.Services
         public static void Logout()
         {
 
-            //using (DataAccess datos = new DataAccess())
-            //{
-            //    ResponseAuthentication user = datos.GetAutentication("CurrenUser");
-            //    datos.DeleteAutentication(user);
-            //}
-            //AppSettings.AuthenticationUser = null;
+            Preferences.Set("IsRemember", false);
+            AppSettings.AuthenticationUser = null;
             App.Current.MainPage = new Views.LoginPage();
         }
 
@@ -162,59 +156,76 @@ namespace PdfSignature.Services
 
         }
 
-        //public static async Task<bool> TokenRefresh(ResponseAuthentication user)
-        //{
+        public static async Task<response> TokenRefresh(ResponseAuthentication user)
+        {
+            response _response;
+            if (user.DateExpire >= DateTime.Now)
+            {
 
-        //    if (user.DateExpire.AddMilliseconds(user.ExpiresIn) > DateTime.Now)
-        //    {
+                try
+                {
+                    TokenRefres token = new TokenRefres { RefreshToken = user.RefreshToken };
 
-        //        try
-        //        {
-        //            TokenRefres token = new TokenRefres { RefreshToken = user.RefreshToken };
+                    HttpClient client = new HttpClient();
 
-        //            HttpClient client = new HttpClient();
+                    string body = JsonConvert.SerializeObject(token);
+                    StringContent content = new StringContent(body, Encoding.UTF8, "application/json");
+                    HttpResponseMessage response = await client.PostAsync(AppSettings.ApiAuthentication(UriApi.Token), content);
+                    if (response.StatusCode.Equals(HttpStatusCode.OK))
+                    {
+                        string jsonResult = await response.Content.ReadAsStringAsync();
+                        ResponseTokenRefesh Response = JsonConvert.DeserializeObject<ResponseTokenRefesh>(jsonResult);
+                        user.IdToken = Response.IdToken;
+                        AppSettings.AuthenticationUser = user;
+                        _response = new response()
+                        {
+                            Success = true,
+                            Message = "Token Actualizado",
+                            Status = 200,
+                            Object = user
+                        };
+                        return _response;
+                    }
+                    else
+                    {
+                        string jsonResult = await response.Content.ReadAsStringAsync();
+                        _response = new response()
+                        {
+                            Success = false,
+                            Message = "No se pudo actualizar el token",
+                            Status = (int)response.StatusCode,
+                            Object = jsonResult
+                        };
+                        return _response;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _response = new response()
+                    {
+                        Success = false,
+                        Message = ex.Message,
+                        Status = 503,
+                        Object = ex
+                    };
+                    return _response;
+                }
 
-        //            string body = JsonConvert.SerializeObject(token);
-        //            StringContent content = new StringContent(body, Encoding.UTF8, "application/json");
-        //            HttpResponseMessage response = await client.PostAsync(AppSettings.ApiAuthentication(UriApi.Token), content);
-        //            if (response.StatusCode.Equals(HttpStatusCode.OK))
-        //            {
-        //                string jsonResult = await response.Content.ReadAsStringAsync();
-        //                ResponseTokenRefesh oResponse = JsonConvert.DeserializeObject<ResponseTokenRefesh>(jsonResult);
-        //                using (DataAccess datos = new DataAccess())
-        //                {
-        //                    user.IdToken = oResponse.IdToken;
-        //                    AppSettings.AuthenticationUser = user;
-        //                    datos.UpdateAutentication(user);
-        //                }
 
+            }
+            else
+            {
+                _response = new response()
+                {
+                    Success = true,
+                    Message = "El token todavia esta valido",
+                    Status = 201,
+                    Object = user
+                };
+                return _response;
+            }
 
-        //                return true;
-        //            }
-        //            else
-        //            {
-        //                return false;
-        //            }
-        //        }
-        //        catch (Exception ex)
-        //        {
-        //            string t = ex.Message;
-        //            return false;
-        //        }
-
-
-        //    }
-        //    else
-        //    {
-
-        //        return false;
-        //    }
-
-
-
-        //}
-
-
+        }
 
     }
     internal class Errors

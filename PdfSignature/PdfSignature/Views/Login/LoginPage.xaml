@@ -140,7 +140,7 @@
                                                     FontSize="12"
                                                     HorizontalOptions="StartAndExpand"
                                                     Style="{StaticResource TransparentButtonStyle}"
-                                                    Text="¿Recordar Usuario?"
+                                                    Text="¿Mantener inicio de sesión?"
                                                     TextColor="{DynamicResource Gray-800}"/>
 
                                                         <!--  Forgot password link  -->

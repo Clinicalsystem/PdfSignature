@@ -15,48 +15,25 @@ namespace PdfSignature
         public static readonly string KeyAplication = "AIzaSyCSy16fvx05bc7pYKRlhipo8qZFx6BCL78";
         public static readonly string UrlGoogleApis = "https://identitytoolkit.googleapis.com/v1/";
         private static ResponseAuthentication _AuthenticationUser;
-        private static bool _IsRemember;
+        public static readonly bool IsRemember = Preferences.Get("IsRemember", false);
         #endregion
         public static ResponseAuthentication AuthenticationUser 
         {
             get 
             {
-                if(_AuthenticationUser == null)
-                {
+               
                     if(Preferences.ContainsKey("UserAutentication"))
                     {
                         var user = Preferences.Get("UserAutentication", string.Empty);
                         _AuthenticationUser = JsonConvert.DeserializeObject<ResponseAuthentication>(user);
                     }
-                    
-                }
+                   
                 return _AuthenticationUser;
             }
             set 
             { 
                 _AuthenticationUser = value;
                 Preferences.Set("UserAutentication", JsonConvert.SerializeObject(value));
-            }
-        }
-
-        public static bool IsRemenber
-        {
-            get
-            {
-                if (!_IsRemember)
-                {
-                    if (Preferences.ContainsKey("IsRemember"))
-                    {
-                        _IsRemember = Preferences.Get("IsRemenber", false);
-                    }
-
-                }
-                return _IsRemember;
-            }
-            set
-            {
-                _IsRemember = value;
-                Preferences.Set("IsRemember", _IsRemember);
             }
         }
 
@@ -84,6 +61,7 @@ namespace PdfSignature
         }
 
     }
+
     public enum UriApi
     {
         Token,

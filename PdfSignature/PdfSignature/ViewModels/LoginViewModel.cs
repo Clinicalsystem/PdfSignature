@@ -1,6 +1,7 @@
 ﻿using PdfSignature.Services;
 using PdfSignature.Validators;
 using PdfSignature.Validators.Rules;
+using Xamarin.Essentials;
 using Xamarin.Forms;
 using Xamarin.Forms.Internals;
 
@@ -16,6 +17,7 @@ namespace PdfSignature.ViewModels
 
         private ValidatableObject<string> email;
 
+        private bool _isRemember;
         
         #endregion
 
@@ -55,6 +57,26 @@ namespace PdfSignature.ViewModels
                 
             }
         }
+
+        public bool IsRemember
+        {
+            get
+            {
+                
+                return _isRemember;
+            }
+            set
+            {
+                if (_isRemember != value)
+                {
+                    
+                    Preferences.Set("IsRemember", value);
+                   // _isRemember = value;
+                    SetProperty(ref this._isRemember, value);
+                }
+                    
+            }
+        }
         #endregion
 
         #region Methods
@@ -75,6 +97,7 @@ namespace PdfSignature.ViewModels
         private void InitializeProperties()
         {
             this.Email = new ValidatableObject<string>();
+            this._isRemember = Preferences.Get("IsRemember", false);
         }
 
         /// <summary>
