@@ -14,6 +14,16 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 
 using System.Reflection;
+using Syncfusion.ListView.XForms.UWP;
+using Syncfusion.SfPdfViewer.XForms.UWP;
+using Syncfusion.SfRangeSlider.XForms.UWP;
+using Syncfusion.SfRating.XForms.UWP;
+using Syncfusion.XForms.UWP.Border;
+using Syncfusion.XForms.UWP.Buttons;
+using Syncfusion.XForms.UWP.ComboBox;
+using Syncfusion.XForms.UWP.Graphics;
+using Syncfusion.XForms.UWP.TabView;
+using Syncfusion.XForms.UWP.TextInputLayout;
 
 namespace PdfSignature.UWP
 {
@@ -22,6 +32,18 @@ namespace PdfSignature.UWP
         public MainPage()
         {
             this.InitializeComponent();
+            SfRatingRenderer.Init();
+            SfListViewRenderer.Init();
+            SfComboBoxRenderer.Init();
+            SfTextInputLayoutRenderer.Init();
+            SfSegmentedControlRenderer.Init();
+            SfRadioButtonRenderer.Init();
+            SfGradientViewRenderer.Init();
+            SfTabViewRenderer.Init();
+            SfButtonRenderer.Init();
+            SfPdfDocumentViewRenderer.Init();
+            SfRangeSliderRenderer.Init();
+            SfListViewRenderer.Init();
 
             LoadApplication(new PdfSignature.App());
         }

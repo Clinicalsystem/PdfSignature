@@ -48,9 +48,10 @@ namespace PdfSignature.iOS
             SfTabViewRenderer.Init();
             SfButtonRenderer.Init();
 			SfPdfDocumentViewRenderer.Init(); 
-			SfRangeSliderRenderer.Init(); 
-			
-			LoadApplication(new App());
+			SfRangeSliderRenderer.Init();
+            SfListViewRenderer.Init();
+
+            LoadApplication(new App());
 
             return base.FinishedLaunching(app, options);
         }

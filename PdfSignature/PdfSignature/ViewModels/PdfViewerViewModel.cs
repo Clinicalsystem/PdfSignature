@@ -1,9 +1,15 @@
-﻿using PdfSignature.Helper;
+﻿using Microsoft.AspNetCore.Http;
+using PdfSignature.Helper;
+using PdfSignature.Modelos;
 using PdfSignature.Modelos.Files;
+using Syncfusion.Pdf.Parsing;
 using Syncfusion.SfPdfViewer.XForms;
+using System;
+using System.Collections;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
+using System.Net.Http;
 using System.Windows.Input;
 using Xamarin.Essentials;
 using Xamarin.Forms;
@@ -168,7 +174,7 @@ namespace PdfSignature.ViewModels
         #endregion
 
         #region Property
-        public Stream PdfDocumentStream
+        public Stream pdfDocumentStream
         {
             get
             {
@@ -177,7 +183,7 @@ namespace PdfSignature.ViewModels
             set
             {
                 _pdfDocumentStream = value;
-                NotifyPropertyChanged("PdfDocumentStream");
+                NotifyPropertyChanged("pdfDocumentStream");
 
             }
         }
@@ -1197,6 +1203,16 @@ namespace PdfSignature.ViewModels
             StampAnnotationSelectedCommand = new Command<object>(OnStampSelectedCommand, CanExecute);
             StampAnnotationDeselectedCommand = new Command<object>(OnStampDeselectedCommand, CanExecute);
             #endregion
+            if(AppSettings.DocumentSelect != null)
+            {
+                byte[] bytes = Convert.FromBase64String(AppSettings.DocumentSelect.PdfBase64);
+                PdfLoadedDocument loadedDocument = new PdfLoadedDocument(bytes);
+                MemoryStream stream = new MemoryStream();
+                loadedDocument.Save(stream);
+                pdfDocumentStream = stream;
+
+            }
+            
         }
         #endregion
 
@@ -2257,12 +2273,43 @@ namespace PdfSignature.ViewModels
             IsMoreOptionsToolBarVisible = false;
             try
             {
-                FileResult file = await FilePicker.PickAsync();
+                DocumentFile document;
+                Stream stream = null;
+                PickOptions pickOptions = new PickOptions
+                {
+                    PickerTitle = "Seleccione Archivo Pdf",
+                    FileTypes = FilePickerFileType.Pdf
+                };
+
+                FileResult file = await FilePicker.PickAsync(pickOptions);
                 if (file != null)
                 {
-                    Document document = new Document(file);
-                    PdfDocumentStream = document.Stream;
+
+
+                    document = new DocumentFile()
+                    {
+                        FileName = file.FileName,
+                        Date = DateTime.Now,
+                        Path = file.FullPath
+
+                    };
+                    stream = await file.OpenReadAsync();
                 }
+                else
+                {
+                    return;
+                }
+                //archivos recientes
+                using (var data = new MemoryStream())
+                {
+                    await stream.CopyToAsync(data);
+                    document.PdfBase64 = Convert.ToBase64String(data.ToArray());
+                }
+
+                AppSettings.DocumentSelect = document;
+
+                pdfDocumentStream = stream;
+            
             }
             catch (System.Exception)
             {

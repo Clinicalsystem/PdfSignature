@@ -14,7 +14,7 @@ namespace PdfSignature.Modelos.Files
         public string FireBaseID { get; set; }    
         public string FileName { get; set; }
 
-        public Stream Stream { get; set; }
+        public string PdfBase64 { get; set; }
 
         public string Path { get; set; }
 

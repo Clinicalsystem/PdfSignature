@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using PdfSignature.Modelos.Autentication;
+using PdfSignature.Modelos.Files;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -14,7 +15,9 @@ namespace PdfSignature
         public static readonly string ApiFirebase = "https://pdfsignature-8079d-default-rtdb.firebaseio.com/";
         public static readonly string KeyAplication = "AIzaSyCSy16fvx05bc7pYKRlhipo8qZFx6BCL78";
         public static readonly string UrlGoogleApis = "https://identitytoolkit.googleapis.com/v1/";
+        public static DocumentFile DocumentSelect;
         private static ResponseAuthentication _AuthenticationUser;
+        private static string _path = string.Empty;
         public static readonly bool IsRemember = Preferences.Get("IsRemember", false);
         #endregion
         public static ResponseAuthentication AuthenticationUser 
@@ -34,6 +37,29 @@ namespace PdfSignature
             { 
                 _AuthenticationUser = value;
                 Preferences.Set("UserAutentication", JsonConvert.SerializeObject(value));
+            }
+        }
+
+        public static string PdfSavePath 
+        { 
+            get
+            {
+                if(!string.IsNullOrEmpty(_path))
+                {
+                    return _path;
+                }
+
+                if (Preferences.ContainsKey("PdfSavePath"))
+                {
+                    _path = Preferences.Get("PdfSavePath", string.Empty);
+                }
+
+                return _path;
+            }
+            set
+            {
+                _path = value;
+                Preferences.Set("PdfSavePath", _path);
             }
         }
 

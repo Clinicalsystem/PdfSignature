@@ -1,0 +1,81 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" 
+             xmlns:converter="clr-namespace:PdfSignature.Converters"
+             xmlns:border="clr-namespace:Syncfusion.XForms.Border;assembly=Syncfusion.Core.XForms" 
+             xmlns:buttons="clr-namespace:Syncfusion.XForms.Buttons;assembly=Syncfusion.Buttons.XForms" 
+             xmlns:listView="clr-namespace:Syncfusion.ListView.XForms;assembly=Syncfusion.SfListView.XForms" xmlns:viewModel="clr-namespace:PdfSignature.ViewModels"
+             x:Class="PdfSignature.Views.Home.HomeList">
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <converter:IndexToColorConverter x:Key="IndexToColorConverter"/>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+    <ContentPage.BindingContext>
+        <viewModel:HomeListViewModel/>
+    </ContentPage.BindingContext>
+    <ContentPage.Content>
+        <StackLayout Padding="1">
+            <border:SfBorder
+             CornerRadius="15,15,0,0"
+             Style="{StaticResource LoginFormBorderlessEntryBorderStyle}">
+                <Grid >
+                    <StackLayout BackgroundColor="{DynamicResource PrimaryGradient}"
+                         HeightRequest="150">
+
+                        <buttons:SfButton
+                          x:Name="PdfSignature"
+                          Margin="0,16"
+                          HorizontalOptions="Center"
+                          Command="{Binding PdfSignatureCommand}"
+                          Style="{StaticResource PdfButtonStyle}"
+                          Text="Pdf Signature">
+                            
+                        </buttons:SfButton>
+
+
+                    </StackLayout>
+
+                </Grid>
+            </border:SfBorder>
+            <Grid >
+            <listView:SfListView 
+                x:Name="listView"
+                HorizontalOptions="CenterAndExpand" 
+                VerticalOptions="CenterAndExpand"
+                Padding="2"
+                BackgroundColor="{DynamicResource Gray-200}">
+                
+                <listView:SfListView.ItemTemplate>
+                    <DataTemplate>
+                        <Grid BackgroundColor="{Binding .,Converter={StaticResource IndexToColorConverter},ConverterParameter={x:Reference Name=listView}}">
+                            <Label Text="{Binding Date}" />
+                            <Label Text="{Binding NameFile}" />
+                        </Grid>
+                    </DataTemplate>
+                </listView:SfListView.ItemTemplate>
+
+            </listView:SfListView>
+                <buttons:SfButton 
+                    HorizontalOptions="End" 
+                    VerticalOptions="End"
+                    HeightRequest="40"
+                    WidthRequest="40"
+                    BorderWidth="1"
+                    Margin="16"
+                    Text="+"
+                    Command="{Binding NewDocumentCommand}"
+                    FontSize="20"
+                    FontAttributes="Bold"
+                    TextColor="Black"
+                    CornerRadius="45"
+                    BorderColor="{DynamicResource Gray-Black}"
+                    BackgroundColor="{DynamicResource PrimaryColor}"/>
+            </Grid>
+
+
+
+
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>

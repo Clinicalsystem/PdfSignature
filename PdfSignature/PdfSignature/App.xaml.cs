@@ -2,6 +2,7 @@ using PdfSignature.Modelos;
 using PdfSignature.Modelos.Autentication;
 using PdfSignature.Services;
 using PdfSignature.Views;
+using PdfSignature.Views.Home;
 using PdfSignature.Views.PDF;
 using System;
 using System.Threading.Tasks;
@@ -35,9 +36,9 @@ namespace PdfSignature
             if(Preferences.Get("IsRemember",false))
             {
                 
-                if (!AppSettings.AuthenticationUser.Registered)
+                if (AppSettings.AuthenticationUser.Registered)
                 {
-                    PdfSignaturePage = new NavigationPage(new PdfView());
+                    PdfSignaturePage = new NavigationPage(new HomeList());
                     GlobalNavigation = PdfSignaturePage.Navigation;
                     MainPage = PdfSignaturePage;
                     return;

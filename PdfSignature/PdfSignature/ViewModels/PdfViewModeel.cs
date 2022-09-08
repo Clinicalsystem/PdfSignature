@@ -1,9 +1,11 @@
 ﻿using Syncfusion.Pdf.Parsing;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Runtime.InteropServices.ComTypes;
 using System.Text;
+using Xamarin.Essentials;
 using Xamarin.Forms;
 
 namespace PdfSignature.ViewModels
@@ -14,7 +16,7 @@ namespace PdfSignature.ViewModels
         #region Fields
 
         public static PdfLoadedDocument _signatureDocument { get; set; }
-
+        Command<object> saveCommand;
         #endregion
 
         #region Contructor
@@ -24,12 +26,13 @@ namespace PdfSignature.ViewModels
             {
                 _signatureDocument = new PdfLoadedDocument(_pdfDocumentStream);
             }
-            
+            this.SignatureCommand = new Command(this.SignatureDocument);
+            this.ShareCommand = new Command(this.ShareDocument);
+            this.SaveCommand = new Command<object>(this.SaveDocument);
         }
         #endregion
 
         #region Property
-        
 
         #endregion
 
@@ -39,7 +42,11 @@ namespace PdfSignature.ViewModels
 
         public Command ShareCommand { get; set; }
 
-        public Command SaveDocumentCommand { get; set; }
+        public Command<object> SaveCommand
+        {
+            get { return saveCommand; }
+            protected set { saveCommand = value; }
+        }
 
         #endregion
 
@@ -48,7 +55,20 @@ namespace PdfSignature.ViewModels
         {
             try
             {
-                _signatureDocument.Save(_pdfDocumentStream);
+                MemoryStream stream = new MemoryStream();
+                _signatureDocument.Save(stream);
+                var document = AppSettings.DocumentSelect;
+                string _Path = $"{Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)}/PdfSignature";
+                string name = $"{document.FileName.Remove(document.FileName.Length - 4)}_Firmado.pdf";
+                
+                _Path =Path.Combine(_Path, name);
+                if(!Directory.Exists(_Path))
+                {
+                    Directory.CreateDirectory(_Path);   
+                }
+
+                File.WriteAllBytes(_Path, stream.GetBuffer());
+
             }
             catch (Exception)
             {
@@ -61,7 +81,8 @@ namespace PdfSignature.ViewModels
         {
             try
             {
-                _signatureDocument.Save(_pdfDocumentStream);
+                MemoryStream stream = new MemoryStream();
+                _signatureDocument.Save(stream);
             }
             catch (Exception)
             {
@@ -74,7 +95,7 @@ namespace PdfSignature.ViewModels
         {
             try
             {
-                _signatureDocument.Save(_pdfDocumentStream);
+                //_signatureDocument.Save(_pdfDocumentStream);
             }
             catch (Exception)
             {

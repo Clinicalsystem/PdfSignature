@@ -57,4 +57,13 @@
         <Setter Property="VerticalOptions" Value="Center" />
     </Style>
 
+    <Style x:Key="TitleStyle" TargetType="Label">
+        <Setter Property="FontSize" Value="Header" />
+        <Setter Property="TextColor" Value="{DynamicResource Gray-Black}" />
+        <Setter Property="HorizontalOptions" Value="Center" />
+        <Setter Property="HorizontalTextAlignment" Value="Center" />
+        <Setter Property="FontFamily" Value="Montserrat-SemiBold" />
+        <Setter Property="LineHeight" Value="{OnPlatform Android=1.5, Default=-1}" />
+    </Style>
+
 </ResourceDictionary>

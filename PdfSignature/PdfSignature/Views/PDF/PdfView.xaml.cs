@@ -1,4 +1,7 @@
-﻿using System;
+﻿using PdfSignature.Implementation;
+using System;
+using System.IO;
+using System.Threading.Tasks;
 using Xamarin.Forms;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.Xaml;
@@ -57,6 +60,37 @@ namespace PdfSignature.Views.PDF
         private void ImageButton_Clicked(object sender, EventArgs e)
         {
 
+        }
+
+        
+
+        private async void pdfViewer_DocumentSaveInitiated(object sender, Syncfusion.SfPdfViewer.XForms.DocumentSaveInitiatedEventArgs args)
+        {
+            string _Path = string.Empty;
+            Stream stream = args.SaveStream;
+            
+            var document = AppSettings.DocumentSelect;
+           // string _Path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "PdfSignature");
+            string name = $"{document.FileName.Remove(document.FileName.Length - 4)}_Firmado.pdf";
+            if (Device.RuntimePlatform == Device.Android || Device.RuntimePlatform == Device.iOS)
+            {
+
+            }
+            else
+            {
+                //byte[] data = ReadFully(stream.BaseStream);
+             _Path =  await DependencyService.Get<IFileManager>().Save(stream as MemoryStream, name);
+            }
+            AppSettings.PdfSavePath = _Path;
+
+        }
+        private byte[] ReadFully(Stream input)
+        {
+            using (MemoryStream ms = new MemoryStream())
+            {
+                input.CopyToAsync(ms);
+                return ms.ToArray();
+            }
         }
     }
 }

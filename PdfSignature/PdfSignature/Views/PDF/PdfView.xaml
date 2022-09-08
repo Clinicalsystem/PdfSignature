@@ -1,7 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" 
-             xmlns:sfpdfviewer="clr-namespace:Syncfusion.SfPdfViewer.XForms;assembly=Syncfusion.SfPdfViewer.XForms" xmlns:viewMolde="clr-namespace:PdfSignature.ViewModels"
+             xmlns:sfpdfviewer="clr-namespace:Syncfusion.SfPdfViewer.XForms;assembly=Syncfusion.SfPdfViewer.XForms" 
+             xmlns:viewMolde="clr-namespace:PdfSignature.ViewModels" 
+             xmlns:Behavior="clr-namespace:PdfSignature.Behaviors"
              x:Class="PdfSignature.Views.PDF.PdfView">
     <ContentPage.BindingContext>
         <viewMolde:PdfViewModeel/>
@@ -16,7 +18,16 @@
                         PageViewMode="PageByPage"
                         IsToolbarVisible = "True"
                         PreserveSignaturePadOrientation="True"
-                        InputFileStream="{Binding PdfDocumentStream}"/>
+                        DocumentSaveInitiated="pdfViewer_DocumentSaveInitiated"
+                        InputFileStream="{Binding pdfDocumentStream}">
+                       <!-- <sfpdfviewer:SfPdfViewer.Behaviors>
+                            <Behavior:EventToCommandBehavior 
+                                EventName="DocumentSaveInitiated" 
+                                Command="{Binding SaveCommand}"/>
+                        </sfpdfviewer:SfPdfViewer.Behaviors>
+                       -->
+                        
+                    </sfpdfviewer:SfPdfViewer>
 
                 </StackLayout>
                 <ImageButton Source="ic_share.png" Command="{Binding FileOpenCommand}" BackgroundColor="red" WidthRequest="60" HeightRequest="60"
