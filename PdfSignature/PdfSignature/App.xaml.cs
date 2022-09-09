@@ -60,13 +60,18 @@ namespace PdfSignature
                 Preferences.Clear("UserAutentication");
                 return;
             }
-            _response = await ApiServicesAutentication.TokenRefresh(AppSettings.AuthenticationUser);
-            if(!_response.Success)
+            if(AppSettings.AuthenticationUser != null)
             {
-                loginPage = new NavigationPage(new LoginPage());
-                GlobalNavigation = loginPage.Navigation;
-                MainPage = loginPage;
-                return;
+
+                _response = await ApiServicesAutentication.TokenRefresh(AppSettings.AuthenticationUser);
+
+                if(!_response.Success)
+                {
+                    loginPage = new NavigationPage(new LoginPage());
+                    GlobalNavigation = loginPage.Navigation;
+                    MainPage = loginPage;
+                    return;
+                }
             }
         }
 

@@ -4,6 +4,7 @@ using System;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using Xamarin.Essentials;
 using Xamarin.Forms;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.Xaml;
@@ -76,7 +77,18 @@ namespace PdfSignature.Views.PDF
             var document = AppSettings.DocumentSelect;
            // string _Path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "PdfSignature");
             string name = $"{document.FileName.Remove(document.FileName.Length - 4)}_Firmado.pdf";
-            if (Device.RuntimePlatform == Device.Android || Device.RuntimePlatform == Device.iOS)
+            if (Device.RuntimePlatform == Device.Android)
+            {
+                var status = await CheckAndRequestStorageWrite();
+                switch (status)
+                {
+                    case PermissionStatus.Granted:
+                        _Path = await DependencyService.Get<IFileManager>().Save(stream as MemoryStream, name);
+                        break;
+                   
+                }
+            }
+            else if (Device.RuntimePlatform == Device.iOS)
             {
 
             }
@@ -96,6 +108,28 @@ namespace PdfSignature.Views.PDF
                 input.CopyToAsync(ms);
                 return ms.ToArray();
             }
+        }
+        private async Task<PermissionStatus> CheckAndRequestStorageWrite()
+        {
+            var status = await Permissions.CheckStatusAsync<Permissions.StorageWrite>();
+
+            if (status == PermissionStatus.Granted)
+                return status;
+
+            if (status == PermissionStatus.Denied && Device.RuntimePlatform == Device.Android)
+            {
+                await _messageService.ShowAsync("El Usuario denego el permiso para guardar archivos en el dispostivo.");
+                return status;
+            }
+
+            if (Permissions.ShouldShowRationale<Permissions.StorageWrite>())
+            {
+                await _messageService.ShowAsync("Se requiere su permiso para almacenar los archivos firmados en el dispositivo, por favor conceda el permiso.");
+            }
+
+            status = await Permissions.RequestAsync<Permissions.StorageWrite>();
+
+            return status;
         }
     }
 }
