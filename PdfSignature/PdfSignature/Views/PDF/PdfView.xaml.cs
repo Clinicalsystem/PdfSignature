@@ -1,6 +1,8 @@
 ﻿using PdfSignature.Implementation;
+using PdfSignature.Services;
 using System;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Xamarin.Forms;
 using Xamarin.Forms.Internals;
@@ -12,6 +14,7 @@ namespace PdfSignature.Views.PDF
     public partial class PdfView : ContentPage
     {
         #region Fields
+        private IMessageService _messageService;
         private float _ZoomFactor = 0;
         double currentScale = 1;
         double startScale = 1;
@@ -21,7 +24,8 @@ namespace PdfSignature.Views.PDF
         #endregion
         public PdfView()
         {
-            PinchGesture.PinchUpdated += OnPinchUpdated;
+            _messageService = new MessageService(); 
+        PinchGesture.PinchUpdated += OnPinchUpdated;
             InitializeComponent();
         }
         private void OnPinchUpdated(object sender, PinchGestureUpdatedEventArgs e)
@@ -82,6 +86,7 @@ namespace PdfSignature.Views.PDF
              _Path =  await DependencyService.Get<IFileManager>().Save(stream as MemoryStream, name);
             }
             AppSettings.PdfSavePath = _Path;
+            await _messageService.ShowAsync($"Se guardo el archivo correctamente en la ruta: {_Path}");
 
         }
         private byte[] ReadFully(Stream input)
