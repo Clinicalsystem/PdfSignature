@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <None Remove="Data\navigation.json" />
+    <None Remove="Resources\Fonts\Icon.ttf" />
     <None Remove="Resources\Fonts\Montserrat-Bold.ttf" />
     <None Remove="Resources\Fonts\Montserrat-Medium.ttf" />
     <None Remove="Resources\Fonts\Montserrat-Regular.ttf" />
@@ -21,6 +22,7 @@
 
   <ItemGroup>
     <EmbeddedResource Include="Data\navigation.json" />
+    <EmbeddedResource Include="Resources\Fonts\Icon.ttf" />
     <EmbeddedResource Include="Resources\Fonts\Montserrat-Bold.ttf" />
     <EmbeddedResource Include="Resources\Fonts\Montserrat-Medium.ttf" />
     <EmbeddedResource Include="Resources\Fonts\Montserrat-Regular.ttf" />
