@@ -82,6 +82,8 @@
                                                      HorizontalOptions="CenterAndExpand" 
                                                      VerticalOptions="CenterAndExpand"
                                                      Padding="2"
+                                                        TapCommand="{Binding OpenDocumentCommand}"
+                                                        TapCommandParameter="{Binding listRecients}"
                                                      ItemsSource="{Binding DocumentsRecientes}">
                                                         <listView:SfListView.HeaderTemplate>
                                                             <DataTemplate>
@@ -112,7 +114,10 @@
                                                                         <Label Text="{Binding Path}" IsVisible="{OnPlatform Android=False, iOS=False, UWP=True}" 
                                                                          Style="{DynamicResource DescriptionLabelStyle}" />
                                                                         <Button FontFamily="Icon" FontSize="Medium" Text="{x:Static fonts:IconFont.TrashEmpty}"
-                                                                       BackgroundColor="Transparent" HorizontalOptions="EndAndExpand" />
+                                                                                x:Name="Delete"
+                                                                                Command="{Binding Path=BindingContext.DeleteDocumentCommand, Source={x:Reference listRecients}}" 
+                                                                                CommandParameter="{x:Reference Delete}"
+                                                                                BackgroundColor="Transparent" HorizontalOptions="EndAndExpand" />
 
 
                                                                     </StackLayout>

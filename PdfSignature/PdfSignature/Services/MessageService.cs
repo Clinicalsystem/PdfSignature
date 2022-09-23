@@ -14,6 +14,9 @@ namespace PdfSignature.Services
             await App.Current.MainPage.DisplayAlert("PdfSignature", message,"Ok");
         }
 
-       
+        public async Task<string> ShowAsync(string[] message)
+        {
+           return await App.Current.MainPage.DisplayActionSheet("PdfSignature", "Ok", null, message);
+        }
     }
 }

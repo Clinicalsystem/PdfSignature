@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 using PdfSignature.Views.PDF;
 using System.IO;
 using PdfSignature.Data;
+using Syncfusion.SfPdfViewer.XForms;
 
 namespace PdfSignature.ViewModels
 {
@@ -25,10 +26,13 @@ namespace PdfSignature.ViewModels
 
         private ObservableCollection<DocumentFile> _documentsRecientes;
 
+        private Command<object> _deleteDocumentCommand;
+
         private IMessageService _displayAlert;
 
 
         private IDataAccess _dataAccess;
+        private Command<object> _openDocumentCommand;
 
         #endregion
 
@@ -37,15 +41,15 @@ namespace PdfSignature.ViewModels
 
         public HomeListViewModel()
         {
-            this._displayAlert = DependencyService.Get<IMessageService>();
-            this._dataAccess = DependencyService.Get<IDataAccess>();
-            this.InitializeProperties();
-            this.NewDocumentCommand = new Command(this.NewDocumentClicked);
-            this.DeleteDocumentCommand = new Command(this.DeleteDocument);
-            this.OpenDocumentCommand = new Command(this.OpenDocumentAsync);
-            this.PerfilCommand = new Command(this.PerfilUser);
-            this.NewDocumentCommand = new Command(this.NewDocumentClicked);
-
+             _displayAlert = DependencyService.Get<IMessageService>();
+             _dataAccess = DependencyService.Get<IDataAccess>();
+             InitializeProperties();
+             NewDocumentCommand = new Command(NewDocumentClicked);
+             DeleteDocumentCommand = new Command<object>(DeleteDocument);
+             OpenDocumentCommand = new Command<object>(OpenDocument);
+             PerfilCommand = new Command(PerfilUser);
+             NewDocumentCommand = new Command(NewDocumentClicked);
+             
         }
 
         #endregion
@@ -96,9 +100,18 @@ namespace PdfSignature.ViewModels
 
         #region Command
 
-        public Command DeleteDocumentCommand { get; set; }
+        
+        public Command<object> DeleteDocumentCommand
+        {
+            get { return _deleteDocumentCommand; }
+            set { _deleteDocumentCommand = value; }
+        }
 
-        public Command OpenDocumentCommand { get; set; }
+        public Command<object> OpenDocumentCommand
+        {
+            get { return _openDocumentCommand; }
+            set { _openDocumentCommand = value; }
+        }
 
 
         public Command PerfilCommand { get; set; }
@@ -112,18 +125,57 @@ namespace PdfSignature.ViewModels
 
         #region methods
 
-        private void DeleteDocument(object obj)
+        private async void DeleteDocument(object obj)
         {
-            var buton = obj as Button;
+            try
+            {
+                DocumentFile document = (DocumentFile)(obj as Xamarin.Forms.Button).BindingContext;
+                if (document != null)
+                {
+                    string[] button = new string[] { "Borrar solo del PDdfSignature.", "Borrar incluso del dispositivo." };
+                    var resp = await _displayAlert.ShowAsync(button);
+                    switch(resp)
+                    {
+                        case "Borrar solo del PDdfSignature.":
+                           var delete = _dataAccess.Delete(document);
+                            break;
+
+                        case "Borrar incluso del dispositivo.":
+                            var delete1 = await _dataAccess.Delete(document);
+                            if(delete1.Success)
+                            {
+                                //Falto borrar del disco.
+                                //var ss = File.Exists(document.Path);
+                                //File.Delete(document.Path);
+                            }
+                            break;
+
+
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+
+              await  _displayAlert.ShowAsync(ex.Message);
+            }
         }
         private void PerfilUser()
         {
 
         }
 
-        public void OpenDocumentAsync()
+        public void OpenDocument(object obj)
         {
+            try
+            {
+                return;
+            }
+            catch (Exception)
+            {
 
+                throw;
+            }
         }
 
 
@@ -132,7 +184,7 @@ namespace PdfSignature.ViewModels
             var listDoc = await _dataAccess.GetDocumentList();
             if (listDoc.Success)
             {
-                this._documentsRecientes = new ObservableCollection<DocumentFile>((List<DocumentFile>)listDoc.Object);
+                DocumentsRecientes = new ObservableCollection<DocumentFile>((List<DocumentFile>)listDoc.Object);
             }
             else
             {
@@ -182,8 +234,18 @@ namespace PdfSignature.ViewModels
                 {
                     await stream.CopyToAsync(data);
                     document.PdfBase64 = Convert.ToBase64String(data.ToArray());
+                    var resp = await _dataAccess.Insert(document);
+                    if(resp.Success)
+                    {
+                        document.Id = (int)resp.Object;
+                        DocumentsRecientes.Add(document);
+                    }
+                    
                 }
-                var resp = await _dataAccess.Insert(document);
+
+
+                
+                
                 AppSettings.DocumentSelect = document;
                 await App.GlobalNavigation.PushAsync(new PdfView(), true);
 

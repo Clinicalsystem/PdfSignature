@@ -8,7 +8,7 @@ namespace PdfSignature.Modelos.Files
 {
     public class DocumentFile
     {
-        [PrimaryKey]
+        [PrimaryKey, AutoIncrement]
         public int Id { get; set; }
 
         public string FireBaseID { get; set; }    
