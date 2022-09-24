@@ -8,7 +8,12 @@ using System.Threading.Tasks;
 namespace PdfSignature.Services
 {
     public class MessageService : IMessageService
-    { 
+    {
+        public async Task<bool> QuestionAsync(string message, string aceptar, string cancelar)
+        {
+            return await App.Current.MainPage.DisplayAlert("PdfSignature", message, aceptar, cancelar);
+        }
+
         public async Task ShowAsync(string message)
         {
             await App.Current.MainPage.DisplayAlert("PdfSignature", message,"Ok");
@@ -16,7 +21,7 @@ namespace PdfSignature.Services
 
         public async Task<string> ShowAsync(string[] message)
         {
-           return await App.Current.MainPage.DisplayActionSheet("PdfSignature", "Ok", null, message);
+           return await App.Current.MainPage.DisplayActionSheet("PdfSignature", "Ok", "Cancelar", message);
         }
     }
 }

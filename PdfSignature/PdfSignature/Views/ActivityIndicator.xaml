@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <ContentView xmlns="http://xamarin.com/schemas/2014/forms" 
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" xmlns:control="clr-namespace:PdfSignature.Controls"
-             x:Class="PdfSignature.Views._ActivityIndicator" IsVisible="{Binding IsRunning}">
+             x:Class="PdfSignature.Views.ActivityIndicator" IsVisible="{Binding IsRunning}">
     
   <ContentView.Content>
         <ContentView AbsoluteLayout.LayoutBounds="0,0,1,1" >
@@ -24,7 +24,7 @@
                                                IsRunning="{Binding IsRunning}" />
                             </Grid>
 
-                            <Label Text="Cargando"
+                            <Label Text="{Binding StatusMessage}"
                                    HorizontalOptions="CenterAndExpand"
                                    Style="{DynamicResource TitleLabelStyle}"/>
                         </StackLayout>

@@ -113,6 +113,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="Views\ActivityIndicator.xaml.cs">
+      <DependentUpon>ActivityIndicator.xaml</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
     <EmbeddedResource Update="Styles\AvatarViewStyles.xaml">
       <Generator>MSBuild:Compile</Generator>
     </EmbeddedResource>
@@ -188,7 +194,7 @@
     <EmbeddedResource Update="Views\PDF\PdfView.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
-    <EmbeddedResource Update="Views\_ActivityIndicator.xaml">
+    <EmbeddedResource Update="Views\ActivityIndicator.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
   </ItemGroup>

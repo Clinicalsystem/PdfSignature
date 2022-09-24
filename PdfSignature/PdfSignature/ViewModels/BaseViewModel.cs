@@ -18,7 +18,8 @@ namespace PdfSignature.ViewModels
         #region Fields
 
         private Command<object> backButtonCommand;
-        private bool isBusy;
+        private string _menssage;
+        private bool _isLook;
 
         private static bool isCompletet { get; set; }
        
@@ -33,6 +34,10 @@ namespace PdfSignature.ViewModels
 
         #endregion
 
+        public BaseViewModel()
+        {
+            IsLook = false;
+        }
         #region Properties
 
 
@@ -57,12 +62,25 @@ namespace PdfSignature.ViewModels
         {
             get
             {
-                return isBusy;
+                return _isLook;
             }
 
             set
             {
-               this.SetProperty(ref this.isBusy, value);
+               this.SetProperty(ref this._isLook, value);
+            }
+        }
+
+        public string StatusMessage
+        {
+            get
+            {
+                return _menssage;
+            }
+
+            set
+            {
+                this.SetProperty(ref this._menssage, value);
             }
         }
 

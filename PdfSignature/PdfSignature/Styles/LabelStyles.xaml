@@ -19,7 +19,7 @@
         <Setter Property="FontSize" Value="14" />
         <Setter Property="TextColor" Value="{DynamicResource Gray-700}" />
         <Setter Property="HorizontalOptions" Value="Center" />
-        <Setter Property="HorizontalTextAlignment" Value="Center" />
+        <Setter Property="VerticalTextAlignment" Value="Center" />
         <Setter Property="FontFamily" Value="Montserrat-Medium" />
         <Setter Property="LineHeight" Value="{OnPlatform Android=1.5, Default=-1}" />
     </Style>

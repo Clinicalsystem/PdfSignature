@@ -2,6 +2,7 @@
 using PdfSignature.Helper;
 using PdfSignature.Modelos;
 using PdfSignature.Modelos.Files;
+using PdfSignature.Services;
 using Syncfusion.Pdf.Parsing;
 using Syncfusion.SfPdfViewer.XForms;
 using System;
@@ -22,7 +23,7 @@ namespace PdfSignature.ViewModels
     {
         #region Fields
         public static Stream _pdfDocumentStream { get; set; }
-
+        private IMessageService _displayAlert;
         public static string PathPdfDocument { get; set; }
         private string m_currentViewModeIconText = FontMappingHelper.ContinuousPage;
         private PageViewMode m_currentPageViewMode = PageViewMode.Continuous;
@@ -1087,8 +1088,8 @@ namespace PdfSignature.ViewModels
             }
         }
 
-        private Document m_selectedItem;
-        public Document SelectedItem
+        private DocumentFile m_selectedItem;
+        public DocumentFile SelectedItem
         {
             get
             {
@@ -1137,7 +1138,11 @@ namespace PdfSignature.ViewModels
         }
         public PdfViewerViewModel()
         {
+            _displayAlert = DependencyService.Get<IMessageService>();
+            try
+            {
 
+            
             #region InicialiceComand
             ToggleViewModeCommand = new Command<object>(OnViewModeToggled, CanExecute);
             SearchAndToolbarToggleCommand = new Command<object>(OnSearchAndToolbarToggleCommand, CanExecute);
@@ -1212,7 +1217,13 @@ namespace PdfSignature.ViewModels
                 pdfDocumentStream = stream;
 
             }
-            
+            }
+            catch (Exception ex)
+            {
+
+               _displayAlert.ShowAsync($"Se produjo una excepción, al intentar mostrar el archivo. \n{ex.Message}");
+            }
+
         }
         #endregion
 

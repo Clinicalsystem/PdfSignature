@@ -32,8 +32,10 @@ namespace PdfSignature.Modelos.Autentication
         [JsonProperty("expiresIn")]
         public long ExpiresIn { get; set; }
 
-        public DateTime DateLogin { get; set; }
+        public DateTime DateExpire => DateToken.AddSeconds(ExpiresIn);
 
-        public DateTime DateExpire => DateLogin.AddSeconds(ExpiresIn);
+        public DateTime DateRegister { get; set; }
+
+        public DateTime DateToken { get; set; }
     }
 }

@@ -16,5 +16,15 @@ namespace PdfSignature.Views.Home
         {
             InitializeComponent();
         }
+        protected override async void OnAppearing()
+        {
+            base.OnAppearing();
+           await  Task.Run(() =>
+                {
+                Task.Delay(1000).Wait();
+                listRecients.SelectedItems.Clear();
+                listFavorits.SelectedItems.Clear();
+                });
+        }
     }
 }

@@ -11,6 +11,8 @@ namespace PdfSignature.Resources.Fonts
         public const string Plus = "\ue802";
         public const string KeyInv = "\ue803";
         public const string Key = "\ue804";
+        public const string UploadCloud = "\ue805";
+        public const string UploadCloud1 = "\uf0ee";
         public const string Docs = "\uf0c5";
         public const string DocText = "\uf0f6";
         public const string AngleCircledUp = "\uf139";

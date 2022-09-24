@@ -13,8 +13,8 @@ namespace PdfSignature.Converters
             var index = listview.DataSource.DisplayItems.IndexOf(value);
 
             if (index % 2 == 0)
-                return Color.Red;
-            return Color.Aquamarine;
+                return Color.White;
+            return Color.FromHex("E7E6E6");
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

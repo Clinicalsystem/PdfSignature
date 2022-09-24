@@ -64,7 +64,7 @@ namespace PdfSignature
             if (AppSettings.AuthenticationUser != null)
             {
 
-                _response = await ApiServicesAutentication.TokenRefresh(AppSettings.AuthenticationUser);
+                _response = await ApiServicesAutentication.TokenRefresh();
 
                 if (!_response.Success)
                 {

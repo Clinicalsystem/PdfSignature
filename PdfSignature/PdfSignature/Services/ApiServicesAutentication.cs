@@ -27,7 +27,8 @@ namespace PdfSignature.Services
                 {
                     string jsonResult = await response.Content.ReadAsStringAsync();
                     ResponseAuthentication Response = JsonConvert.DeserializeObject<ResponseAuthentication>(jsonResult);
-                    Response.DateLogin = DateTime.Now;
+                    Response.DateRegister = DateTime.Now;
+                    Response.DateToken = DateTime.Now;
                     return new response { Success = true, Message = "Te damos la Bienvenida", Object = Response, Status = 200 };
                 }
                 else
@@ -156,10 +157,11 @@ namespace PdfSignature.Services
 
         }
 
-        public static async Task<response> TokenRefresh(ResponseAuthentication user)
+        public static async Task<response> TokenRefresh()
         {
+            ResponseAuthentication user = AppSettings.AuthenticationUser;
             response _response;
-            if (user.DateExpire >= DateTime.Now)
+            if (DateTime.Now >= user.DateExpire)
             {
 
                 try
@@ -176,6 +178,7 @@ namespace PdfSignature.Services
                         string jsonResult = await response.Content.ReadAsStringAsync();
                         ResponseTokenRefesh Response = JsonConvert.DeserializeObject<ResponseTokenRefesh>(jsonResult);
                         user.IdToken = Response.IdToken;
+                        user.DateToken = DateTime.Now;
                         AppSettings.AuthenticationUser = user;
                         _response = new response()
                         {

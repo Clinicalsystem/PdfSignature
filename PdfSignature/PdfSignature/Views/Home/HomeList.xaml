@@ -6,12 +6,14 @@
              xmlns:buttons="clr-namespace:Syncfusion.XForms.Buttons;assembly=Syncfusion.Buttons.XForms" 
              xmlns:control="clr-namespace:PdfSignature.Controls"
              xmlns:fonts="clr-namespace:PdfSignature.Resources.Fonts"
+             xmlns:views="clr-namespace:PdfSignature.Views"
              xmlns:tabView="clr-namespace:Syncfusion.XForms.TabView;assembly=Syncfusion.SfTabView.XForms"
              xmlns:listView="clr-namespace:Syncfusion.ListView.XForms;assembly=Syncfusion.SfListView.XForms" xmlns:viewModel="clr-namespace:PdfSignature.ViewModels"
              x:Class="PdfSignature.Views.Home.HomeList">
     <ContentPage.Resources>
         <ResourceDictionary>
             <converter:IndexToColorConverter x:Key="IndexToColorConverter"/>
+            <converter:InverseBoolConverter x:Key="InverseBoolConverter" />
         </ResourceDictionary>
     </ContentPage.Resources>
     <ContentPage.BindingContext>
@@ -41,13 +43,13 @@
 
                 </Grid>
             </border:SfBorder>
-            <Grid >
+            
+                <Grid VerticalOptions="FillAndExpand">
                 <Grid>
-                    <StackLayout >
-                        <StackLayout VerticalOptions="CenterAndExpand">
-                            <control:CustomShadowFrame
+
+                    <control:CustomShadowFrame
                             x:Name="frame"
-                            Margin="24,8"
+                            Margin="10,8"
                             Padding="0"
                             BackgroundColor="{DynamicResource GrayShadowColor}"
                             BorderWidth="0"
@@ -55,47 +57,53 @@
                             HasShadow="True"
                             HeightRequest="390"
                             Radius="4">
-                                <tabView:SfTabView
-                                BackgroundColor="Transparent"
-                                x:Name="tabView"
-                                VisibleHeaderCount="2">
-                                    <tabView:SfTabView.SelectionIndicatorSettings>
-                                        <tabView:SelectionIndicatorSettings StrokeThickness="3" Color="{DynamicResource PrimaryColor}" />
+                        <tabView:SfTabView
+                                    BackgroundColor="Transparent"
+                                    x:Name="tabView"
+                                    VerticalOptions="CenterAndExpand"
+                                    VisibleHeaderCount="2">
+                            <tabView:SfTabView.SelectionIndicatorSettings>
+                                <tabView:SelectionIndicatorSettings StrokeThickness="3" Color="{DynamicResource PrimaryColor}" />
 
-                                    </tabView:SfTabView.SelectionIndicatorSettings>
-                                    <tabView:SfTabItem
+                            </tabView:SfTabView.SelectionIndicatorSettings>
+                            <tabView:SfTabItem
                                     x:Name="recientsItem"
                                     Title="Recientes"
                                     SelectionColor="{DynamicResource PrimaryColor}"
                                     TitleFontColor="{DynamicResource Gray-700}"
                                     TitleFontFamily="Montserrat-Regular"
                                     TitleFontSize="14">
-                                        <tabView:SfTabItem.Content>
-                                            <Grid VerticalOptions="StartAndExpand">
-                                                <StackLayout
-                                                Padding="16,4,16,16"
+                                <tabView:SfTabItem.Content>
+                                    <StackLayout
+                                            Padding="8"
+                                            HorizontalOptions="Center"
+                                            Spacing="24"
+                                            VerticalOptions="StartAndExpand">
+                                        <Grid VerticalOptions="StartAndExpand">
+                                            <StackLayout
                                                 HorizontalOptions="Center"
                                                 VerticalOptions="StartAndExpand">
-
+                                                <border:SfBorder
+                                                 CornerRadius="0,0,0,0"
+                                                 Style="{StaticResource ListViewBorder}">
                                                     <listView:SfListView 
                                                      x:Name="listRecients"
                                                      HorizontalOptions="CenterAndExpand" 
                                                      VerticalOptions="CenterAndExpand"
-                                                     Padding="2"
-                                                        TapCommand="{Binding OpenDocumentCommand}"
-                                                        TapCommandParameter="{Binding listRecients}"
+                                                     TapCommand="{Binding OpenDocumentCommand}"
+                                                     TapCommandParameter="{Binding listRecients}"
                                                      ItemsSource="{Binding DocumentsRecientes}">
                                                         <listView:SfListView.HeaderTemplate>
                                                             <DataTemplate>
-                                                                <Grid >
-                                                                    <StackLayout Orientation="Horizontal">
+                                                                <Grid BackgroundColor="{DynamicResource Gray-400}"  >
+                                                                    <StackLayout Orientation="Horizontal" VerticalOptions="CenterAndExpand">
                                                                         <Label Text="Fecha" 
-                                                                         WidthRequest="100"
+                                                                         Padding="24,0" HorizontalTextAlignment="Center"
                                                                          Style="{DynamicResource TitleLabelStyle}"/>
-                                                                        <Label Text="Nombre" WidthRequest="150" 
-                                                                         Style="{DynamicResource TitleLabelStyle}"/>
-                                                                        <Label Text="Ubicación" IsVisible="{OnPlatform Android=False, iOS=False, UWP=True}" 
-                                                                         Style="{DynamicResource TitleLabelStyle}" />
+                                                                        <Label Text="Nombre" 
+                                                                               Padding="14,0"
+                                                                               HorizontalTextAlignment="Center"
+                                                                               Style="{DynamicResource TitleLabelStyle}"/>
                                                                     </StackLayout>
 
                                                                 </Grid>
@@ -103,21 +111,28 @@
                                                         </listView:SfListView.HeaderTemplate>
                                                         <listView:SfListView.ItemTemplate>
                                                             <DataTemplate>
-                                                                <Grid >
+                                                                <Grid BackgroundColor = "{Binding .,Converter={StaticResource IndexToColorConverter},ConverterParameter={x:Reference Name=listRecients}}">
                                                                     <StackLayout Orientation="Horizontal">
                                                                         <Label Text="{Binding Date, StringFormat='{0:dd/MM/yyyy}'}" 
                                                                          Style="{DynamicResource DescriptionLabelStyle}" 
-                                                                         WidthRequest="100" />
+                                                                         Padding="16,0"
+                                                                          HorizontalTextAlignment="Center" />
                                                                         <Label Text="{Binding FileName}" 
-                                                                        WidthRequest="150" 
+                                                                        HorizontalOptions="StartAndExpand" 
                                                                         Style="{DynamicResource DescriptionLabelStyle}" />
-                                                                        <Label Text="{Binding Path}" IsVisible="{OnPlatform Android=False, iOS=False, UWP=True}" 
-                                                                         Style="{DynamicResource DescriptionLabelStyle}" />
-                                                                        <Button FontFamily="Icon" FontSize="Medium" Text="{x:Static fonts:IconFont.TrashEmpty}"
-                                                                                x:Name="Delete"
+
+
+                                                                        <Button FontFamily="Icon" FontSize="Medium" Text="{x:Static fonts:IconFont.AngleCircledUp}"
+                                                                                x:Name="AddFavorits"
+                                                                                Command="{Binding Path=BindingContext.AddFavoritsCommand, Source={x:Reference listRecients}}" 
+                                                                                CommandParameter="{x:Reference AddFavorits}"
+                                                                                BackgroundColor="Transparent" HorizontalOptions="End" />
+
+                                                                        <Button FontFamily="Icon" FontSize="Medium" Text="{x:Static fonts:IconFont.Trash}"
+                                                                                x:Name="Delete" 
                                                                                 Command="{Binding Path=BindingContext.DeleteDocumentCommand, Source={x:Reference listRecients}}" 
                                                                                 CommandParameter="{x:Reference Delete}"
-                                                                                BackgroundColor="Transparent" HorizontalOptions="EndAndExpand" />
+                                                                                BackgroundColor="Transparent" />
 
 
                                                                     </StackLayout>
@@ -126,73 +141,92 @@
                                                             </DataTemplate>
                                                         </listView:SfListView.ItemTemplate>
                                                     </listView:SfListView>
+                                                </border:SfBorder>
+                                                
 
-                                                </StackLayout>
-                                            </Grid>
-                                        </tabView:SfTabItem.Content>
-                                    </tabView:SfTabItem>
+                                            </StackLayout>
+                                        </Grid>
+                                    </StackLayout>
+                                </tabView:SfTabItem.Content>
+                            </tabView:SfTabItem>
 
-                                    <tabView:SfTabItem
+                            <tabView:SfTabItem
                                     Title="Favoritos"
                                     SelectionColor="{DynamicResource PrimaryColor}"
                                     TitleFontColor="{DynamicResource Gray-700}"
                                     TitleFontFamily="Montserrat-Regular"
                                     TitleFontSize="14">
-                                        <tabView:SfTabItem.Content>
-                                            <StackLayout
-                                            Padding="16,30,16,36"
+                                <tabView:SfTabItem.Content>
+                                    <StackLayout
+                                            Padding="8"
                                             HorizontalOptions="Center"
                                             Spacing="24"
                                             VerticalOptions="StartAndExpand">
-                                               
+                                        <Grid VerticalOptions="StartAndExpand">
+                                            <StackLayout
+                                                HorizontalOptions="Center"
+                                                VerticalOptions="StartAndExpand">
+                                                <border:SfBorder
+                                                 CornerRadius="0,0,0,0"
+                                                 Style="{StaticResource ListViewBorder}">
+                                                    <listView:SfListView 
+                                                     x:Name="listFavorits"
+                                                     HorizontalOptions="CenterAndExpand" 
+                                                     VerticalOptions="CenterAndExpand"
+                                                     TapCommand="{Binding OpenDocumentCommand}"
+                                                     TapCommandParameter="{Binding listFavorits}"
+                                                     ItemsSource="{Binding DocumentsFavoritos}">
+                                                        <listView:SfListView.HeaderTemplate>
+                                                            <DataTemplate>
+                                                                <Grid BackgroundColor="{DynamicResource Gray-400}"  >
+                                                                    <StackLayout Orientation="Horizontal" VerticalOptions="CenterAndExpand">
+                                                                        <Label Text="Fecha" 
+                                                                         Padding="24,0" HorizontalTextAlignment="Center"
+                                                                         Style="{DynamicResource TitleLabelStyle}"/>
+                                                                        <Label Text="Nombre" 
+                                                                               Padding="14,0"
+                                                                               HorizontalTextAlignment="Center"
+                                                                               Style="{DynamicResource TitleLabelStyle}"/>
+                                                                    </StackLayout>
+
+                                                                </Grid>
+                                                            </DataTemplate>
+                                                        </listView:SfListView.HeaderTemplate>
+                                                        <listView:SfListView.ItemTemplate>
+                                                        <DataTemplate>
+                                                                <Grid BackgroundColor = "{Binding .,Converter={StaticResource IndexToColorConverter},ConverterParameter={x:Reference Name=listRecients}}">
+                                                                    <StackLayout Orientation="Horizontal">
+                                                                        <Label Text="{Binding Date, StringFormat='{0:dd/MM/yyyy}'}" 
+                                                                         Style="{DynamicResource DescriptionLabelStyle}" 
+                                                                         Padding="16,0"
+                                                                          HorizontalTextAlignment="Center" />
+                                                                        <Label Text="{Binding FileName}" 
+                                                                        HorizontalOptions="StartAndExpand" 
+                                                                        Style="{DynamicResource DescriptionLabelStyle}" />
+                                                                        <Button FontFamily="Icon" FontSize="Medium" Text="{x:Static fonts:IconFont.Trash}"
+                                                                                x:Name="Delete" 
+                                                                                Command="{Binding Path=BindingContext.DeleteFavoritsCommand, Source={x:Reference listFavorits}}" 
+                                                                                CommandParameter="{x:Reference Delete}"
+                                                                                BackgroundColor="Transparent" />
 
 
-                                               
+                                                                </StackLayout>
+
+                                                            </Grid>
+                                                        </DataTemplate>
+                                                    </listView:SfListView.ItemTemplate>
+                                                </listView:SfListView>
+                                                </border:SfBorder>
                                             </StackLayout>
-                                        </tabView:SfTabItem.Content>
-                                    </tabView:SfTabItem>
-                                </tabView:SfTabView>
-                            </control:CustomShadowFrame>
-                            <!--
-                        <Label
-                            Grid.Row="6"
-                            Margin="0,20,0,0"
-                            Style="{StaticResource DescriptionLabelStyle}"
-                            Text="Or create an account using social media"
-                            TextColor="{DynamicResource Gray-800}" />
+                                        </Grid>
 
-                          Login through facebook account  
-                        <buttons:SfButton
-                            Margin="0,16,0,16"
-                            BackgroundColor="{DynamicResource FacebookBlue}"
-                            BindingContext="{Binding BindingContext, Source={x:Reference logInItem}}"
-                            Command="{Binding SocialMediaLoginCommand}"
-                            CornerRadius="20"
-                            HeightRequest="40"
-                            HorizontalOptions="Center"
-                            WidthRequest="325">
-                            <buttons:SfButton.Content>
-                                <StackLayout
-                                    HorizontalOptions="CenterAndExpand"
-                                    Orientation="Horizontal"
-                                    VerticalOptions="Center">
-                                    <Label
-                                        FontFamily="FontIcons"
-                                        FontSize="18"
-                                        Text="&#xe735;"
-                                        TextColor="{DynamicResource Gray-White}"
-                                        VerticalTextAlignment="Center" />
-                                    <Label
-                                        FontFamily="Montserrat-Medium"
-                                        FontSize="16"
-                                        Text="Facebook"
-                                        TextColor="{DynamicResource Gray-White}" />
-                                </StackLayout>
-                            </buttons:SfButton.Content>
-                        </buttons:SfButton>
-                        -->
-                        </StackLayout>
-                    </StackLayout>
+
+                                    </StackLayout>
+                                </tabView:SfTabItem.Content>
+                            </tabView:SfTabItem>
+                        </tabView:SfTabView>
+                    </control:CustomShadowFrame>
+
 
 
                 </Grid>
@@ -206,7 +240,8 @@
                     HorizontalOptions="End" 
                     VerticalOptions="End"
                     HeightRequest="40"
-                    WidthRequest="40"
+                    WidthRequest="40" x:Name="NewDocument"
+                    IsTabStop="{Binding IsLook, Converter={StaticResource InverseBoolConverter}}"
                     BorderWidth="1"
                     Margin="16"
                     Text="+"
@@ -217,9 +252,10 @@
                     CornerRadius="45"
                     BorderColor="{DynamicResource Gray-Black}"
                     BackgroundColor="{DynamicResource PrimaryColor}"/>
+
+                <views:ActivityIndicator IsRunning="{Binding Source={x:Reference NewDocument}, Path=IsTabStop, Converter={StaticResource InverseBoolConverter}}" />
             </Grid>
-
-
+            
 
 
         </StackLayout>

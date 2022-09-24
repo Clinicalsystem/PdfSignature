@@ -380,7 +380,7 @@
         </Grid>
 
 
-            <local:_ActivityIndicator IsRunning="{Binding Source={x:Reference Login}, Path=IsTabStop, Converter={StaticResource InverseBoolConverter}}" />
+            <local:ActivityIndicator IsRunning="{Binding Source={x:Reference Login}, Path=IsTabStop, Converter={StaticResource InverseBoolConverter}}" />
 
         </Grid>
     </ContentPage.Content>

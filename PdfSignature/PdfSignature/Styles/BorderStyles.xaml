@@ -39,4 +39,9 @@
         <Setter Property="BorderColor" Value="{DynamicResource Gray-Bg}" />
         <Setter Property="CornerRadius" Value="20" />
     </Style>
+    <Style x:Key="ListViewBorder" TargetType="border:SfBorder">
+        <Setter Property="BorderWidth" Value="1" />
+        <Setter Property="BorderColor" Value="{DynamicResource PrimaryGradient}" />
+        <Setter Property="CornerRadius" Value="20" />
+    </Style>
 </ResourceDictionary>

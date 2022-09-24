@@ -12,9 +12,10 @@ using PdfSignature.Modelos.Files;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using PdfSignature.Views.PDF;
-using System.IO;
 using PdfSignature.Data;
 using Syncfusion.SfPdfViewer.XForms;
+using System.IO;
+using System.Net.Http;
 
 namespace PdfSignature.ViewModels
 {
@@ -22,7 +23,7 @@ namespace PdfSignature.ViewModels
     {
         #region Fields
 
-        private ObservableCollection<DocumentFile> _documentsFavoritos;
+        private ObservableCollection<Document> _documentsFavoritos;
 
         private ObservableCollection<DocumentFile> _documentsRecientes;
 
@@ -30,9 +31,12 @@ namespace PdfSignature.ViewModels
 
         private IMessageService _displayAlert;
 
-
         private IDataAccess _dataAccess;
+
         private Command<object> _openDocumentCommand;
+
+        private Command<object> _addFavoritsCommand;
+        private Command<object> _deleteFavoritsCommand;
 
         #endregion
 
@@ -41,15 +45,20 @@ namespace PdfSignature.ViewModels
 
         public HomeListViewModel()
         {
-             _displayAlert = DependencyService.Get<IMessageService>();
-             _dataAccess = DependencyService.Get<IDataAccess>();
-             InitializeProperties();
-             NewDocumentCommand = new Command(NewDocumentClicked);
-             DeleteDocumentCommand = new Command<object>(DeleteDocument);
-             OpenDocumentCommand = new Command<object>(OpenDocument);
-             PerfilCommand = new Command(PerfilUser);
-             NewDocumentCommand = new Command(NewDocumentClicked);
-             
+            _displayAlert = DependencyService.Get<IMessageService>();
+            _dataAccess = DependencyService.Get<IDataAccess>();
+
+            InitializeProperties();
+
+            #region InitializeCommand
+            NewDocumentCommand = new Command(NewDocumentClicked);
+            DeleteDocumentCommand = new Command<object>(DeleteDocument);
+            AddFavoritsCommand = new Command<object>(AddFovorits);
+            DeleteFavoritsCommand = new Command<object>(DeleteFavorits);
+            OpenDocumentCommand = new Command<object>(OpenDocument);
+            PerfilCommand = new Command(PerfilUser);
+            NewDocumentCommand = new Command(NewDocumentClicked);
+            #endregion
         }
 
         #endregion
@@ -60,7 +69,7 @@ namespace PdfSignature.ViewModels
         /// <summary>
         /// Gets or sets the property that is bound with an entry that gets the password from user in the login page.
         /// </summary>
-        public ObservableCollection<DocumentFile> DocumentsFavoritos
+        public ObservableCollection<Document> DocumentsFavoritos
         {
             get
             {
@@ -107,6 +116,17 @@ namespace PdfSignature.ViewModels
             set { _deleteDocumentCommand = value; }
         }
 
+        public Command<object> AddFavoritsCommand
+        {
+            get { return _addFavoritsCommand; }
+            set { _addFavoritsCommand = value; }
+        }
+        public Command<object> DeleteFavoritsCommand
+        {
+            get { return _deleteFavoritsCommand; }
+            set { _deleteFavoritsCommand = value; }
+        }
+
         public Command<object> OpenDocumentCommand
         {
             get { return _openDocumentCommand; }
@@ -127,26 +147,26 @@ namespace PdfSignature.ViewModels
 
         private async void DeleteDocument(object obj)
         {
+            IsLook = true;
             try
             {
                 DocumentFile document = (DocumentFile)(obj as Xamarin.Forms.Button).BindingContext;
                 if (document != null)
                 {
-                    string[] button = new string[] { "Borrar solo del PDdfSignature.", "Borrar incluso del dispositivo." };
+                    StatusMessage = "Esperando, respuesta del usuario.";
+                    string[] button = new string[] { "¿Borrar Archivo Reciente?."};
                     var resp = await _displayAlert.ShowAsync(button);
                     switch(resp)
                     {
-                        case "Borrar solo del PDdfSignature.":
-                           var delete = _dataAccess.Delete(document);
+                        case "Cancelar":
                             break;
-
-                        case "Borrar incluso del dispositivo.":
-                            var delete1 = await _dataAccess.Delete(document);
-                            if(delete1.Success)
+                        default:
+                            StatusMessage = "Borrando archivo.";
+                            var delete = await _dataAccess.Delete(document);
+                            if(delete.Success)
                             {
-                                //Falto borrar del disco.
-                                //var ss = File.Exists(document.Path);
-                                //File.Delete(document.Path);
+                                DocumentsRecientes.Remove(document);
+                                NotifyPropertyChanged("DocumentsRecientes");
                             }
                             break;
 
@@ -159,25 +179,104 @@ namespace PdfSignature.ViewModels
 
               await  _displayAlert.ShowAsync(ex.Message);
             }
+            StatusMessage = string.Empty;
+            IsLook = false;
         }
+
+        private async void AddFovorits(object obj)
+        {
+            IsLook = true;
+            try
+            {
+                DocumentFile document = (DocumentFile)(obj as Button).BindingContext;
+                if (document != null)
+                {
+                    StatusMessage = "Esperando, respuesta del usuario.";
+                    document.Date = DateTime.Now;
+                    bool questoion = await _displayAlert.QuestionAsync("¿Estas seguro de agregar este documento a favoritos?");
+                    
+                    if(questoion)
+                    {
+                        StatusMessage = "Almacenado en la nube.";
+                        var response = await ApiServiceFireBase.InsertDocument(document);
+                        if(response.Success)
+                        {
+                            StatusMessage = "Agregando a Favoritos.";
+                            await _dataAccess.Delete(document);
+                            DocumentsRecientes.Remove(document);
+                            NotifyPropertyChanged("DocumentsRecientes");
+                            document.FireBaseID = ((FireBaseID)response.Object).Id;
+                            DocumentsFavoritos.Add(document);
+                            NotifyPropertyChanged("DocumentsFavoritos");
+                        }
+                        else
+                        {
+                            StatusMessage = "Esperando, respuesta del usuario.";
+                            await _displayAlert.ShowAsync($"{response.Message} Code: {response.Status} \n{response.Object}");    
+                        }
+                        
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+
+                await _displayAlert.ShowAsync(ex.Message);
+            }
+            StatusMessage = string.Empty;
+            IsLook = false;
+        }
+
+        private async void DeleteFavorits(object obj)
+        {
+            IsLook = true;
+            try
+            {
+                Document document = (Document)(obj as Button).BindingContext;
+                if (document != null)
+                {
+                    StatusMessage = "Esperando, respuesta del usuario.";
+                   
+                    var resp = await _displayAlert.QuestionAsync("¿Estas seguro de eliminar el archivo de Favoritos?");
+                    switch (resp)
+                    {
+                        
+                        case false:
+                            StatusMessage = "Operación cancelada por el usuario.";
+                            break;
+                        case true:
+                            StatusMessage = "Eliminando archivo de la nube.";
+                            var delete = await ApiServiceFireBase.DeleteDocument(document.FireBaseID);
+                            if (delete.Success)
+                            {
+                                StatusMessage = "Removiendo archivo de la lista Recientes.";
+                                DocumentsFavoritos.Remove(document);
+                                NotifyPropertyChanged("DocumentsFavoritos");
+                            }
+                            else
+                            {
+                                StatusMessage = "Esperando, respuesta del usuario.";
+                                await _displayAlert.ShowAsync($"{delete.Message} Code:{delete.Status} \n{delete.Object}");
+                            }
+                            break;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                StatusMessage = "Esperando, respuesta del usuario.";
+                await _displayAlert.ShowAsync($"Se produjo una excepción al intentar eliminar el archivo. Code: {ex.GetHashCode()} \n{ex.Message}");
+            }
+            StatusMessage = string.Empty;
+            IsLook = false;
+        }
+
         private void PerfilUser()
         {
 
         }
 
-        public void OpenDocument(object obj)
-        {
-            try
-            {
-                return;
-            }
-            catch (Exception)
-            {
-
-                throw;
-            }
-        }
-
+        
 
         private async void InitializeProperties()
         {
@@ -188,22 +287,71 @@ namespace PdfSignature.ViewModels
             }
             else
             {
+                DocumentsRecientes = new ObservableCollection<DocumentFile>();
                 await _displayAlert.ShowAsync(listDoc.Message);
             }
-            // var listFavorits = await ApiServiceFireBase.GetFavoritsList();
-
-            this._documentsFavoritos = new ObservableCollection<DocumentFile>();
+            var listFavorits = await ApiServiceFireBase.GetDocumentList();
+            if(listFavorits.Success)
+            {
+                DocumentsFavoritos = new ObservableCollection<Document>((List<Document>)listFavorits.Object);
+            }
+            else
+            {
+                DocumentsFavoritos = new ObservableCollection<Document>();
+                await _displayAlert.ShowAsync($"{listFavorits.Message} Code: {listFavorits.Status} \n{listFavorits.Object}");
+            }
+            
         }
 
         private void PerfilClicked(object obj)
         {
 
         }
+        public async void OpenDocument(object obj)
+        {
+            IsLook = true;
+            try
+            {
+                StatusMessage = "Cargando Archivo.";
+                DocumentFile document = (DocumentFile)(obj as Syncfusion.ListView.XForms.ItemTappedEventArgs).ItemData;
+                AppSettings.DocumentSelect = document;
+                await App.GlobalNavigation.PushAsync(new PdfView(), true);
+
+            }
+            catch (Exception ex)
+            {
+                if(ex.Message.Contains("PdfSignature.Modelos.Files.DocumentFile"))
+                {
+
+                    StatusMessage = "Cargando Archivo.";
+                    Document document = (Document)(obj as Syncfusion.ListView.XForms.ItemTappedEventArgs).ItemData;
+                    AppSettings.DocumentSelect = new DocumentFile 
+                    {
+                        Date = document.Date,
+                        FireBaseID = document.FireBaseID,
+                        FileName = document.FileName,
+                        PasswordPdf = document.PasswordPdf,
+                        PdfBase64 = document.PdfBase64
+                    };
+                    await App.GlobalNavigation.PushAsync(new PdfView(), true);
+
+                }
+                else
+                {
+                    StatusMessage = "Esperando, respuesta del usuario.";
+                    await _displayAlert.ShowAsync($"Se produjo una excepción al intentar abrir el archivo. Code: {ex.GetHashCode()} \n{ex.Message}");
+                }
+            }
+            StatusMessage = string.Empty;
+            IsLook = false;
+        }
 
         private async void NewDocumentClicked(object obj)
         {
+            IsLook = true;
             try
             {
+                StatusMessage = "Esperando, selección de archivo.";
                 DocumentFile document;
                 Stream stream = null;
                 PickOptions pickOptions = new PickOptions
@@ -211,6 +359,7 @@ namespace PdfSignature.ViewModels
                     PickerTitle = "Seleccione Archivo Pdf",
                     FileTypes = FilePickerFileType.Pdf
                 };
+                
                 FileResult file = await FilePicker.PickAsync(pickOptions);
                 if (file != null)
                 {
@@ -220,13 +369,15 @@ namespace PdfSignature.ViewModels
                     {
                         FileName = file.FileName,
                         Date = DateTime.Now,
-                        Path = file.FullPath
+                        Path = file.FullPath.Replace("\\", $"/" )
 
                     };
                     stream = await file.OpenReadAsync();
                 }
                 else
                 {
+                    StatusMessage = string.Empty;
+                    IsLook = false;
                     return;
                 }
                 //archivos recientes
@@ -250,15 +401,18 @@ namespace PdfSignature.ViewModels
                 await App.GlobalNavigation.PushAsync(new PdfView(), true);
 
             }
-            catch (System.Exception)
+            catch (Exception ex)
             {
-
-                return;
+                StatusMessage = "Esperando, respuesta del usuario.";
+                await _displayAlert.ShowAsync($"Se produjo una excepción al intentar abrir el archivo. Code: {ex.GetHashCode()} \n{ex.Message}");
             }
+            StatusMessage = string.Empty;
+            IsLook = false;
         }
 
 
 
         #endregion
     }
+
 }
