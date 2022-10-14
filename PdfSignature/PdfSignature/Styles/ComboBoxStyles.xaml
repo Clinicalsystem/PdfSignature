@@ -7,8 +7,8 @@
 
     <Style x:Key="SimpleComboBoxStyle" TargetType="combobox:SfComboBox">
         <Setter Property="DropDownTextColor" Value="{DynamicResource Gray-900}" />
-        <Setter Property="TextSize" Value="16" />
-        <Setter Property="DropDownTextSize" Value="16" />
+        <Setter Property="TextSize" Value="14" />
+        <Setter Property="DropDownTextSize" Value="14" />
         <Setter Property="VerticalOptions" Value="Center" />
         <Setter Property="FontFamily" Value="Montserrat-Regular" />
         <Setter Property="DropDownItemFontFamily" Value="Montserrat-Regular" />

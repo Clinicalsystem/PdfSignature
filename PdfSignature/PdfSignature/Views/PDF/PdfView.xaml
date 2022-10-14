@@ -4,34 +4,346 @@
              xmlns:sfpdfviewer="clr-namespace:Syncfusion.SfPdfViewer.XForms;assembly=Syncfusion.SfPdfViewer.XForms" 
              xmlns:viewMolde="clr-namespace:PdfSignature.ViewModels" 
              xmlns:Behavior="clr-namespace:PdfSignature.Behaviors"
+             xmlns:fonts="clr-namespace:PdfSignature.Resources.Fonts" 
+             xmlns:cards="clr-namespace:Syncfusion.XForms.Cards;assembly=Syncfusion.Cards.XForms"
+             xmlns:controls="clr-namespace:PdfSignature.Controls" 
+             xmlns:progressBar="clr-namespace:Syncfusion.XForms.ProgressBar;assembly=Syncfusion.SfProgressBar.XForms" xmlns:listView="clr-namespace:Syncfusion.ListView.XForms;assembly=Syncfusion.SfListView.XForms" xmlns:buttons="clr-namespace:Syncfusion.XForms.Buttons;assembly=Syncfusion.Buttons.XForms" xmlns:border="clr-namespace:Syncfusion.XForms.Border;assembly=Syncfusion.Core.XForms" xmlns:converter="clr-namespace:PdfSignature.Converters"
+             Title="PdfSignature"
+             xmlns:combobox="clr-namespace:Syncfusion.XForms.ComboBox;assembly=Syncfusion.SfComboBox.XForms"
              x:Class="PdfSignature.Views.PDF.PdfView">
     <ContentPage.BindingContext>
         <viewMolde:PdfViewModeel/>
     </ContentPage.BindingContext>
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="Abrir"
+                     Command="{Binding FileOpenCommand}" 
+                     Order="Secondary"
+                     Priority="0"/>
+        <ToolbarItem Text="Proteger"
+                     Command="{Binding FileOpenCommand}" 
+                     Order="Secondary"
+                     Priority="1"/>
+        <ToolbarItem Text="Firmar Digitalmente"
+                     Command="{Binding TouchSignatureCommand}"
+                     CommandParameter="true"
+                     Order="Secondary"
+                     Priority="2"/>
+        <ToolbarItem Text="Eliminar Mi Firma"
+                     Command="{Binding FileOpenCommand}" 
+                     Order="Secondary"
+                     Priority="3"/>
+    </ContentPage.ToolbarItems>
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <converter:InverseBoolConverter x:Key="InverseBoolConverter" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
     <ContentPage.Content>
         <ContentView AbsoluteLayout.LayoutBounds="0,0,1,1" >
             <Grid  >
 
                 <StackLayout HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
+                    
                     <sfpdfviewer:SfPdfViewer 
                         x:Name="pdfViewer" 
                         PageViewMode="PageByPage"
-                        IsToolbarVisible = "True"
+                        IsToolbarVisible = "True" 
                         PreserveSignaturePadOrientation="True"
                         DocumentSaveInitiated="pdfViewer_DocumentSaveInitiated"
                         InputFileStream="{Binding pdfDocumentStream}">
-                       <!-- <sfpdfviewer:SfPdfViewer.Behaviors>
-                            <Behavior:EventToCommandBehavior 
-                                EventName="DocumentSaveInitiated" 
-                                Command="{Binding SaveCommand}"/>
-                        </sfpdfviewer:SfPdfViewer.Behaviors>
-                       -->
-                        
-                    </sfpdfviewer:SfPdfViewer>
 
+                    </sfpdfviewer:SfPdfViewer>
+                    
+                    <StackLayout HorizontalOptions="FillAndExpand" 
+                             VerticalOptions="End" 
+                             HeightRequest="60" 
+                             BackgroundColor="{DynamicResource Gray-Bg}"
+                             Orientation="Horizontal">
+                        <StackLayout.IsVisible>
+                            <OnIdiom x:TypeArguments="x:Boolean">
+                                <OnIdiom.Phone>False</OnIdiom.Phone>
+                                <OnIdiom.Tablet>True</OnIdiom.Tablet>
+                                <OnIdiom.Desktop>True</OnIdiom.Desktop>
+                            </OnIdiom>
+                        </StackLayout.IsVisible>
+                        <controls:TapAnimationGrid
+                    BackgroundColor="{DynamicResource Gray-Bg}"
+                    ColumnDefinitions="Auto, Auto"
+                    ColumnSpacing="10"
+                    Padding="10,0"
+                    Command="{Binding FileOpenCommand}"
+                    RowSpacing="0"
+                    Tapped="False">
+
+                            <!--  icon  -->
+                            <Label
+                          Grid.Column="0"
+                          FontFamily="Icon" 
+                          FontSize="Medium"
+                            Style="{StaticResource IconLabelStyle}"
+                          Text="{x:Static fonts:IconFont.FilePdf}" />
+                            <!--  Action label  -->
+                            <Label
+                        Grid.Column="1"
+                        FontFamily="Montserrat-Medium"
+                        HorizontalOptions="Start"
+                        Style="{StaticResource TitleLabelStyle}"
+                        Text="Abrir"
+                        VerticalOptions="Center" />
+                        </controls:TapAnimationGrid>
+                        <controls:TapAnimationGrid
+                          BackgroundColor="{DynamicResource Gray-Bg}"
+                          ColumnDefinitions="Auto, Auto"
+                          ColumnSpacing="10"
+                          Padding="10,0"
+                          Command="{Binding ProtectedDocumentCommand}"
+                          RowSpacing="0"
+                          Tapped="False">
+
+                            <!--  icon  -->
+                            <Label
+                          Grid.Column="0"
+                          FontFamily="Icon" 
+                          FontSize="Medium"
+                            Style="{StaticResource IconLabelStyle}"
+                          Text="{x:Static fonts:IconFont.Key}" />
+                            <!--  Action label  -->
+                            <Label
+                        Grid.Column="1"
+                        FontFamily="Montserrat-Medium"
+                        HorizontalOptions="Start"
+                        Style="{StaticResource TitleLabelStyle}"
+                        Text="Proteger"
+                        VerticalOptions="Center" />
+                        </controls:TapAnimationGrid>
+
+                        <controls:TapAnimationGrid
+                            BackgroundColor="{DynamicResource Gray-Bg}"
+                            ColumnDefinitions="Auto, *"
+                            ColumnSpacing="10"
+                            Padding="10"
+                            HorizontalOptions="FillAndExpand"
+                            Command="{Binding TouchSignatureCommand}"
+                            CommandParameter="true"
+                            RowSpacing="0"
+                            Tapped="False">
+
+                            <!--  icon  -->
+                            <Label
+                          Grid.Column="0"
+                          FontFamily="Icon" 
+                          FontSize="Medium"
+                            Style="{StaticResource IconLabelStyle}"
+                          Text="{x:Static fonts:IconFont.AngleCircledDown}" />
+                            <!--  Action label  -->
+                            <Label
+                        Grid.Column="1"
+                        FontFamily="Montserrat-Medium"
+                        HorizontalOptions="FillAndExpand"
+                        Style="{StaticResource TitleLabelStyle}"
+                        Text="Firmar Digitalmente"
+                        VerticalOptions="Center" />
+                        </controls:TapAnimationGrid>
+                        <controls:TapAnimationGrid
+                     BackgroundColor="{DynamicResource Gray-Bg}"
+                     ColumnDefinitions="Auto, Auto"
+                     ColumnSpacing="10"
+                     Padding="10,0"
+                     Command="{Binding DeleteMySignatureCommand}"
+                     RowSpacing="0"
+                     Tapped="False">
+
+                            <!--  icon  -->
+                            <Label
+                          Grid.Column="0"
+                          FontFamily="Icon" 
+                          FontSize="Medium"
+                            Style="{StaticResource IconLabelStyle}"
+                          Text="{x:Static fonts:IconFont.Trash}" />
+                            <!--  Action label  -->
+                            <Label
+                        Grid.Column="1"
+                        FontFamily="Montserrat-Medium"
+                        HorizontalOptions="Start"
+                        Style="{StaticResource TitleLabelStyle}"
+                        Text="Eliminar mi Firma"
+                        VerticalOptions="Center" />
+                        </controls:TapAnimationGrid>
+
+                    </StackLayout>
                 </StackLayout>
-                <ImageButton Source="ic_share.png" Command="{Binding FileOpenCommand}" BackgroundColor="red" WidthRequest="60" HeightRequest="60"
-                         HorizontalOptions="End" VerticalOptions="End" Margin="5" CornerRadius="40" />
+
+                <ContentView Padding="50" BackgroundColor="#C0808080" IsVisible="{Binding IsVisibleModal}" AbsoluteLayout.LayoutBounds="0,0,1,1">
+                    <Frame BackgroundColor="White"  >
+
+                        <StackLayout>                    
+                          <progressBar:SfStepProgressBar HorizontalOptions="Center" VerticalOptions="Start">
+                                <progressBar:StepView PrimaryText="Certificado" AutomationId="SyncfusionStepMarker" Status="{Binding StepCertificado}"/>
+                                <progressBar:StepView PrimaryText="Firma" AutomationId="SyncfusionStepMarker1" Status="{Binding StepFirma}"/>
+                                      <progressBar:StepView PrimaryText="Guardar" AutomationId="SyncfusionStepMarker2" Status="{Binding StepSave}"/>
+                          </progressBar:SfStepProgressBar>
+                            <Grid HorizontalOptions="CenterAndExpand" VerticalOptions="FillAndExpand">
+                                <!-- Select Cert-->
+                                <border:SfBorder
+                                    IsVisible="{Binding IsNext}"
+                                    CornerRadius="20,0,20,0"
+                                    BorderColor="{DynamicResource Gray-Black}"
+                                    BorderThickness="4"
+                                    BackgroundColor="{DynamicResource Gray-100}">
+                                    
+                                     <StackLayout Padding="20, 10, 20, 10">
+                                    <Label  Text="Seleccione El Certificado Digital" FontSize="25" HorizontalOptions="Center" />
+                                        <listView:SfListView 
+                                              x:Name="List"
+                                              HorizontalOptions="CenterAndExpand" 
+                                              VerticalOptions="CenterAndExpand"
+                                              SelectionMode="Single"
+                                              TapCommand="{Binding SelectCertCommand}"
+                                              ItemsSource="{Binding ListSignatures}">
+                                            <listView:SfListView.ItemTemplate>
+                                                <DataTemplate>
+                                                    <Grid >
+                                                        <StackLayout Orientation="Horizontal">
+                                                            <Label Text="{Binding Name}" 
+                                                             Padding="8,0"
+                                                             HorizontalOptions="FillAndExpand"
+                                                             Style="{DynamicResource DescriptionLabelStyle}" />
+
+                                                            <Label Text="{Binding Expire, StringFormat='{0:dd/MM/yyyy}'}" 
+                                                            Style="{DynamicResource DescriptionLabelStyle}" 
+                                                            Padding="8,0"
+                                                            HorizontalTextAlignment="Center" />
+                                                            <Label Text="{Binding DaysOfExpire.Days, StringFormat='{0} Días'}" 
+                                                               Padding="8,0"
+                                                               Style="{DynamicResource DescriptionLabelStyle}" />
+
+
+
+
+                                                        </StackLayout>
+
+                                                    </Grid>
+                                                </DataTemplate>
+                                            </listView:SfListView.ItemTemplate>
+                                        </listView:SfListView>
+                                    </StackLayout>
+
+                                </border:SfBorder>
+                                
+                                    
+                                
+                                <border:SfBorder
+                                    IsVisible="{Binding IsNext, Converter={StaticResource InverseBoolConverter}}"
+                                    CornerRadius="20,0,20,0"
+                                    BorderColor="{DynamicResource Gray-Black}" 
+                                    BorderThickness="4"
+                                    BackgroundColor="{DynamicResource Gray-100}">
+                                    <StackLayout>
+                                        <StackLayout Padding="20, 10, 20, 10" >
+                                        <Label  Text="Configure su Firma Digital" FontSize="25" HorizontalOptions="Center" />
+                                        <border:SfBorder
+                                         IsVisible="{Binding IsNext, Converter={StaticResource InverseBoolConverter}}"
+                                         CornerRadius="1" 
+                                         BorderColor="{DynamicResource Gray-Black}"
+                                         BorderThickness="1"
+                                         BackgroundColor="{DynamicResource Gray-100}">
+                                            <StackLayout Padding="20, 10, 20, 10" >
+                                                <Grid  VerticalOptions="Center" HorizontalOptions="CenterAndExpand">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width=".3*"/>
+                                                        <ColumnDefinition Width=".7*"/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <Image Source="{Binding SourseImg}" 
+                                                           Grid.Column="0" Grid.ColumnSpan="2"/>
+                                                    
+
+                                                </Grid>
+                                                
+
+
+
+                                            </StackLayout>
+                                           
+                                            
+                                            
+                                        </border:SfBorder>
+                                    </StackLayout>
+
+                                        <StackLayout Padding="42, 10, 20, 10" HorizontalOptions="Start">
+                                            <buttons:SfCheckBox Text="Mostrar Certificador de la firma" IsChecked="{Binding CertSelect.Setting.IsEmisor}"/>
+                                            <StackLayout Orientation="Horizontal">
+                                                <buttons:SfCheckBox Text="Agregar Motivo:" x:Name="IsReason" IsChecked="{Binding CertSelect.Setting.IsReason}"/>
+                                                <combobox:SfComboBox 
+                                                    HeightRequest="30" WidthRequest="300" Style="{DynamicResource SimpleComboBoxStyle}"
+                                                    BackgroundColor="{DynamicResource Gray-200}" TextColor="{DynamicResource PrimaryColor}"
+                                                    ComboBoxSource="{Binding CertSelect.Setting.Reason.reason}"
+                                                    SelectedIndex="{Binding CertSelect.Setting.IndexReason}"
+                                                    MaximumDropDownHeight="200" 
+                                                    IsEditableMode="False"
+                                                    IsEnabled="{Binding Source={x:Reference IsReason}, Path=IsChecked}"/>
+                                            </StackLayout>
+                                            <StackLayout Orientation="Horizontal">
+                                                <buttons:SfCheckBox Text="Ubicación:" x:Name="IsLocation" IsChecked="{Binding CertSelect.Setting.IsLocation}"/>
+                                                <controls:BorderlessEntry Text="{Binding CertSelect.Setting.Location}" WidthRequest="300"
+                                                                          BackgroundColor="{DynamicResource Gray-200}"
+                                                                           TextColor="{DynamicResource PrimaryColor}"
+                                                                          HorizontalOptions="EndAndExpand"
+                                                                          IsEnabled="{Binding Source={x:Reference IsLocation}, Path=IsChecked}"/>
+                                            </StackLayout>
+                                            <StackLayout Orientation="Horizontal">
+                                                <buttons:SfCheckBox Text="Organización:" x:Name="IsCompany" IsChecked="{Binding CertSelect.Setting.IsCompany}"/>
+                                                <controls:BorderlessEntry Text="{Binding CertSelect.Setting.Company}" WidthRequest="300"
+                                                                          BackgroundColor="{DynamicResource Gray-200}"
+                                                                          TextColor="{DynamicResource PrimaryColor}"
+                                                                          HorizontalOptions="EndAndExpand"
+                                                                          IsEnabled="{Binding Source={x:Reference IsLocation}, Path=IsChecked}"/>
+                                            </StackLayout>
+                                            <StackLayout Orientation="Horizontal">
+                                                <buttons:SfCheckBox Text="Mostrar Imagen Personal:" x:Name="IsImagePersonal" IsChecked="{Binding CertSelect.Setting.IsImagePersonal}"/>
+                                                <buttons:SfButton Text="Seleccionar Archivo" Style="{DynamicResource SimpleButtonStyle}"
+                                                                  Command="{Binding SelectImageCommand}"
+                                                                   IsEnabled="{Binding Source={x:Reference IsImagePersonal}, Path=IsChecked}"/>
+                                            </StackLayout>
+                                        </StackLayout>
+                                    </StackLayout>
+
+                                </border:SfBorder>
+                                
+
+                            </Grid>
+
+                        </StackLayout>
+
+
+                    </Frame>
+
+                </ContentView>
+
+
+                <ContentView Padding="50" BackgroundColor="#C0808090" Opacity="0.5" IsVisible="{Binding IsTouchSignature}" AbsoluteLayout.LayoutBounds="0,0,1,1">
+                    
+                        <Grid BackgroundColor="Transparent" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
+                            
+                            <Label  Text="Seleccione el área para insertar la firma."/>
+
+                        <Path Fill="{DynamicResource PrimaryColor}"
+                                  Stroke="{DynamicResource Gray-Black}"
+                                  StrokeThickness="1" Data="{Binding Dimension}">
+                                
+                            </Path>
+
+                                    <Grid.Effects>
+                                        <controls:TouchEffect Capture="True"
+                                         TouchAction="OnTouchEffectAction"/>
+
+                                    </Grid.Effects>
+                        </Grid>
+                    
+
+                </ContentView>
+               
+
+
             </Grid>
         </ContentView>
     </ContentPage.Content>

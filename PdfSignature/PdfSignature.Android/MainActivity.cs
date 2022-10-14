@@ -2,7 +2,9 @@
 using Android.Content.PM;
 using Android.OS;
 using Android.Runtime;
-using System;
+using PdfSignature.Android.Implementation;
+using PdfSignature.Implementation;
+using PdfSignature.Services;
 
 namespace PdfSignature.Android
 {
@@ -15,6 +17,8 @@ namespace PdfSignature.Android
 
             Xamarin.Essentials.Platform.Init(this, savedInstanceState);
             global::Xamarin.Forms.Forms.Init(this, savedInstanceState);
+            Xamarin.Forms.DependencyService.Register<IToast, ToastMessage>();
+            Xamarin.Forms.DependencyService.Register<IFileManager, FileManager>();
             LoadApplication(new App());
         }
         public override void OnRequestPermissionsResult(int requestCode, string[] permissions, [GeneratedEnum] Permission[] grantResults)

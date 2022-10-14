@@ -3,6 +3,7 @@ using PdfSignature.Services;
 using PdfSignature.Validators;
 using PdfSignature.Validators.Rules;
 using PdfSignature.Views;
+using PdfSignature.Views.Home;
 using System.Threading.Tasks;
 using Xamarin.Forms;
 using Xamarin.Forms.Internals;
@@ -156,11 +157,14 @@ namespace PdfSignature.ViewModels
 
                 if (response.Success)
                 {
-                   
+
                     AppSettings.AuthenticationUser = (ResponseAuthentication)response.Object;
+                    await ApiServiceFireBase.GetUser();
                     IsLook = false;
                     await _displayAlert.ShowAsync(response.Message);
-                    App.Current.MainPage = new NavigationPage(new Views.PDF.PdfView());
+                    NavigationPage PdfSignaturePage = new NavigationPage(new HomeList());
+                    App.GlobalNavigation = PdfSignaturePage.Navigation;
+                    App.Current.MainPage = PdfSignaturePage;
                     return;
                 }
                 else

@@ -18,6 +18,8 @@ namespace PdfSignature.Data
 
         Task<response> GetDocumentList();
 
+        Task<response> GetSignatureList();
+
         Task<response> Delete<T>(T model);
 
     }

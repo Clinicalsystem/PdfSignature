@@ -15,7 +15,11 @@ using UIKit;
 
 using Syncfusion.SfPdfViewer.XForms.iOS; 
 
-using Syncfusion.SfRangeSlider.XForms.iOS; 
+using Syncfusion.SfRangeSlider.XForms.iOS;
+using PdfSignature.Services;
+using PdfSignature.iOS.Implementation;
+using PdfSignature.Implementation;
+using Syncfusion.XForms.iOS.Cards;
 
 namespace PdfSignature.iOS
 {
@@ -49,8 +53,10 @@ namespace PdfSignature.iOS
             SfButtonRenderer.Init();
 			SfPdfDocumentViewRenderer.Init(); 
 			SfRangeSliderRenderer.Init();
+            SfCardViewRenderer.Init();
             SfListViewRenderer.Init();
-
+            Xamarin.Forms.DependencyService.Register<IToast, ToastMessage>();
+           // Xamarin.Forms.DependencyService.Register<IFileManager, FileManager>();
             LoadApplication(new App());
 
             return base.FinishedLaunching(app, options);

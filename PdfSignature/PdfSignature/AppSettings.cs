@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using PdfSignature.Modelos.Autentication;
 using PdfSignature.Modelos.Files;
+using PdfSignature.Views;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -18,6 +19,7 @@ namespace PdfSignature
         public static DocumentFile DocumentSelect;
         private static ResponseAuthentication _AuthenticationUser;
         private static string _path = string.Empty;
+        private static RegisterUser _dataUser;
         public static readonly bool IsRemember = Preferences.Get("IsRemember", false);
         #endregion
         public static ResponseAuthentication AuthenticationUser 
@@ -37,6 +39,25 @@ namespace PdfSignature
             { 
                 _AuthenticationUser = value;
                 Preferences.Set("UserAutentication", JsonConvert.SerializeObject(value));
+            }
+        }
+        public static RegisterUser UserData
+        {
+            get
+            {
+
+                if (Preferences.ContainsKey("UserData"))
+                {
+                    var user = Preferences.Get("UserData", string.Empty);
+                    _dataUser = JsonConvert.DeserializeObject<RegisterUser>(user);
+                }
+
+                return _dataUser;
+            }
+            set
+            {
+                _dataUser = value;
+                Preferences.Set("UserData", JsonConvert.SerializeObject(value));
             }
         }
 

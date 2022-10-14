@@ -1,5 +1,8 @@
-﻿using PdfSignature.Implementation;
+﻿using PdfSignature.Controls;
+using PdfSignature.Implementation;
 using PdfSignature.Services;
+using PdfSignature.ViewModels;
+using Syncfusion.Pdf;
 using System;
 using System.IO;
 using System.Runtime.CompilerServices;
@@ -7,7 +10,10 @@ using System.Threading.Tasks;
 using Xamarin.Essentials;
 using Xamarin.Forms;
 using Xamarin.Forms.Internals;
+using Xamarin.Forms.Shapes;
 using Xamarin.Forms.Xaml;
+using static Xamarin.Forms.Internals.GIFBitmap;
+using Rect = Xamarin.Forms.Rect;
 
 namespace PdfSignature.Views.PDF
 {
@@ -16,19 +22,29 @@ namespace PdfSignature.Views.PDF
     {
         #region Fields
         private IMessageService _messageService;
-        private float _ZoomFactor = 0;
+        PdfViewModeel model;
         double currentScale = 1;
         double startScale = 1;
         double xOffset = 0;
         double yOffset = 0;
         PinchGestureRecognizer PinchGesture = new PinchGestureRecognizer();
+        Rect rect = new Rect();
+        private Point originalPoint;
+        long touchId = -1;
         #endregion
         public PdfView()
         {
             _messageService = new MessageService(); 
         PinchGesture.PinchUpdated += OnPinchUpdated;
             InitializeComponent();
+            CustomPdfBar();
         }
+
+        private void CustomPdfBar()
+        {
+            pdfViewer.Toolbar.SetToolbarItemVisibility("signature", false);
+        }
+
         private void OnPinchUpdated(object sender, PinchGestureUpdatedEventArgs e)
         {
             if (e.Status == GestureStatus.Started)
@@ -131,5 +147,86 @@ namespace PdfSignature.Views.PDF
 
             return status;
         }
+
+
+         private void OnTouchEffectAction(object sender, TouchActionEventArgs args)
+            {
+                // Convert Xamarin.Forms point to pixels
+                Point pt = args.Location;
+
+            string direc = string.Empty;
+
+                switch (args.Type)
+                {
+                    case TouchActionType.Pressed:
+                        // Find transformed bitmap rectangle
+                        rect = new Rect(pt.X, pt.Y, 10, 10);
+                        originalPoint = new Point(pt.X, pt.Y);
+                        touchId = args.Id;
+                   // model.OnTouchEffectCommand.Execute(rect);
+                    break;
+
+                    case TouchActionType.Moved:
+                    if (touchId == args.Id && args.IsInContact)
+                    {
+                        // Adjust the matrix for the new position
+                        var X = (pt.X - originalPoint.X);
+                        var Y = (pt.Y - originalPoint.Y);
+                        if (X < 0 && Y < 0) //Diagonal izq arriba
+                        {
+                            rect.Location = pt;
+                            rect.Width = originalPoint.X - pt.X;
+                            rect.Height = originalPoint.Y - pt.Y;
+
+                            model.OnTouchEffectCommand.Execute(rect);
+
+                        }
+                        if (X < 0 && Y > 0) //Diagonal izq Abajo
+                        {
+                            rect.Width = (originalPoint.X - pt.X);
+                            rect.Height = (originalPoint.Y - pt.Y) * -1;
+                            var pont = new Point(pt.X, pt.Y - rect.Height);
+                            rect.Location = pont;
+                            model.OnTouchEffectCommand.Execute(rect);
+                        }
+
+                        else if (X > 0 && Y < 0) //Diagonal Derec arriba
+                        {
+                            rect.Width = (originalPoint.X - pt.X) * -1;
+                            rect.Height = (originalPoint.Y - pt.Y);
+                            var pont = new Point(pt.X - rect.Width, pt.Y);
+                            rect.Location = pont;
+                            model.OnTouchEffectCommand.Execute(rect);
+
+                        }
+                        else if (X > 0 && Y > 0) //Diagonal Derec abajo 
+                        {
+                            rect.Width = (pt.X - originalPoint.X);
+                            rect.Height = (pt.Y - originalPoint.Y);
+                            model.OnTouchEffectCommand.Execute(rect);
+                            
+                        }
+                    }
+                        break;
+                case TouchActionType.Entered:
+                    break;
+                case TouchActionType.Released:
+                    
+                    model.OnTouchEffectCommand.Execute(rect);
+                    model.TouchSignatureCommand.Execute(false);
+                    break;
+
+                default:
+                        touchId = -1;
+                        break;
+                }
+            }
+
+        protected override void OnAppearing()
+        {
+            base.OnAppearing();
+            model = (PdfViewModeel)this.BindingContext;
+        }
+
     }
 }

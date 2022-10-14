@@ -2248,7 +2248,7 @@ namespace PdfSignature.ViewModels
             IsMoreOptionsToolBarVisible = false;
         }
 
-        private void NotifyPropertyChanged(string propertyName)
+        public void NotifyPropertyChanged(string propertyName)
         {
             if (PropertyChanged != null)
             {

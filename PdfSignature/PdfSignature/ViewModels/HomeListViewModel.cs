@@ -37,6 +37,7 @@ namespace PdfSignature.ViewModels
 
         private Command<object> _addFavoritsCommand;
         private Command<object> _deleteFavoritsCommand;
+        private ObservableCollection<Signature> _listSignatures;
 
         #endregion
 
@@ -47,7 +48,7 @@ namespace PdfSignature.ViewModels
         {
             _displayAlert = DependencyService.Get<IMessageService>();
             _dataAccess = DependencyService.Get<IDataAccess>();
-
+            
             InitializeProperties();
 
             #region InitializeCommand
@@ -56,7 +57,7 @@ namespace PdfSignature.ViewModels
             AddFavoritsCommand = new Command<object>(AddFovorits);
             DeleteFavoritsCommand = new Command<object>(DeleteFavorits);
             OpenDocumentCommand = new Command<object>(OpenDocument);
-            PerfilCommand = new Command(PerfilUser);
+            PerfilCommand = new Command<object>(PerfilUser);
             NewDocumentCommand = new Command(NewDocumentClicked);
             #endregion
         }
@@ -271,9 +272,9 @@ namespace PdfSignature.ViewModels
             IsLook = false;
         }
 
-        private void PerfilUser()
+        private async void PerfilUser(object obj)
         {
-
+            await App.GlobalNavigation.PushAsync(new PerfilUser(), true);
         }
 
         
@@ -290,6 +291,7 @@ namespace PdfSignature.ViewModels
                 DocumentsRecientes = new ObservableCollection<DocumentFile>();
                 await _displayAlert.ShowAsync(listDoc.Message);
             }
+            
             var listFavorits = await ApiServiceFireBase.GetDocumentList();
             if(listFavorits.Success)
             {
@@ -300,13 +302,10 @@ namespace PdfSignature.ViewModels
                 DocumentsFavoritos = new ObservableCollection<Document>();
                 await _displayAlert.ShowAsync($"{listFavorits.Message} Code: {listFavorits.Status} \n{listFavorits.Object}");
             }
-            
-        }
-
-        private void PerfilClicked(object obj)
-        {
 
         }
+
+        
         public async void OpenDocument(object obj)
         {
             IsLook = true;
@@ -381,18 +380,17 @@ namespace PdfSignature.ViewModels
                     return;
                 }
                 //archivos recientes
-                using (var data = new MemoryStream())
+               
+                var bytes = StreamToByteArray(stream);
+                document.PdfBase64 = Convert.ToBase64String(bytes);
+                var resp = await _dataAccess.Insert(document);
+                if(resp.Success)
                 {
-                    await stream.CopyToAsync(data);
-                    document.PdfBase64 = Convert.ToBase64String(data.ToArray());
-                    var resp = await _dataAccess.Insert(document);
-                    if(resp.Success)
-                    {
-                        document.Id = (int)resp.Object;
-                        DocumentsRecientes.Add(document);
-                    }
-                    
+                    document.Id = (int)resp.Object;
+                    DocumentsRecientes.Add(document);
                 }
+                
+               
 
 
                 

@@ -3,8 +3,12 @@ using PdfSignature.Modelos;
 using PdfSignature.Services;
 using PdfSignature.Views;
 using PdfSignature.Views.Home;
+using Syncfusion.Licensing;
 using Xamarin.Essentials;
 using Xamarin.Forms;
+using Xamarin.Forms.PlatformConfiguration;
+using Xamarin.Forms.PlatformConfiguration.WindowsSpecific;
+using Application = Xamarin.Forms.Application;
 
 [assembly: ExportFont("Montserrat-Bold.ttf", Alias = "Montserrat-Bold")]
 [assembly: ExportFont("Montserrat-Medium.ttf", Alias = "Montserrat-Medium")]
@@ -14,6 +18,7 @@ using Xamarin.Forms;
 [assembly: ExportFont("Icon.ttf", Alias = "Icon")]
 namespace PdfSignature
 {
+   
     public partial class App : Application
     {
         #region Fields
@@ -28,11 +33,14 @@ namespace PdfSignature
         public App()
         {
             #region Services
-            Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("Njg2NzMzQDMyMzAyZTMyMmUzMGtBdElubGRvWGZKRjFZdTN4Q1liSzhiV2h0NFVQbTJkOVJIdkFWRmpla3c9");
+            SyncfusionLicenseProvider.RegisterLicense("NzM1NTA1QDMyMzAyZTMzMmUzMFFObUI1dDdxRGpNV0VTdUE1QXlKSTdYc09FMzVlTEgwVnZKSHpnNUJXUEk9");
             DependencyService.Register<IMessageService, MessageService>();
             DependencyService.Register<IDataAccess, DataAccess>();
+            
             #endregion
             InitializeComponent();
+
+            Current.On<Windows>().SetImageDirectory("Assets");
 
             if (Preferences.Get("IsRemember", false))
             {

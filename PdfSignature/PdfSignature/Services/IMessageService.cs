@@ -9,5 +9,9 @@ namespace PdfSignature.Services
         Task<bool> QuestionAsync(string messagestring, string  aceptar = "Aceptar", string cancelar ="Cancelar");
 
         Task<string> ShowAsync(string []message);
+
+        Task<string> Info(string messagestring);
+
+        void Toast(string messagestring);
     }
 }

@@ -8,8 +8,11 @@
              xmlns:fonts="clr-namespace:PdfSignature.Resources.Fonts"
              xmlns:views="clr-namespace:PdfSignature.Views"
              xmlns:tabView="clr-namespace:Syncfusion.XForms.TabView;assembly=Syncfusion.SfTabView.XForms"
-             xmlns:listView="clr-namespace:Syncfusion.ListView.XForms;assembly=Syncfusion.SfListView.XForms" xmlns:viewModel="clr-namespace:PdfSignature.ViewModels"
-             x:Class="PdfSignature.Views.Home.HomeList">
+             xmlns:listView="clr-namespace:Syncfusion.ListView.XForms;assembly=Syncfusion.SfListView.XForms" 
+             xmlns:viewModel="clr-namespace:PdfSignature.ViewModels"
+             x:Class="PdfSignature.Views.Home.HomeList"
+             xmlns:windows="clr-namespace:Xamarin.Forms.PlatformConfiguration.WindowsSpecific;assembly=Xamarin.Forms.Core"
+             windows:Application.ImageDirectory="Assets">
     <ContentPage.Resources>
         <ResourceDictionary>
             <converter:IndexToColorConverter x:Key="IndexToColorConverter"/>
@@ -19,6 +22,14 @@
     <ContentPage.BindingContext>
         <viewModel:HomeListViewModel/>
     </ContentPage.BindingContext>
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="Perfil" x:Name="perfil"
+                     Command="{Binding PerfilCommand}" 
+                     IconImageSource="ic_perfil.png"
+                     Order="Primary"
+                     Priority="0"/>
+    </ContentPage.ToolbarItems>
+        
     <ContentPage.Content>
         <StackLayout Padding="1">
             <border:SfBorder

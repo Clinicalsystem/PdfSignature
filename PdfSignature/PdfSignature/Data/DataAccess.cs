@@ -1,8 +1,11 @@
 ﻿using PdfSignature.Modelos;
 using PdfSignature.Modelos.Files;
 using SQLite;
+using SQLiteNetExtensions.Extensions;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using Xamarin.Essentials;
 
@@ -18,6 +21,8 @@ namespace PdfSignature.Data
 
             #region CreateTables
             connection.CreateTable<DocumentFile>();
+            connection.CreateTable<Signature>();
+            connection.CreateTable<SignatureSetting>();
             #endregion
 
 
@@ -133,17 +138,25 @@ namespace PdfSignature.Data
             return Task.FromResult(_response);
         }
 
-        public Task<response> Insert<T>(T model)
+        public Task<response> GetSignatureList()
         {
             response _response = new response();
-            var item = connection.Insert(model) ;
-            if (item > 0)
+            var item = connection.GetAllWithChildren<Signature>().Where(s => s.LoaclId ==  AppSettings.AuthenticationUser.LocalId).ToList(); 
+            
+            if (item != null)
             {
+                foreach (var signature in item)
+                {
+                    int index = item.IndexOf(signature);
+                    var sett = connection.Table<SignatureSetting>().FirstOrDefault(m => m.Key == signature.FireBaselId);
+                    item[index].Setting = sett;
+                    
+                }
                 _response = new response()
                 {
                     Status = 200,
                     Success = true,
-                    Message = $"Se inserto el items.",
+                    Message = $"Retorna lista de items.",
                     Object = item
                 };
             }
@@ -153,66 +166,58 @@ namespace PdfSignature.Data
                 {
                     Status = 400,
                     Success = false,
-                    Message = "No se pudo insertar el items",
+                    Message = "No se pudo obtener la lista de items",
                     Object = item
                 };
             }
 
             return Task.FromResult(_response);
         }
-
-        public Task<response> Insert<T>(List<T> models)
+        public Task<response> Insert<T>(T model)
         {
             response _response = new response();
-            var item = connection.InsertAll(models);
-            if (item > 0)
+            
+            connection.InsertWithChildren(model) ;
+
+            _response = new response()
             {
+                Status = 200,
+                Success = true,
+                Message = $"Se inserto el items.",
+                Object = model
+            };
+
+            return Task.FromResult(_response);
+        }
+
+        public  Task<response> Insert<T>(List<T> models)
+        {
+            response _response = new response();
+            connection.InsertAllWithChildren(models);
                 _response = new response()
                 {
                     Status = 200,
                     Success = true,
                     Message = $"Se inserto los items.",
-                    Object = item
+                    Object = models
                 };
-            }
-            else
-            {
-                _response = new response()
-                {
-                    Status = 400,
-                    Success = false,
-                    Message = "No se pudo insertar los items",
-                    Object = item
-                };
-            }
+           
 
             return Task.FromResult(_response);
         }
 
-        public Task<response> Update<T>(T model)
+        public Task<response> Update<T>(T models)
         {
             response _response = new response();
-            var item = connection.Update(model);
-            if (item > 0)
+            connection.UpdateWithChildren(models);
+            _response = new response()
             {
-                _response = new response()
-                {
-                    Status = 200,
-                    Success = true,
-                    Message = "El items fue Actualizado.",
-                    Object = item
-                };
-            }
-            else
-            {
-                _response = new response()
-                {
-                    Status = 400,
-                    Success = false,
-                    Message = "No se pudo actulizar el items",
-                    Object = item
-                };
-            }
+                Status = 200,
+                Success = true,
+                Message = $"Se inserto los items.",
+                Object = models
+            };
+
 
             return Task.FromResult(_response);
         }

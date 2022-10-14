@@ -27,7 +27,11 @@ using System.Reflection;
 
 using Syncfusion.SfPdfViewer.XForms.UWP; 
 
-using Syncfusion.SfRangeSlider.XForms.UWP; 
+using Syncfusion.SfRangeSlider.XForms.UWP;
+using PdfSignature.Services;
+using PdfSignature.UWP.Implementation;
+using PdfSignature.Implementation;
+using Syncfusion.XForms.UWP.Cards;
 
 namespace PdfSignature.UWP
 {
@@ -42,7 +46,10 @@ namespace PdfSignature.UWP
         /// </summary>
         public App()
         {
+            
             this.InitializeComponent();
+            Xamarin.Forms.DependencyService.Register<IToast, ToastMessage>();
+            Xamarin.Forms.DependencyService.Register<IFileManager, FileManager>();
             this.Suspending += OnSuspending;
         }
 
@@ -85,6 +92,7 @@ namespace PdfSignature.UWP
                     assembliesToInclude.Add(typeof(SfComboBoxRenderer).GetTypeInfo().Assembly);
                     assembliesToInclude.Add(typeof(SfRangeSliderRenderer).GetTypeInfo().Assembly);
                     assembliesToInclude.Add(typeof(SfPdfDocumentViewRenderer).GetTypeInfo().Assembly);
+                    assembliesToInclude.Add(typeof(SfCardViewRenderer).GetTypeInfo().Assembly);
 
                 Xamarin.Forms.Forms.Init(e, assembliesToInclude);
 

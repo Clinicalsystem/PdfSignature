@@ -1,6 +1,7 @@
 ﻿using PdfSignature.Validators;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
 using Xamarin.Forms;
@@ -40,7 +41,13 @@ namespace PdfSignature.ViewModels
         }
         #region Properties
 
-
+        public byte[] StreamToByteArray(Stream stream)
+        {
+            stream.Position = 0L;
+            byte[] array = new byte[stream.Length];
+            stream.Read(array, 0, array.Length);
+            return array;
+        }
         public static bool IsCompletet
         {
             get
