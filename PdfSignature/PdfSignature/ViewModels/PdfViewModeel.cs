@@ -13,14 +13,23 @@ using Syncfusion.XForms.ProgressBar;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Drawing;
+using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices.ComTypes;
+using System.Text;
 using System.Threading.Tasks;
 using Xamarin.Essentials;
 using Xamarin.Forms;
+using Xamarin.Forms.PlatformConfiguration.TizenSpecific;
 using Xamarin.Forms.Shapes;
+using static System.Net.Mime.MediaTypeNames;
+using Image = Xamarin.Forms.Image;
 using Path = System.IO.Path;
 using Rect = Xamarin.Forms.Rect;
+using RectangleF = Syncfusion.Drawing.RectangleF;
 using TextAlignment = ImageMagick.TextAlignment;
 
 namespace PdfSignature.ViewModels
@@ -31,10 +40,9 @@ namespace PdfSignature.ViewModels
         #region Fields
 
         public static PdfLoadedDocument Document { get; set; }
-        private Rect CorrdenadasDoc;
+        TextInfo _TextInfo = new CultureInfo("en-US", false).TextInfo; //CultureInfo.CurrentCulture.TextInfo.ToTitleCase
         Command<object> saveCommand;
         private StepStatus _stepCert;
-        private StepStatus _stepContraseña;
         private StepStatus _stepSave;
         private bool _isVisibleModal;
         private IMessageService _displayAlert;
@@ -44,7 +52,7 @@ namespace PdfSignature.ViewModels
         private bool _isTouchSignature;
         private bool _isNext;
         private Signature _certSelect;
-        private string _sourse;
+        private ImageSource _SourceImg;
         #endregion
 
         #region Contructor
@@ -59,6 +67,8 @@ namespace PdfSignature.ViewModels
             _dataAccess = DependencyService.Get<IDataAccess>();
             InicializePropieties();
         }
+
+        public Rect CorrdenadasDoc { get; private set; }
 
 
         #endregion
@@ -116,19 +126,28 @@ namespace PdfSignature.ViewModels
                 NotifyPropertyChanged("CertSelect");
             }
         }
-
-        public string SourseImg
+        public ImageSource SourceImg
         {
             get
             {
-                return _sourse;
+                return _SourceImg;
             }
             set
             {
-                _sourse = value;
-                NotifyPropertyChanged("SourseImg");
+                _SourceImg = value;
+                NotifyPropertyChanged("SourceImg");
             }
         }
+
+        public List<string> StylesSignature
+        {
+            get
+            {
+               return new List<string>() { "Texto en mayúscula", "Texto en minúscula", "Texto estilo titulo" };
+
+            }
+        }
+
 
         public StepStatus StepCertificado
         {
@@ -212,6 +231,10 @@ namespace PdfSignature.ViewModels
         public Command<object> SignatureCommand { get; set; }
 
         public Command<object> SelectCertCommand { get; set; }
+
+        public Command<object> ChangeSettingCommand { get; set; } 
+
+        public Command<object> SelectImageCommand { get; set; } //SelectImageCommand
         public Command ShareCommand { get; set; }
 
         public Command<object> OnTouchEffectCommand { get; set; }
@@ -251,6 +274,8 @@ namespace PdfSignature.ViewModels
             this.SaveCommand = new Command<object>(SaveDocument);
             this.TouchSignatureCommand = new Command<object>(TouchSignature);
             this.SelectCertCommand = new Command<object>(SelectCert);
+            this.ChangeSettingCommand = new Command<object>(ChangeSettingSingnature);
+            this.SelectImageCommand = new Command<object>(SelectImage);
             var resp = await _dataAccess.GetSignatureList();
             if (resp.Success)
             {
@@ -261,7 +286,7 @@ namespace PdfSignature.ViewModels
                 await _displayAlert.ShowAsync($"{resp.Message} Code: {resp.Status} \n{resp.Object}");
             }
         }
-        private string CreateImage(SignatureSetting setting)
+        private Stream CreateImage(SignatureSetting setting)
         {
             MagickImage image = new MagickImage(MagickColor.FromRgb(255, 255, 255), 2000, 1500);
 
@@ -272,7 +297,7 @@ namespace PdfSignature.ViewModels
                 .StrokeColor(MagickColors.Black)
                 .FillColor(MagickColors.Black)
                 .TextAlignment(TextAlignment.Left)
-                .Text(300, Y, $"FIRMADO POR: {_certSelect.Name}.")
+                .Text(300, Y, MyStyleText($"FIRMADO POR: {_certSelect.Name}.", setting.StyleSignature))
                 .Draw(image);
             if (setting.IsRut)
             {
@@ -283,7 +308,7 @@ namespace PdfSignature.ViewModels
                  .StrokeColor(MagickColors.Black)
                  .FillColor(MagickColors.Black)
                  .TextAlignment(TextAlignment.Left)
-                 .Text(300, Y, $"RUT: {_certSelect.Rut}.")
+                 .Text(300, Y, MyStyleText($"RUT: {_certSelect.Rut}.", setting.StyleSignature))
                  .Draw(image);
             }
             if (setting.IsEmisor)
@@ -295,7 +320,7 @@ namespace PdfSignature.ViewModels
                  .StrokeColor(MagickColors.Black)
                  .FillColor(MagickColors.Black)
                  .TextAlignment(TextAlignment.Left)
-                 .Text(300, Y, $"FIRMA CERT POR: {_certSelect.Emisor}.")
+                 .Text(300, Y, MyStyleText($"FIRMA CERT POR: {_certSelect.Emisor}.", setting.StyleSignature))
                  .Draw(image);
             }
             if (setting.IsCN)
@@ -307,7 +332,7 @@ namespace PdfSignature.ViewModels
                  .StrokeColor(MagickColors.Black)
                  .FillColor(MagickColors.Black)
                  .TextAlignment(TextAlignment.Left)
-                 .Text(300, Y, $"Nombre de Reconocimiento (DN): {_certSelect.CN}.")
+                 .Text(300, Y, MyStyleText($"Nombre de Reconocimiento (DN): {_certSelect.CN}.", setting.StyleSignature))
                  .Draw(image);
             }
             Y += 60;
@@ -317,7 +342,7 @@ namespace PdfSignature.ViewModels
                  .StrokeColor(MagickColors.Black)
                  .FillColor(MagickColors.Black)
                  .TextAlignment(TextAlignment.Left)
-                 .Text(300, Y, $"FECHA: {_certSelect.Setting.Date}.")
+                 .Text(300, Y, MyStyleText($"FECHA: {_certSelect.Setting.Date}.", setting.StyleSignature))
                  .Draw(image);
 
             if (setting.IsReason)
@@ -329,7 +354,7 @@ namespace PdfSignature.ViewModels
                  .StrokeColor(MagickColors.Black)
                  .FillColor(MagickColors.Black)
                  .TextAlignment(TextAlignment.Left)
-                 .Text(300, Y, $"MOTIVO: {_certSelect.Setting.MyReason.ToUpper()}")
+                 .Text(300, Y, MyStyleText($"MOTIVO: {_certSelect.Setting.MyReason.ToUpper()}", setting.StyleSignature))
                  .Draw(image);
             }
             if (setting.IsLocation)
@@ -341,7 +366,7 @@ namespace PdfSignature.ViewModels
                  .StrokeColor(MagickColors.Black)
                  .FillColor(MagickColors.Black)
                  .TextAlignment(TextAlignment.Left)
-                 .Text(300, Y, $"UBICACIÓN: {_certSelect.Setting.Location}.")
+                 .Text(300, Y, MyStyleText($"UBICACIÓN: {_certSelect.Setting.Location}.", setting.StyleSignature))
                  .Draw(image);
             }
             if (setting.IsCompany)
@@ -353,12 +378,12 @@ namespace PdfSignature.ViewModels
                  .StrokeColor(MagickColors.Black)
                  .FillColor(MagickColors.Black)
                  .TextAlignment(TextAlignment.Left)
-                 .Text(300, Y, $"ORGANIZACIÓN: {_certSelect.Setting.Company}")
+                 .Text(300, Y, MyStyleText($"ORGANIZACIÓN: {_certSelect.Setting.Company}", setting.StyleSignature))
                  .Draw(image);
             }
             if (setting.IsImagePersonal && !string.IsNullOrEmpty(setting.ImagePersonal) && !string.IsNullOrWhiteSpace(setting.ImagePersonal))
             {
-                using (var imagePersonal = new MagickImage(setting.ImageStream))
+                using (var imagePersonal = new MagickImage(setting.ImagePersonalStream()))
                 {
                     imagePersonal.Resize(290, 0);
                     imagePersonal.ColorFuzz = new Percentage(50);
@@ -372,14 +397,38 @@ namespace PdfSignature.ViewModels
 
             image.Format = MagickFormat.Png;
             image.Trim();
-            var path = Path.Combine(FileSystem.AppDataDirectory, $"{_certSelect.Name}.png");
-            image.Write(path, MagickFormat.Png);
+            Stream stream = new MemoryStream();
+            image.Write(stream, MagickFormat.Png);
+             image.Dispose();
 
 
 
+            return stream;
 
-            return path;
+        }
 
+        private string MyStyleText(string text, StyleText styleText)
+        {
+            var str = _TextInfo.ToTitleCase(text.ToLower());
+            switch (styleText)
+            {
+                case StyleText.ToUppper:
+                    return _TextInfo.ToUpper(text);
+                case StyleText.ToLover:
+                    return _TextInfo.ToLower(text);
+                case StyleText.ToTitleCase:
+                    return _TextInfo.ToTitleCase(text.ToLower());
+                default:
+                    return text;
+            }
+        }
+
+        private void ChangeSettingSingnature(object ojb)
+        {
+            var stream = CreateImage(CertSelect.Setting);
+            SourceImg = ImageSource.FromStream(() => { return stream; }) ;
+           
+            
         }
 
         private byte[] ToByteArray(Stream input)
@@ -400,18 +449,114 @@ namespace PdfSignature.ViewModels
                 {
                     CertSelect = (Signature)SfListView.ItemData;
                     var cert = CertSelect.Certificate();
-                    SourseImg = CreateImage(CertSelect.Setting);
                     StepFirma = StepStatus.InProgress;
+                    var stream = CreateImage(CertSelect.Setting);
+                    SourceImg = ImageSource.FromStream(() => { return stream; });
+                        
+
                     IsNext = false;
 
                 }
             }
 
-            catch (Exception)
+            catch (Exception ex)
             {
+                _displayAlert.ShowAsync(ex.Message);
+
+            }
+        }
+
+        private async void SelectImage(object obj)
+        {
+            try
+            {
+                #region fields
+                Stream stream = null;
+                #endregion
+
+                #region Select file
+                var customFileType = new FilePickerFileType(new Dictionary<DevicePlatform, IEnumerable<string>>
+                    {
+                         { DevicePlatform.iOS, new[] { ".jpg", ".png", ".heif" } },
+                         { DevicePlatform.Android, new[] { ".jpg", ".png", ".heif" } },
+                         { DevicePlatform.UWP, new[] { ".jpg", ".png", ".heif" } },
+                    });
+                var options = new PickOptions
+                {
+                    PickerTitle = "Seleccione una imagen para insertar en su firma",
+                    FileTypes = customFileType,
+                };
+
+                FileResult file = await FilePicker.PickAsync(options);
+
+                #endregion
+
+
+                if (file != null)
+                {
+                    MagickFormat magickFormat = new MagickFormat();
+                    #region Validate Signature
+                    switch (file.ContentType)
+                    {
+                        case "image/png":
+                            magickFormat = MagickFormat.Png;
+                            break;
+                        case "image/jpeg":
+                            magickFormat = MagickFormat.Jpeg;
+                            break;
+                        default:
+                            await _displayAlert.ShowAsync("El archivo seleccionado no se encuentra en formato jpg, .png ó heif validos como una imagen.");
+                            return;
+                    }
+                    #endregion
+
+                    #region Save 
+                    stream = await file.OpenReadAsync();
+                    using (var magickImage = new MagickImage(stream))
+                    { 
+                        using (MemoryStream streamResize = new MemoryStream())
+                        {
+                            magickImage.Resize(560, 0);
+                            magickImage.Format = magickFormat;
+                            magickImage.Write(streamResize, magickFormat);
+                            magickImage.Dispose();
+                            if (obj.ToString().Contains("ImsgePersonal"))
+                            {
+                                CertSelect.Setting.ImagePersonal = Convert.ToBase64String(streamResize.ToArray());
+                            }
+                            else if (obj.ToString().Contains("IsWaterMark"))
+                            {
+                                CertSelect.Setting.WaterMark = Convert.ToBase64String(streamResize.ToArray());
+                            }
+
+                        };
+                        
+                       
+
+                    };
+
+                    
+                    
+                    return;
+                    #endregion
+
+                }
+                else
+                {
+                    
+                    return;
+                }
 
 
             }
+            catch (Exception Ex)
+            {
+                await _displayAlert.ShowAsync($"Se produjo una exsepción Code: {Ex.GetHashCode()} \n{Ex.Message}");
+              
+                return;
+            }
+           
+
         }
         private void SaveDocument(object obj)
         {
@@ -437,7 +582,7 @@ namespace PdfSignature.ViewModels
 
                 throw;
             }
-        }
+        } 
 
         private void ShareDocument(object obj)
         {
@@ -452,7 +597,6 @@ namespace PdfSignature.ViewModels
                 throw;
             }
         }
-
 
         private void TouchSignature(object obj)
         {
@@ -615,4 +759,6 @@ namespace PdfSignature.ViewModels
 
         }
     }
+
+    
 }

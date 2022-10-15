@@ -22,6 +22,7 @@ namespace PdfSignature.Modelos.Files
 
         public string Rut { get; set; }
 
+        public bool IsExitRut => string.IsNullOrEmpty(Rut) || Rut.Length < 7 ? false : true;
         public string CN { get; set; }
 
         public DateTime DateRegister { get; set; }

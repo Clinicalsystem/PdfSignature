@@ -8,7 +8,7 @@ using Syncfusion.XForms.iOS.Graphics;
 using Syncfusion.XForms.iOS.TabView;
 using Syncfusion.XForms.iOS.Buttons;
 using Foundation;
-using System;
+using Syncfusion.SfImageEditor.XForms.iOS;
 using System.Collections.Generic;
 using System.Linq;
 using UIKit;
@@ -54,6 +54,7 @@ namespace PdfSignature.iOS
 			SfPdfDocumentViewRenderer.Init(); 
 			SfRangeSliderRenderer.Init();
             SfCardViewRenderer.Init();
+            SfImageEditorRenderer.Init();
             SfListViewRenderer.Init();
             Xamarin.Forms.DependencyService.Register<IToast, ToastMessage>();
            // Xamarin.Forms.DependencyService.Register<IFileManager, FileManager>();

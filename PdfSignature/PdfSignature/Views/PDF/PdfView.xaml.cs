@@ -228,5 +228,27 @@ namespace PdfSignature.Views.PDF
             model = (PdfViewModeel)this.BindingContext;
         }
 
+        private void SfComboBox_SelectionChanged(object sender, Syncfusion.XForms.ComboBox.SelectionChangedEventArgs e)
+        {
+            Syncfusion.XForms.ComboBox.SfComboBox sfCombo = sender as Syncfusion.XForms.ComboBox.SfComboBox;
+            switch(sfCombo.SelectedIndex)
+            {
+                case 0:
+                    model.CertSelect.Setting.StyleSignature = StyleText.ToUppper;
+                    break;
+                case 1:
+                    model.CertSelect.Setting.StyleSignature = StyleText.ToLover;
+                    break;
+                case 2:
+                    model.CertSelect.Setting.StyleSignature = StyleText.ToTitleCase;
+                    break;
+                   
+                default:
+                    break;
+
+            }
+
+
+        }
     }
 }

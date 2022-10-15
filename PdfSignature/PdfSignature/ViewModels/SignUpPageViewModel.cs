@@ -19,7 +19,7 @@ namespace PdfSignature.ViewModels
 
         private ValidatablePair<string> password;
 
-        private ValidatableObject<string> stringEmpty;
+       // private ValidatableObject<string> stringEmpty;
 
         private IMessageService _displayAlert;
 

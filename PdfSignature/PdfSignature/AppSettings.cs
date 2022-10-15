@@ -116,4 +116,12 @@ namespace PdfSignature
         Sign,
         PasswordReset
     }
+
+    public enum StyleText
+    {
+
+        ToUppper,
+        ToLover,
+        ToTitleCase
+    }
 }

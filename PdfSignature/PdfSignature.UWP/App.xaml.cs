@@ -32,6 +32,7 @@ using PdfSignature.Services;
 using PdfSignature.UWP.Implementation;
 using PdfSignature.Implementation;
 using Syncfusion.XForms.UWP.Cards;
+using Syncfusion.SfImageEditor.XForms.UWP;
 
 namespace PdfSignature.UWP
 {
@@ -93,7 +94,7 @@ namespace PdfSignature.UWP
                     assembliesToInclude.Add(typeof(SfRangeSliderRenderer).GetTypeInfo().Assembly);
                     assembliesToInclude.Add(typeof(SfPdfDocumentViewRenderer).GetTypeInfo().Assembly);
                     assembliesToInclude.Add(typeof(SfCardViewRenderer).GetTypeInfo().Assembly);
-
+                    assembliesToInclude.Add(typeof(SfImageEditorRenderer).GetTypeInfo().Assembly);
                 Xamarin.Forms.Forms.Init(e, assembliesToInclude);
 
                 if (e.PreviousExecutionState == ApplicationExecutionState.Terminated)

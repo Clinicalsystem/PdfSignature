@@ -37,7 +37,7 @@ namespace PdfSignature.ViewModels
 
         private Command<object> _addFavoritsCommand;
         private Command<object> _deleteFavoritsCommand;
-        private ObservableCollection<Signature> _listSignatures;
+        //private ObservableCollection<Signature> _listSignatures;
 
         #endregion
 

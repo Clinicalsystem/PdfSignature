@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" 
              xmlns:sfpdfviewer="clr-namespace:Syncfusion.SfPdfViewer.XForms;assembly=Syncfusion.SfPdfViewer.XForms" 
              xmlns:viewMolde="clr-namespace:PdfSignature.ViewModels" 
-             xmlns:Behavior="clr-namespace:PdfSignature.Behaviors"
+             xmlns:imageeditor="clr-namespace:Syncfusion.SfImageEditor.XForms;assembly=Syncfusion.SfImageEditor.XForms"
              xmlns:fonts="clr-namespace:PdfSignature.Resources.Fonts" 
              xmlns:cards="clr-namespace:Syncfusion.XForms.Cards;assembly=Syncfusion.Cards.XForms"
              xmlns:controls="clr-namespace:PdfSignature.Controls" 
@@ -236,79 +236,114 @@
                                     IsVisible="{Binding IsNext, Converter={StaticResource InverseBoolConverter}}"
                                     CornerRadius="20,0,20,0"
                                     BorderColor="{DynamicResource Gray-Black}" 
-                                    BorderThickness="4"
+                                    BorderThickness="4" 
                                     BackgroundColor="{DynamicResource Gray-100}">
-                                    <StackLayout>
-                                        <StackLayout Padding="20, 10, 20, 10" >
-                                        <Label  Text="Configure su Firma Digital" FontSize="25" HorizontalOptions="Center" />
+                                    <StackLayout >
+                                        <StackLayout Padding="20, 10, 20, 10" VerticalOptions="FillAndExpand">
+                                        <Label  Text="Configure su Firma Digital" FontSize="25" HorizontalOptions="CenterAndExpand"/>
                                         <border:SfBorder
                                          IsVisible="{Binding IsNext, Converter={StaticResource InverseBoolConverter}}"
                                          CornerRadius="1" 
+                                            HorizontalOptions="Center"
                                          BorderColor="{DynamicResource Gray-Black}"
                                          BorderThickness="1"
                                          BackgroundColor="{DynamicResource Gray-100}">
-                                            <StackLayout Padding="20, 10, 20, 10" >
-                                                <Grid  VerticalOptions="Center" HorizontalOptions="CenterAndExpand">
-                                                    <Grid.ColumnDefinitions>
-                                                        <ColumnDefinition Width=".3*"/>
-                                                        <ColumnDefinition Width=".7*"/>
-                                                    </Grid.ColumnDefinitions>
-                                                    <Image Source="{Binding SourseImg}" 
-                                                           Grid.Column="0" Grid.ColumnSpan="2"/>
+                                            <StackLayout Padding="20, 10, 20, 10" HorizontalOptions="Center" MinimumWidthRequest="100" >
+                                                    <StackLayout VerticalOptions="FillAndExpand" Orientation="Horizontal">
+
+                                                        <StackLayout>
+                                                            <imageeditor:SfImageEditor  Source="{Binding SourceImg}" ZoomLevel="1" VerticalOptions="FillAndExpand" MinimumWidthRequest="100" Grid.Row="0" Grid.RowSpan="3" Grid.Column="1" >
+                                                                <imageeditor:SfImageEditor.ToolbarSettings>
+                                                                    <imageeditor:ToolbarSettings IsVisible="False" />
+                                                                </imageeditor:SfImageEditor.ToolbarSettings>
+                                                            </imageeditor:SfImageEditor>
+                                                            <combobox:SfComboBox 
+                                                                           HeightRequest="30" Style="{DynamicResource SimpleComboBoxStyle}"
+                                                                           BackgroundColor="{DynamicResource Gray-200}" TextColor="{DynamicResource PrimaryColor}"
+                                                                           ComboBoxSource="{Binding StylesSignature}"
+                                                                           SelectedIndex="{Binding CertSelect.Setting.StyleSignature}"
+                                                                           SelectionChanged="SfComboBox_SelectionChanged"
+                                                                           MaximumDropDownHeight="100" 
+                                                                           IsEditableMode="False"/>
+                                                        </StackLayout>
+                                                        <StackLayout>
+                                                            <StackLayout> 
+                                                                  <StackLayout HorizontalOptions="Start" >
+
+                                                                    <StackLayout Orientation="Horizontal">
+                                                                        <buttons:SfCheckBox Text="Mostrar RUT." x:Name="IsRut" IsChecked="{Binding CertSelect.Setting.IsRut}" />
+
+                                                                    </StackLayout>
+                                                                    <buttons:SfCheckBox Text="Mostrar Certificador de la firma" IsChecked="{Binding CertSelect.Setting.IsEmisor}"/>
+                                                                    <StackLayout Orientation="Horizontal">
+                                                                        <buttons:SfCheckBox Text="Agregar Motivo:" WidthRequest="130" x:Name="IsReason" IsChecked="{Binding CertSelect.Setting.IsReason}"/>
+                                                                        <combobox:SfComboBox 
+                                                                           HeightRequest="30" WidthRequest="300" Style="{DynamicResource SimpleComboBoxStyle}"
+                                                                           BackgroundColor="{DynamicResource Gray-200}" TextColor="{DynamicResource PrimaryColor}"
+                                                                           ComboBoxSource="{Binding CertSelect.Setting.Reason.reason}"
+                                                                           SelectedIndex="{Binding CertSelect.Setting.IndexReason}"
+                                                                           MaximumDropDownHeight="200" 
+                                                                           IsEditableMode="False"
+                                                                           IsEnabled="{Binding Source={x:Reference IsReason}, Path=IsChecked}"/>
+                                                                    </StackLayout>
+
+
+
+                                                                  </StackLayout>
+                                                                  <StackLayout Orientation="Horizontal">
+                                                                    <buttons:SfCheckBox Text="Ubicación:" WidthRequest="130" x:Name="IsLocation" IsChecked="{Binding CertSelect.Setting.IsLocation}"/>
+                                                                    <controls:BorderlessEntry Text="{Binding CertSelect.Setting.Location}" WidthRequest="300"
+                                                                          BackgroundColor="{DynamicResource Gray-200}"
+                                                                           TextColor="{DynamicResource PrimaryColor}"
+                                                                          IsEnabled="{Binding Source={x:Reference IsLocation}, Path=IsChecked}"/>
+                                                                </StackLayout>
+                                                                  
+                                                                </StackLayout>
+                                                            <StackLayout Grid.Row="2" Grid.Column="0" >
+                                                                    <StackLayout Orientation="Horizontal">
+                                                                    <buttons:SfCheckBox Text="Organización:" WidthRequest="130" x:Name="IsCompany" IsChecked="{Binding CertSelect.Setting.IsCompany}"/>
+                                                                        <controls:BorderlessEntry Text="{Binding CertSelect.Setting.Company}" WidthRequest="300"
+                                                                          BackgroundColor="{DynamicResource Gray-200}"
+                                                                          TextColor="{DynamicResource PrimaryColor}"
+                                                                          IsEnabled="{Binding Source={x:Reference IsCompany}, Path=IsChecked}"/>
+                                                                    </StackLayout>
+                                                                    <StackLayout Orientation="Horizontal">
+                                                                    <buttons:SfCheckBox Text="Mostrar Imagen Personal:" WidthRequest="190" x:Name="IsImagePersonal" IsChecked="{Binding CertSelect.Setting.IsImagePersonal}"/>
+                                                                    <buttons:SfButton Text="Seleccionar Archivo" Style="{DynamicResource SimpleButtonStyle}"
+                                                                           Command="{Binding SelectImageCommand}"
+                                                                           CommandParameter="ImsgePersonal"
+                                                                           IsEnabled="{Binding Source={x:Reference IsImagePersonal}, Path=IsChecked}"/>
+                                                                </StackLayout>
+                                                                <StackLayout Orientation="Horizontal">
+                                                                    <buttons:SfCheckBox Text="Mostrar Marca de Agua:" WidthRequest="190" x:Name="IsWaterMark" IsChecked="{Binding CertSelect.Setting.IsWaterMark}"/>
+                                                                    <buttons:SfButton Text="Seleccionar Archivo" Style="{DynamicResource SimpleButtonStyle}"
+                                                                  Command="{Binding SelectImageCommand}"
+                                                                  CommandParameter="IsWaterMark"
+                                                                   IsEnabled="{Binding Source={x:Reference IsImagePersonal}, Path=IsChecked}"/>
+
+                                                                </StackLayout>
+                                                                    
+                                                                </StackLayout>
+                                                        </StackLayout>
+                                                        
                                                     
-
-                                                </Grid>
-                                                
-
-
-
-                                            </StackLayout>
+                                                    </StackLayout>
+                                                    <StackLayout Orientation="Horizontal">
+                                                        <buttons:SfButton Command="{Binding ChangeSettingCommand}" Text="Visualizar Cambios"/>
+                                                        <buttons:SfButton Command="{Binding SaveSettingCommand}" CommandParameter="{Binding CertSelect.Setting}" Text="Guardar Cambios"/>
+                                                    </StackLayout>
+                                                </StackLayout>
                                            
                                             
                                             
                                         </border:SfBorder>
                                     </StackLayout>
 
-                                        <StackLayout Padding="42, 10, 20, 10" HorizontalOptions="Start">
-                                            <buttons:SfCheckBox Text="Mostrar Certificador de la firma" IsChecked="{Binding CertSelect.Setting.IsEmisor}"/>
-                                            <StackLayout Orientation="Horizontal">
-                                                <buttons:SfCheckBox Text="Agregar Motivo:" x:Name="IsReason" IsChecked="{Binding CertSelect.Setting.IsReason}"/>
-                                                <combobox:SfComboBox 
-                                                    HeightRequest="30" WidthRequest="300" Style="{DynamicResource SimpleComboBoxStyle}"
-                                                    BackgroundColor="{DynamicResource Gray-200}" TextColor="{DynamicResource PrimaryColor}"
-                                                    ComboBoxSource="{Binding CertSelect.Setting.Reason.reason}"
-                                                    SelectedIndex="{Binding CertSelect.Setting.IndexReason}"
-                                                    MaximumDropDownHeight="200" 
-                                                    IsEditableMode="False"
-                                                    IsEnabled="{Binding Source={x:Reference IsReason}, Path=IsChecked}"/>
-                                            </StackLayout>
-                                            <StackLayout Orientation="Horizontal">
-                                                <buttons:SfCheckBox Text="Ubicación:" x:Name="IsLocation" IsChecked="{Binding CertSelect.Setting.IsLocation}"/>
-                                                <controls:BorderlessEntry Text="{Binding CertSelect.Setting.Location}" WidthRequest="300"
-                                                                          BackgroundColor="{DynamicResource Gray-200}"
-                                                                           TextColor="{DynamicResource PrimaryColor}"
-                                                                          HorizontalOptions="EndAndExpand"
-                                                                          IsEnabled="{Binding Source={x:Reference IsLocation}, Path=IsChecked}"/>
-                                            </StackLayout>
-                                            <StackLayout Orientation="Horizontal">
-                                                <buttons:SfCheckBox Text="Organización:" x:Name="IsCompany" IsChecked="{Binding CertSelect.Setting.IsCompany}"/>
-                                                <controls:BorderlessEntry Text="{Binding CertSelect.Setting.Company}" WidthRequest="300"
-                                                                          BackgroundColor="{DynamicResource Gray-200}"
-                                                                          TextColor="{DynamicResource PrimaryColor}"
-                                                                          HorizontalOptions="EndAndExpand"
-                                                                          IsEnabled="{Binding Source={x:Reference IsLocation}, Path=IsChecked}"/>
-                                            </StackLayout>
-                                            <StackLayout Orientation="Horizontal">
-                                                <buttons:SfCheckBox Text="Mostrar Imagen Personal:" x:Name="IsImagePersonal" IsChecked="{Binding CertSelect.Setting.IsImagePersonal}"/>
-                                                <buttons:SfButton Text="Seleccionar Archivo" Style="{DynamicResource SimpleButtonStyle}"
-                                                                  Command="{Binding SelectImageCommand}"
-                                                                   IsEnabled="{Binding Source={x:Reference IsImagePersonal}, Path=IsChecked}"/>
-                                            </StackLayout>
-                                        </StackLayout>
+                                       
                                     </StackLayout>
 
                                 </border:SfBorder>
-                                
+                              
 
                             </Grid>
 

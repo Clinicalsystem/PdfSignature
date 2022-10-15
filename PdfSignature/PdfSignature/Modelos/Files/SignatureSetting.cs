@@ -7,6 +7,7 @@ using System.IO;
 using System.Drawing;
 using System.Linq;
 using Xamarin.Forms;
+using System.Security.Principal;
 
 namespace PdfSignature.Modelos.Files
 {
@@ -21,6 +22,10 @@ namespace PdfSignature.Modelos.Files
         public bool IsImagePersonal { get; set; }
 
         public string ImagePersonal { get; set; }
+
+        public bool IsWaterMark { get; set; }
+
+        public string WaterMark { get; set; }
 
         public bool IsEmisor { get; set; }
 
@@ -38,6 +43,7 @@ namespace PdfSignature.Modelos.Files
 
         public bool IsReason { get; set; }
 
+        public StyleText StyleSignature { get; set; } 
 
         [Ignore]
         public Reason Reason { get; set; }
@@ -60,16 +66,31 @@ namespace PdfSignature.Modelos.Files
             IsReason = true;
             Reason = new Reason();
 
-            Stream stream = null;
+            
+        }
+        
+        public Stream ImagePersonalStream()
+        {
+            Stream stream = null;   
             if (!string.IsNullOrEmpty(ImagePersonal))
             {
                 byte[] bytes = Convert.FromBase64String(ImagePersonal);
                 stream = new MemoryStream(bytes);
-                ImageStream = stream;
             }
+            return stream;  
         }
-        public Stream ImageStream { get; private set; }
-        
+       
+        public Stream WaterMarkStream()
+        {
+            Stream stream = null;
+
+            if (!string.IsNullOrEmpty(WaterMark))
+            {
+                byte[] bytes = Convert.FromBase64String(WaterMark);
+                stream = new MemoryStream(bytes);
+            }
+            return stream;
+        }
     }
 
     public class Reason

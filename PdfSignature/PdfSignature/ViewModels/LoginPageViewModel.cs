@@ -181,7 +181,6 @@ namespace PdfSignature.ViewModels
                     await _displayAlert.ShowAsync(response.Message);
                     return;
                 }
-                IsLook = false;
             }
         }
 
