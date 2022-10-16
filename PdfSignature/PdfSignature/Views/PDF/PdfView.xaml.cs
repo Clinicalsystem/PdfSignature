@@ -213,6 +213,7 @@ namespace PdfSignature.Views.PDF
                 case TouchActionType.Released:
                     
                     model.OnTouchEffectCommand.Execute(rect);
+                    model.RectSignature = rect;
                     model.TouchSignatureCommand.Execute(false);
                     break;
 

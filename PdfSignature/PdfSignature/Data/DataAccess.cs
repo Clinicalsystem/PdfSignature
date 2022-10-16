@@ -141,17 +141,10 @@ namespace PdfSignature.Data
         public Task<response> GetSignatureList()
         {
             response _response = new response();
-            var item = connection.GetAllWithChildren<Signature>().Where(s => s.LoaclId ==  AppSettings.AuthenticationUser.LocalId).ToList(); 
-            
+            var item = connection.GetAllWithChildren<Signature>().Where(s => s.LoaclId ==  AppSettings.AuthenticationUser.LocalId).ToList();
             if (item != null)
             {
-                foreach (var signature in item)
-                {
-                    int index = item.IndexOf(signature);
-                    var sett = connection.Table<SignatureSetting>().FirstOrDefault(m => m.Key == signature.FireBaselId);
-                    item[index].Setting = sett;
-                    
-                }
+                
                 _response = new response()
                 {
                     Status = 200,
@@ -193,7 +186,7 @@ namespace PdfSignature.Data
         public  Task<response> Insert<T>(List<T> models)
         {
             response _response = new response();
-            connection.InsertAllWithChildren(models);
+            connection.InsertOrReplaceAllWithChildren(models);
                 _response = new response()
                 {
                     Status = 200,
@@ -208,8 +201,8 @@ namespace PdfSignature.Data
 
         public Task<response> Update<T>(T models)
         {
-            response _response = new response();
-            connection.UpdateWithChildren(models);
+            response _response;
+            connection.InsertOrReplaceWithChildren(models);
             _response = new response()
             {
                 Status = 200,
@@ -225,30 +218,19 @@ namespace PdfSignature.Data
         public Task<response> Update<T>(List<T> models)
         {
             response _response = new response();
-            var item = connection.UpdateAll(models);
-            if (item > 0)
+            connection.InsertOrReplaceAllWithChildren(models);
+            _response = new response()
             {
-                _response = new response()
-                {
-                    Status = 200,
-                    Success = true,
-                    Message = "Los items fueron actualizados.",
-                    Object = item
-                };
-            }
-            else
-            {
-                _response = new response()
-                {
-                    Status = 400,
-                    Success = false,
-                    Message = "No se pudo actulizar los items.",
-                    Object = item
-                };
-            }
+                Status = 200,
+                Success = true,
+                Message = "Los items fueron actualizados.",
+                Object = models
+            };
+
 
             return Task.FromResult(_response);
         }
+        
         public void Dispose()
         {
             connection.Dispose();

@@ -386,7 +386,6 @@ namespace PdfSignature.ViewModels
                 var resp = await _dataAccess.Insert(document);
                 if(resp.Success)
                 {
-                    document.Id = (int)resp.Object;
                     DocumentsRecientes.Add(document);
                 }
                 

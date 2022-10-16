@@ -331,9 +331,12 @@
                                                     <StackLayout Orientation="Horizontal">
                                                         <buttons:SfButton Command="{Binding ChangeSettingCommand}" Text="Visualizar Cambios"/>
                                                         <buttons:SfButton Command="{Binding SaveSettingCommand}" CommandParameter="{Binding CertSelect.Setting}" Text="Guardar Cambios"/>
+                                                   
                                                     </StackLayout>
+                                                    <buttons:SfButton Command="{Binding SignatureCommand}" CommandParameter="{x:Reference pdfViewer}" Text="Firmar y Guardar."/>
+
                                                 </StackLayout>
-                                           
+                                                
                                             
                                             
                                         </border:SfBorder>

@@ -111,6 +111,37 @@ namespace PdfSignature.Services
             }
 
         }
+
+        public static async Task<bool> UpdateUser(RegisterUser user)
+        {
+
+            try
+            {
+                HttpClient client = new HttpClient();
+                string body = JsonConvert.SerializeObject(user);
+                StringContent content = new StringContent(body, Encoding.UTF8, "application/json");
+
+                string apiUri = string.Concat(AppSettings.ApiFirebase, $"Users/{AppSettings.AuthenticationUser.LocalId}.json?auth={AppSettings.AuthenticationUser.IdToken}");
+
+                HttpResponseMessage response = await client.PutAsync(apiUri, content);
+
+                if (response.StatusCode.Equals(HttpStatusCode.OK))
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                string t = ex.Message;
+                return false;
+            }
+
+        }
+
         #region DocumentFavorits
         public static async Task<response> InsertDocument(DocumentFile document)
         {
@@ -433,6 +464,51 @@ namespace PdfSignature.Services
                     Success = false,
                     Message = "Se produjo una excepción, al intentar eliminar el certificado.",
                     Object = ex.Message
+                };
+            }
+        }
+
+        public static async Task<response> UpdateSignature(Signature signature)
+        {
+            try
+            {
+                HttpClient client = new HttpClient();
+                string body = JsonConvert.SerializeObject(signature);
+                StringContent content = new StringContent(body, Encoding.UTF8, "application/json");
+
+
+                string apiUri = string.Concat(AppSettings.ApiFirebase, $"Signature/{AppSettings.AuthenticationUser.LocalId}/{signature.FireBaselId}.json?auth={AppSettings.AuthenticationUser.IdToken}");
+                HttpResponseMessage response = await client.PutAsync(apiUri, content);
+                string jsonString = await response.Content.ReadAsStringAsync();
+                if (response.StatusCode.Equals(HttpStatusCode.OK))
+                {
+                    return new response
+                    {
+                        Message = "Se guardo correctamente.",
+                        Success = true,
+                        Object = JsonConvert.DeserializeObject<FireBaseID>(jsonString),
+                        Status = (int)response.StatusCode
+                    };
+                }
+                else
+                {
+                    return new response
+                    {
+                        Message = "No se pudo guardar el archivo.",
+                        Success = false,
+                        Object = JsonConvert.DeserializeObject<object>(jsonString),
+                        Status = (int)response.StatusCode
+                    };
+                }
+            }
+            catch (Exception ex)
+            {
+                return new response
+                {
+                    Message = "Se produjo una excepción, al itentar guardar el archivo.",
+                    Success = false,
+                    Object = ex.Message,
+                    Status = (int)ex.GetHashCode()
                 };
             }
         }
