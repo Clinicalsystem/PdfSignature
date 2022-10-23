@@ -1,16 +1,12 @@
-﻿using Microsoft.AspNetCore.Http;
-using PdfSignature.Helper;
-using PdfSignature.Modelos;
+﻿using PdfSignature.Helper;
 using PdfSignature.Modelos.Files;
 using PdfSignature.Services;
 using Syncfusion.Pdf.Parsing;
 using Syncfusion.SfPdfViewer.XForms;
 using System;
-using System.Collections;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
-using System.Net.Http;
 using System.Windows.Input;
 using Xamarin.Essentials;
 using Xamarin.Forms;
@@ -1142,86 +1138,86 @@ namespace PdfSignature.ViewModels
             try
             {
 
-            
-            #region InicialiceComand
-            ToggleViewModeCommand = new Command<object>(OnViewModeToggled, CanExecute);
-            SearchAndToolbarToggleCommand = new Command<object>(OnSearchAndToolbarToggleCommand, CanExecute);
-            FileOpenCommand = new Command<object>(OnFileOpenedCommand, CanExecute);
-            MoreOptionsCommand = new Command<object>(OnMoreOptionsCommand, CanExecute);
-            AnnotationCommand = new Command<object>(OnAnnotationIconClickedCommand, CanExecute);
-            HighlightCommand = new Command<object>(OnHighlightCommand, CanExecute);
-            UnderlineCommand = new Command<object>(OnUnderlineCommand, CanExecute);
-            StrikeThroughCommand = new Command<object>(OnStrikeThroughCommand, CanExecute);
-            SquigglyCommand = new Command<object>(OnSquigglyCommand, CanExecute);
-            RectangleCommand = new Command<object>(OnRectangleCommand, CanExecute);
-            CircleCommand = new Command<object>(OnCircleCommand, CanExecute);
-            LineCommand = new Command<object>(OnLineCommand, CanExecute);
-            ArrowCommand = new Command<object>(OnArrowCommand, CanExecute);
-            PolygonCommand = new Command<object>(OnPolygonCommand, CanExecute);
-            CloudCommand = new Command<object>(OnCloudCommand, CanExecute);
-            PolylineCommand = new Command<object>(OnPolylineCommand, CanExecute);
-            AnnotationBackCommand = new Command<object>(OnAnnotationBackCommand, CanExecute);
-            ColorButtonClickedCommand = new Command<object>(OnColorButtonClickedCommand, CanExecute);
-            ColorCommand = new Command<object>(OnColorCommand, CanExecute);
-            TextMarkupSelectedCommand = new Command<object>(OnTextMarkupSelectedCommand, CanExecute);
-            TextMarkupDeselectedCommand = new Command<object>(OnTextMarkupDeselectedCommand, CanExecute);
-            DeleteCommand = new Command<object>(OnDeleteCommand, CanExecute);
-            DocumentLoadedCommand = new Command<object>(OnDocumentLoadedCommand, CanExecute);
-            TextMarkupCommand = new Command<object>(OnTextMarkupCommand, CanExecute);
-            InkCommand = new Command<object>(OnInkCommand, CanExecute);
-            EditTextCommand = new Command<object>(OnEditTextCommand, CanExecute);
-            ShapeCommand = new Command<object>(OnShapeCommand, CanExecute);
-            InkBackButtonCommand = new Command<object>(OnInkBackButtonCommand, CanExecute);
-            TextMarkupBackCommand = new Command<object>(OnTextMarkupBackCommand, CanExecute);
-            RectangleBackButtonCommand = new Command<object>(OnRectangleBackButtonCommand, CanExecute);
-            CircleBackButtonCommand = new Command<object>(OnCircleBackButtonCommand, CanExecute);
-            LineBackButtonCommand = new Command<object>(OnLineBackButtonCommand, CanExecute);
-            ArrowBackButtonCommand = new Command<object>(OnArrowBackButtonCommand, CanExecute);
-            PolygonBackButtonCommand = new Command<object>(OnPolygonBackButtonCommand, CanExecute);
-            CloudBackButtonCommand = new Command<object>(OnCloudBackButtonCommand, CanExecute);
-            PolylineBackButtonCommand = new Command<object>(OnPolylineBackButtonCommand, CanExecute);
-            EditTextBackButtonCommand = new Command<object>(OnEditTextBackButtonCommand, CanExecute);
-            ShapeBackButtonCommand = new Command<object>(OnShapeBackButtonCommand, CanExecute);
-            InkThicknessCommand = new Command<object>(OnInkThicknessCommand, CanExecute);
-            RectangleThicknessCommand = new Command<object>(OnRectangleThicknessCommand, CanExecute);
-            CircleThicknessCommand = new Command<object>(OnCircleThicknessCommand, CanExecute);
-            LineThicknessCommand = new Command<object>(OnLineThicknessCommand, CanExecute);
-            ArrowThicknessCommand = new Command<object>(OnArrowThicknessCommand, CanExecute);
-            PolygonThicknessCommand = new Command<object>(OnPolygonThicknessCommand, CanExecute);
-            CloudThicknessCommand = new Command<object>(OnCloudThicknessCommand, CanExecute);
-            PolylineThicknessCommand = new Command<object>(OnPolylineThicknessCommand, CanExecute);
-            EditTextFontSizeCommand = new Command<object>(OnEditTextFontSizeCommand, CanExecute);
-            OpacityButtonCommand = new Command<object>(OnOpacityButtonColorCommand, CanExecute);
-            InkOpacityCommand = new Command<object>(OnInkOpacityCommand, CanExecute);
-            InkSelectedCommand = new Command<object>(OnInkSelectedCommand, CanExecute);
-            InkDeselectedCommand = new Command<object>(OnInkDeselectedCommand, CanExecute);
-            ShapeSelectedCommand = new Command<object[]>(OnShapeSelectedCommand, CanExecute);
-            ShapeDeselectedCommand = new Command<object>(OnShapeDeselectedCommand, CanExecute);
 
-            FreeTextSelectedCommand = new Command<object>(OnFreeTextSelectedCommand, CanExecute);
-            FreeTextDeselectedCommand = new Command<object>(OnFreeTextDeselectedCommand, CanExecute);
+                #region InicialiceComand
+                ToggleViewModeCommand = new Command<object>(OnViewModeToggled, CanExecute);
+                SearchAndToolbarToggleCommand = new Command<object>(OnSearchAndToolbarToggleCommand, CanExecute);
+                FileOpenCommand = new Command<object>(OnFileOpenedCommand, CanExecute);
+                MoreOptionsCommand = new Command<object>(OnMoreOptionsCommand, CanExecute);
+                AnnotationCommand = new Command<object>(OnAnnotationIconClickedCommand, CanExecute);
+                HighlightCommand = new Command<object>(OnHighlightCommand, CanExecute);
+                UnderlineCommand = new Command<object>(OnUnderlineCommand, CanExecute);
+                StrikeThroughCommand = new Command<object>(OnStrikeThroughCommand, CanExecute);
+                SquigglyCommand = new Command<object>(OnSquigglyCommand, CanExecute);
+                RectangleCommand = new Command<object>(OnRectangleCommand, CanExecute);
+                CircleCommand = new Command<object>(OnCircleCommand, CanExecute);
+                LineCommand = new Command<object>(OnLineCommand, CanExecute);
+                ArrowCommand = new Command<object>(OnArrowCommand, CanExecute);
+                PolygonCommand = new Command<object>(OnPolygonCommand, CanExecute);
+                CloudCommand = new Command<object>(OnCloudCommand, CanExecute);
+                PolylineCommand = new Command<object>(OnPolylineCommand, CanExecute);
+                AnnotationBackCommand = new Command<object>(OnAnnotationBackCommand, CanExecute);
+                ColorButtonClickedCommand = new Command<object>(OnColorButtonClickedCommand, CanExecute);
+                ColorCommand = new Command<object>(OnColorCommand, CanExecute);
+                TextMarkupSelectedCommand = new Command<object>(OnTextMarkupSelectedCommand, CanExecute);
+                TextMarkupDeselectedCommand = new Command<object>(OnTextMarkupDeselectedCommand, CanExecute);
+                DeleteCommand = new Command<object>(OnDeleteCommand, CanExecute);
+                DocumentLoadedCommand = new Command<object>(OnDocumentLoadedCommand, CanExecute);
+                TextMarkupCommand = new Command<object>(OnTextMarkupCommand, CanExecute);
+                InkCommand = new Command<object>(OnInkCommand, CanExecute);
+                EditTextCommand = new Command<object>(OnEditTextCommand, CanExecute);
+                ShapeCommand = new Command<object>(OnShapeCommand, CanExecute);
+                InkBackButtonCommand = new Command<object>(OnInkBackButtonCommand, CanExecute);
+                TextMarkupBackCommand = new Command<object>(OnTextMarkupBackCommand, CanExecute);
+                RectangleBackButtonCommand = new Command<object>(OnRectangleBackButtonCommand, CanExecute);
+                CircleBackButtonCommand = new Command<object>(OnCircleBackButtonCommand, CanExecute);
+                LineBackButtonCommand = new Command<object>(OnLineBackButtonCommand, CanExecute);
+                ArrowBackButtonCommand = new Command<object>(OnArrowBackButtonCommand, CanExecute);
+                PolygonBackButtonCommand = new Command<object>(OnPolygonBackButtonCommand, CanExecute);
+                CloudBackButtonCommand = new Command<object>(OnCloudBackButtonCommand, CanExecute);
+                PolylineBackButtonCommand = new Command<object>(OnPolylineBackButtonCommand, CanExecute);
+                EditTextBackButtonCommand = new Command<object>(OnEditTextBackButtonCommand, CanExecute);
+                ShapeBackButtonCommand = new Command<object>(OnShapeBackButtonCommand, CanExecute);
+                InkThicknessCommand = new Command<object>(OnInkThicknessCommand, CanExecute);
+                RectangleThicknessCommand = new Command<object>(OnRectangleThicknessCommand, CanExecute);
+                CircleThicknessCommand = new Command<object>(OnCircleThicknessCommand, CanExecute);
+                LineThicknessCommand = new Command<object>(OnLineThicknessCommand, CanExecute);
+                ArrowThicknessCommand = new Command<object>(OnArrowThicknessCommand, CanExecute);
+                PolygonThicknessCommand = new Command<object>(OnPolygonThicknessCommand, CanExecute);
+                CloudThicknessCommand = new Command<object>(OnCloudThicknessCommand, CanExecute);
+                PolylineThicknessCommand = new Command<object>(OnPolylineThicknessCommand, CanExecute);
+                EditTextFontSizeCommand = new Command<object>(OnEditTextFontSizeCommand, CanExecute);
+                OpacityButtonCommand = new Command<object>(OnOpacityButtonColorCommand, CanExecute);
+                InkOpacityCommand = new Command<object>(OnInkOpacityCommand, CanExecute);
+                InkSelectedCommand = new Command<object>(OnInkSelectedCommand, CanExecute);
+                InkDeselectedCommand = new Command<object>(OnInkDeselectedCommand, CanExecute);
+                ShapeSelectedCommand = new Command<object[]>(OnShapeSelectedCommand, CanExecute);
+                ShapeDeselectedCommand = new Command<object>(OnShapeDeselectedCommand, CanExecute);
 
-            ShapeDeleteCommand = new Command<object>(OnShapeDeletedCommand, CanExecute);
-            EditTextDeleteCommand = new Command<object>(OnEditTextDeleteCommand, CanExecute);
-            TabletBookmarkCommand = new Command<object>(OnTabletBookmarkCommand, CanExecute);
+                FreeTextSelectedCommand = new Command<object>(OnFreeTextSelectedCommand, CanExecute);
+                FreeTextDeselectedCommand = new Command<object>(OnFreeTextDeselectedCommand, CanExecute);
 
-            StampAnnotationSelectedCommand = new Command<object>(OnStampSelectedCommand, CanExecute);
-            StampAnnotationDeselectedCommand = new Command<object>(OnStampDeselectedCommand, CanExecute);
-            #endregion
-            if(AppSettings.DocumentSelect != null)
-            {
-                byte[] bytes = Convert.FromBase64String(AppSettings.DocumentSelect.PdfBase64);
-                PdfLoadedDocument loadedDocument = new PdfLoadedDocument(bytes);
-                MemoryStream stream = new MemoryStream();
-                loadedDocument.Save(stream);
-                pdfDocumentStream = stream;
+                ShapeDeleteCommand = new Command<object>(OnShapeDeletedCommand, CanExecute);
+                EditTextDeleteCommand = new Command<object>(OnEditTextDeleteCommand, CanExecute);
+                TabletBookmarkCommand = new Command<object>(OnTabletBookmarkCommand, CanExecute);
 
-            }
+                StampAnnotationSelectedCommand = new Command<object>(OnStampSelectedCommand, CanExecute);
+                StampAnnotationDeselectedCommand = new Command<object>(OnStampDeselectedCommand, CanExecute);
+                #endregion
+                if (AppSettings.DocumentSelect != null)
+                {
+                    byte[] bytes = Convert.FromBase64String(AppSettings.DocumentSelect.PdfBase64);
+                    PdfLoadedDocument loadedDocument = new PdfLoadedDocument(bytes);
+                    MemoryStream stream = new MemoryStream();
+                    loadedDocument.Save(stream);
+                    pdfDocumentStream = stream;
+
+                }
             }
             catch (Exception ex)
             {
 
-               _displayAlert.ShowAsync($"Se produjo una excepción, al intentar mostrar el archivo. \n{ex.Message}");
+                _displayAlert.ShowAsync($"Se produjo una excepción, al intentar mostrar el archivo. \n{ex.Message}");
             }
 
         }
@@ -2320,10 +2316,11 @@ namespace PdfSignature.ViewModels
                 AppSettings.DocumentSelect = document;
 
                 pdfDocumentStream = stream;
-            
+
             }
-            catch (System.Exception)
+            catch (Exception ex)
             {
+                await _displayAlert.ShowAsync($"Se produjo una excepción al intentar abrir el archivo. Code: {ex.GetHashCode()} \n{ex.Message}");
 
                 return;
             }

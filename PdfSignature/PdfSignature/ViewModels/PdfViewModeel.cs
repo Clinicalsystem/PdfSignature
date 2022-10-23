@@ -3,6 +3,7 @@ using PdfSignature.Data;
 using PdfSignature.Implementation;
 using PdfSignature.Modelos.Files;
 using PdfSignature.Services;
+using PdfSignature.Views.PDF;
 using Syncfusion.Pdf;
 using Syncfusion.Pdf.Graphics;
 using Syncfusion.Pdf.Parsing;
@@ -15,6 +16,7 @@ using System.Collections.ObjectModel;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices.ComTypes;
 using System.Threading.Tasks;
 using Xamarin.Essentials;
 using Xamarin.Forms;
@@ -32,7 +34,7 @@ namespace PdfSignature.ViewModels
     {
         #region Fields
 
-        public static PdfLoadedDocument Document { get; set; }
+        public PdfLoadedDocument Document { get; set; }
         TextInfo _TextInfo = new CultureInfo("en-US", false).TextInfo; //CultureInfo.CurrentCulture.TextInfo.ToTitleCase
         Command<object> saveCommand;
         public Rect RectSignature { get; set; }
@@ -47,6 +49,8 @@ namespace PdfSignature.ViewModels
         private bool _isNext;
         private Signature _certSelect;
         private ImageSource _SourceImg;
+        private bool _isLocked;
+        private bool _isOpenFile;
         #endregion
 
         #region Contructor
@@ -82,6 +86,8 @@ namespace PdfSignature.ViewModels
             }
         }
 
+        public AnnotationMode PadSignature { get; private set; }
+
         public bool IsTouchSignature
         {
             get
@@ -95,6 +101,30 @@ namespace PdfSignature.ViewModels
             }
         }
 
+        public bool IsLocked 
+        {
+            get
+            {
+                return _isLocked;
+            }
+            set
+            {
+                _isLocked = value;
+                NotifyPropertyChanged("IsLocked");
+            }
+        }
+        public bool IsOpenFile
+        {
+            get
+            {
+                return _isOpenFile;
+            }
+            set
+            {
+                _isOpenFile = value;
+                NotifyPropertyChanged("IsOpenFile");
+            }
+        }
         public bool IsNext
         {
             get
@@ -250,6 +280,7 @@ namespace PdfSignature.ViewModels
         private void InicializePropieties()
         {
             StepCertificado = StepStatus.InProgress;
+            PadSignature = AnnotationMode.None;
             _isNext = true;
             _certSelect = new Signature
             {
@@ -597,6 +628,7 @@ namespace PdfSignature.ViewModels
 
 
         }
+
         private void SaveDocument(object obj)
         {
             try
@@ -623,17 +655,80 @@ namespace PdfSignature.ViewModels
             }
         }
 
-        private void ShareDocument(object obj)
+        private async void ShareDocument(object pdfViewer)
         {
             try
             {
-                MemoryStream stream = new MemoryStream();
-                Document.Save(stream);
-            }
-            catch (Exception)
-            {
+               
 
-                throw;
+                var path = Path.GetFullPath(AppSettings.DocumentSelect.Path);
+                if(Device.RuntimePlatform == Device.WPF)
+                {
+                    await Share.RequestAsync(new ShareFileRequest
+
+                    {
+                        Title = "Hola te comparto este archivo desde el PdfSignature",
+                        File = new ShareFile(path)
+
+                    });
+                    return;
+                }
+                await Share.RequestAsync(new ShareFileRequest
+
+                {
+                    Title = "Elegir App para compartir",
+                    File = new ShareFile(path)
+                    
+                });
+
+            }
+            catch (Exception ex)
+            {
+                if(ex.Message.Contains("file specified"))
+                {
+                    var pdf = pdfViewer as SfPdfViewer;
+                    Stream stream = await pdf.SaveDocumentAsync();
+                    PdfLoadedDocument pdfLoaded = new PdfLoadedDocument(stream);
+                    MemoryStream memoryStream = new MemoryStream(); 
+                    pdfLoaded.Save(memoryStream);   
+
+                    string folder = Path.Combine(FileSystem.AppDataDirectory, "Archives");
+                    if(!Directory.Exists(folder))
+                    {
+                        Directory.CreateDirectory(folder);
+                    }
+                    else
+                    {
+                        Directory.Delete(folder, true);
+                        Directory.CreateDirectory(folder);
+                    }
+                    var path = Path.Combine(folder, AppSettings.DocumentSelect.FileName);
+                    File.WriteAllBytes(path, memoryStream.GetBuffer());
+                    if (Device.RuntimePlatform == Device.UWP)
+                    {
+                        await Share.RequestAsync(new ShareFileRequest
+
+                        {
+                            Title = "Hola te comparto este archivo desde el PdfSignature",
+                            File = new ShareFile(path)
+
+                        });
+                        return;
+                    }
+                    else
+                    {
+                        await Share.RequestAsync(new ShareFileRequest
+
+                        {
+                            Title = "Elegir App para compartir",
+                            File = new ShareFile(path)
+
+                        });
+                        return;
+                    }
+                    
+                }
+                await _displayAlert.ShowAsync($"Se produjo una excepción al intentar Compartir el archivo. Code: {ex.GetHashCode()} \n{ex.Message}");
             }
         }
 
@@ -669,10 +764,12 @@ namespace PdfSignature.ViewModels
         {
             try
             {
+                StepFirma = StepStatus.Completed;
+                StepSave = StepStatus.InProgress;
+                #region Fields
                 var pdf = pdfViewer as SfPdfViewer;
-
-                var pageNumber = pdf.PageNumber;
-
+                var pageNumber = pdf.PageNumber; 
+                
                 Point clientPoint = new Point((int)RectSignature.Location.X, (int)RectSignature.Location.Y);
                 var x2 = RectSignature.Location.X + RectSignature.Size.Width;
                 var y2 = RectSignature.Location.Y + RectSignature.Size.Height;
@@ -681,40 +778,41 @@ namespace PdfSignature.ViewModels
                 Point pagePoint2 = pdf.ConvertClientPointToPagePoint(clientPoint2, pageNumber);
                 int width = (int)(pagePoint2.X - pagePoint.X);
                 int Height = (int)(pagePoint2.Y - pagePoint.Y);
-
-                PdfLoadedPage page = Document.Pages[pageNumber - 1] as PdfLoadedPage;
-
+                Stream streamPdf = await pdf.SaveDocumentAsync();
+                PdfLoadedDocument pdfDocument = new PdfLoadedDocument(streamPdf);
+                PdfLoadedPage page = pdfDocument.Pages[pageNumber - 1] as PdfLoadedPage;
                 PdfGraphics graphics = page.Graphics;
 
                 PdfCertificate pdfCert = CertSelect.Certificate();
-                //Creates a signature field
-
                 RectangleF rectangleF = new RectangleF((float)pagePoint.X, (float)pagePoint.Y, width, Height);
-
-                //PdfBitmap image = new PdfBitmap(GetImageSignature());
+                RectangleF rectangleImage = new RectangleF((float)pagePoint.X + 2, (float)pagePoint.Y + 2, width - 4, Height - 4);
                 PdfStandardFont font = new PdfStandardFont(PdfFontFamily.Helvetica, 15);
+                
 
+                Syncfusion.Pdf.Security.PdfSignature signature = new Syncfusion.Pdf.Security.PdfSignature(pdfDocument, page, pdfCert, "PdfSignature");
+                #endregion
 
-                Syncfusion.Pdf.Security.PdfSignature signature = new Syncfusion.Pdf.Security.PdfSignature(Document, Document.Pages[pageNumber - 1], pdfCert, "PdfSignature");
-
-                //Set bounds to the signature.
+                #region Add Signature
                 signature.Bounds = rectangleF;
-
-                //Load image from file.
                 PdfImage image = PdfImage.FromStream(CreateImage(CertSelect.Setting));
-                //Create a font to draw text.
+                PdfPen pen = new PdfPen(new PdfColor(0,0,0));
+                graphics.DrawRectangle(pen, rectangleF);
+                graphics.DrawImage(image, rectangleImage);
+                signature.Reason = CertSelect.Setting.MyReason;
+                signature.SignedName = CertSelect.Name;
+                signature.LocationInfo = CertSelect.Setting.Location;
+                signature.ContactInfo = $"{CertSelect.Name} Rut: {CertSelect.Rut}";
+                signature.IsLocked = IsLocked;
+                #endregion
 
-                // signature.Appearance.Normal.Graphics.DrawImage(image, rectangleF);
-                graphics.DrawImage(image, rectangleF);
-
-                //Saves and closes the document
+                #region Saves and closes the document
 
                 string _Path = string.Empty;
                 Stream stream = new MemoryStream();
-                Document.Save(stream);
+                pdfDocument.Save(stream);
 
                 var documentSelect = AppSettings.DocumentSelect;
-                // string _Path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "PdfSignature");
+
                 string name = $"{documentSelect.FileName.Remove(documentSelect.FileName.Length - 4)}_Firmado.pdf";
                 if (Device.RuntimePlatform == Device.Android)
                 {
@@ -731,20 +829,42 @@ namespace PdfSignature.ViewModels
                 {
 
                 }
-                else
+                else if (Device.RuntimePlatform == Device.UWP)
                 {
-                    //byte[] data = ReadFully(stream.BaseStream);
-                    _Path = await DependencyService.Get<IFileManager>().Save(stream as MemoryStream, name);
+                     _Path = await DependencyService.Get<IFileManager>().Save(stream as MemoryStream, name);
                 }
-                AppSettings.PdfSavePath = _Path;
-                await _displayAlert.ShowAsync($"Se guardo el archivo correctamente en la ruta: {_Path}");
+                if (IsOpenFile)
+                {
+                    DocumentFile documentFile = new DocumentFile
+                    {
+                    Date = DateTime.Now,
+                    FileName = name,
+                    Path = Path.Combine(_Path,name),
+                    PdfBase64 = Convert.ToBase64String(ToByteArray(stream)),
+                    };
+                    AppSettings.DocumentSelect = documentFile;
+                    pdfDocumentStream = stream;
+                    await _dataAccess.Insert(documentFile);
+
+                }
+                
+                StepSave = StepStatus.Completed;
+                #endregion
+                if(!string.IsNullOrEmpty(_Path))
+                {
+                    AppSettings.PdfSavePath = _Path;
+                    await _displayAlert.ShowAsync($"Se guardo el archivo correctamente en la ruta: {_Path}");
+                
+                }
+                
+                IsVisibleModal = false;
 
 
             }
-            catch (Exception)
+            catch (Exception ex)
             {
 
-                throw;
+                await _displayAlert.ShowAsync($"Se produjo una excepción al intentar Firmar el archivo. Code: {ex.GetHashCode()} \n{ex.Message}");
             }
         }
 

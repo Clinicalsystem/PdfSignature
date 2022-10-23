@@ -3,6 +3,7 @@ using PdfSignature.Implementation;
 using PdfSignature.Services;
 using PdfSignature.ViewModels;
 using Syncfusion.Pdf;
+using Syncfusion.SfPdfViewer.XForms;
 using System;
 using System.IO;
 using System.Runtime.CompilerServices;
@@ -35,14 +36,16 @@ namespace PdfSignature.Views.PDF
         public PdfView()
         {
             _messageService = new MessageService(); 
-        PinchGesture.PinchUpdated += OnPinchUpdated;
+            PinchGesture.PinchUpdated += OnPinchUpdated;
+            
             InitializeComponent();
-            CustomPdfBar();
+            pdfViewer.Toolbar.SetToolbarItemVisibility("save", false);
+            pdfViewer.FormSettings.FlattenSignatureFields = true;
         }
-
-        private void CustomPdfBar()
+        protected override void OnAppearing()
         {
-            pdfViewer.Toolbar.SetToolbarItemVisibility("signature", false);
+            base.OnAppearing();
+            model = (PdfViewModeel)this.BindingContext;
         }
 
         private void OnPinchUpdated(object sender, PinchGestureUpdatedEventArgs e)
@@ -78,12 +81,7 @@ namespace PdfSignature.Views.PDF
             }
         }
 
-        private void ImageButton_Clicked(object sender, EventArgs e)
-        {
-
-        }
-
-        
+           
 
         private async void pdfViewer_DocumentSaveInitiated(object sender, Syncfusion.SfPdfViewer.XForms.DocumentSaveInitiatedEventArgs args)
         {
@@ -149,7 +147,7 @@ namespace PdfSignature.Views.PDF
         }
 
 
-         private void OnTouchEffectAction(object sender, TouchActionEventArgs args)
+         private async void OnTouchEffectAction(object sender, TouchActionEventArgs args)
             {
                 // Convert Xamarin.Forms point to pixels
                 Point pt = args.Location;
@@ -211,23 +209,36 @@ namespace PdfSignature.Views.PDF
                 case TouchActionType.Entered:
                     break;
                 case TouchActionType.Released:
-                    
-                    model.OnTouchEffectCommand.Execute(rect);
-                    model.RectSignature = rect;
-                    model.TouchSignatureCommand.Execute(false);
+                    if(IsPointValid(originalPoint) && IsPointValid(pt))
+                    {
+                        model.OnTouchEffectCommand.Execute(rect);
+                        model.RectSignature = rect;
+                        model.TouchSignatureCommand.Execute(false);
+                    }
+                    else
+                    {
+                       await _messageService.ShowAsync("No se puede dibujar la firma fuera del documento, por favor seleccione el área dentro del documento.");
+                    }
+
                     break;
 
                 default:
                         touchId = -1;
                         break;
                 }
-            }
-
-        protected override void OnAppearing()
+          }
+        private bool IsPointValid(Point point)
         {
-            base.OnAppearing();
-            model = (PdfViewModeel)this.BindingContext;
+
+            Point pagePoint = pdfViewer.ConvertClientPointToPagePoint(point, pdfViewer.PageNumber);
+            if(pagePoint.X < 0 || pagePoint.Y < 0)
+            {
+                return false;
+            }
+            return true;
         }
+
+       
 
         private void SfComboBox_SelectionChanged(object sender, Syncfusion.XForms.ComboBox.SelectionChangedEventArgs e)
         {
@@ -250,6 +261,15 @@ namespace PdfSignature.Views.PDF
             }
 
 
+        }
+
+      
+
+        private void Closed_Clicked(object sender, EventArgs e)
+        {
+            model.IsVisibleModal = false;
+            model.IsTouchSignature = false;
+            model.IsNext = false;
         }
     }
 }

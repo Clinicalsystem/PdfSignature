@@ -178,7 +178,7 @@ namespace PdfSignature.ViewModels
             catch (Exception ex)
             {
 
-              await  _displayAlert.ShowAsync(ex.Message);
+                await _displayAlert.ShowAsync($"Se produjo una excepción al intentar borrar el archivo. Code: {ex.GetHashCode()} \n{ex.Message}");
             }
             StatusMessage = string.Empty;
             IsLook = false;

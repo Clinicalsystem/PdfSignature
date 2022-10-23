@@ -15,6 +15,18 @@ namespace PdfSignature.UWP.Implementation
     {
         MemoryStream stream;
         StorageFile file;
+
+        public async Task<Stream> Load(string filePath, string fileName)
+        {
+
+            StorageFolder folderPDF = await StorageFolder.GetFolderFromPathAsync(filePath);
+            string path = Path.Combine(filePath, fileName);
+            Stream fileStream = await folderPDF.OpenStreamForReadAsync(fileName); 
+           return fileStream;
+            
+            
+        }
+
         public async Task<string> Save(MemoryStream fileStream, string fileName)
         {
             stream = fileStream;
@@ -31,7 +43,7 @@ namespace PdfSignature.UWP.Implementation
 
             if (folderOll == null)
             {
-               var folderPicker = new Windows.Storage.Pickers.FolderPicker();
+                var folderPicker = new Windows.Storage.Pickers.FolderPicker();
                 folderPicker.SuggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.DocumentsLibrary;
                 folderPicker.FileTypeFilter.Add("*");
 
@@ -45,7 +57,7 @@ namespace PdfSignature.UWP.Implementation
             }
             else
             {
-                
+
                 return await SaveAsync(fileName, folderOll);
             }
 
@@ -54,7 +66,7 @@ namespace PdfSignature.UWP.Implementation
 
         }
 
-       
+
 
         private async Task<string> SaveAsync(string fileName, StorageFolder folder)
         {
@@ -62,7 +74,6 @@ namespace PdfSignature.UWP.Implementation
             StorageFolder folderPDF;
             StorageFolder folderOll;
             string _path = Path.Combine(folder.Path, "PdfSingature");
-            bool a = folder.Path.Contains("PdfSingature");
             #endregion
 
             #region Validaciones
