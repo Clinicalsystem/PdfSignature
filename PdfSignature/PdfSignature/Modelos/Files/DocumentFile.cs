@@ -15,6 +15,9 @@ namespace PdfSignature.Modelos.Files
 
         [JsonIgnore]
         public string Path { get; set; }
-       
+
+        [JsonIgnore]
+        public string LocalId { get; set; }
+
     }
 }

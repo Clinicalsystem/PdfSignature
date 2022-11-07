@@ -56,9 +56,20 @@ namespace PdfSignature.ViewModels
         #region Contructor
         public PdfViewModeel()
         {
-            if (_pdfDocumentStream != null)
+            if (AppSettings.DocumentSelect != null)
             {
-                Document = new PdfLoadedDocument(_pdfDocumentStream);
+                byte[] bytes = Convert.FromBase64String(AppSettings.DocumentSelect.PdfBase64);
+                if (!string.IsNullOrEmpty(AppSettings.DocumentSelect.PasswordPdf))
+                {
+                    Document = new PdfLoadedDocument(bytes, AppSettings.DocumentSelect.PasswordPdf);
+                    _pdfDocumentStream = new MemoryStream(bytes);
+                }
+                else
+                {
+                    Document = new PdfLoadedDocument(bytes);
+                    _pdfDocumentStream = new MemoryStream(bytes);
+                }
+                
             }
             _isVisibleModal = false;
             _displayAlert = DependencyService.Get<IMessageService>();
@@ -252,6 +263,7 @@ namespace PdfSignature.ViewModels
 
         #region Command
 
+        public Command<object> SecurityCommand { get; set; }
         public Command<object> SignatureCommand { get; set; }
 
         public Command<object> SelectCertCommand { get; set; }
@@ -300,6 +312,7 @@ namespace PdfSignature.ViewModels
             this.ChangeSettingCommand = new Command<object>(ChangeSettingSingnature);
             this.SelectImageCommand = new Command<object>(SelectImage);
             this.SaveSettingCommand = new Command<object>(SaveSetting);
+            this.SecurityCommand = new Command<object>(Security);
 
 
         }
@@ -621,7 +634,7 @@ namespace PdfSignature.ViewModels
             }
             catch (Exception Ex)
             {
-                await _displayAlert.ShowAsync($"Se produjo una exsepción Code: {Ex.GetHashCode()} \n{Ex.Message}");
+                await _displayAlert.ShowAsync($"Se produjo una excepción Code: {Ex.GetHashCode()} \n{Ex.Message}");
 
                 return;
             }
@@ -659,27 +672,49 @@ namespace PdfSignature.ViewModels
         {
             try
             {
-               
+                var pdf = pdfViewer as SfPdfViewer;
+                Stream stream = await pdf.SaveDocumentAsync();
+                PdfLoadedDocument pdfLoaded = new PdfLoadedDocument(stream);
+                MemoryStream memoryStream = new MemoryStream();
+                pdfLoaded.Save(memoryStream);
 
-                var path = Path.GetFullPath(AppSettings.DocumentSelect.Path);
-                if(Device.RuntimePlatform == Device.WPF)
+
+                var path = string.Empty;
+                if (Device.RuntimePlatform == Device.Android)
                 {
+                    var status = await CheckAndRequestStorageWrite();
+                    switch (status)
+                    {
+                        case PermissionStatus.Granted:
+                            path = await DependencyService.Get<IFileManager>().Save(stream as MemoryStream, AppSettings.DocumentSelect.FileName);
+                            await Share.RequestAsync(new ShareFileRequest
+
+                            {
+                                Title = "Hola te comparto este archivo desde el PdfSignature",
+                                File = new ShareFile(path)
+
+                            });
+                            break;
+
+                    }
+                }
+                else if (Device.RuntimePlatform == Device.iOS)
+                {
+                    //
+                }
+                else if (Device.RuntimePlatform == Device.UWP)
+                {
+                    path = await DependencyService.Get<IFileManager>().Save(stream as MemoryStream, AppSettings.DocumentSelect.FileName);
                     await Share.RequestAsync(new ShareFileRequest
 
                     {
-                        Title = "Hola te comparto este archivo desde el PdfSignature",
+                        Title = "Elegir App para compartir",
                         File = new ShareFile(path)
 
                     });
-                    return;
+                   
                 }
-                await Share.RequestAsync(new ShareFileRequest
-
-                {
-                    Title = "Elegir App para compartir",
-                    File = new ShareFile(path)
-                    
-                });
+                
 
             }
             catch (Exception ex)
@@ -864,7 +899,7 @@ namespace PdfSignature.ViewModels
             catch (Exception ex)
             {
 
-                await _displayAlert.ShowAsync($"Se produjo una excepción al intentar Firmar el archivo. Code: {ex.GetHashCode()} \n{ex.Message}");
+                await _displayAlert.ShowAsync($"Se produjo una excepción al intentar bloquear el archivo. Code: {ex.GetHashCode()} \n{ex.Message}");
             }
         }
 
@@ -891,6 +926,59 @@ namespace PdfSignature.ViewModels
             return status;
         }
 
+        private async void Security(object pdfViewer)
+        {
+            try
+            {
+
+            
+            #region fields
+            var pdf = pdfViewer as SfPdfViewer;
+            Stream stream = await pdf.SaveDocumentAsync();
+            PdfLoadedDocument pdfLoaded;
+            if (!string.IsNullOrEmpty(AppSettings.DocumentSelect.PasswordPdf))
+            {
+                pdfLoaded = new PdfLoadedDocument(stream, AppSettings.DocumentSelect.PasswordPdf);
+            }
+            else
+            {
+                pdfLoaded = new PdfLoadedDocument(stream);
+            }
+            
+            PdfSecurity pdfSecurity = pdfLoaded.Security;
+            #endregion
+
+            #region password
+            string password = await _displayAlert.Info("Ingrese una contraseña para bloquear el archivo");
+            #endregion
+
+            #region Encripta PDF
+            pdfSecurity.KeySize = PdfEncryptionKeySize.Key256Bit;
+            pdfSecurity.Algorithm = PdfEncryptionAlgorithm.AES;
+            pdfSecurity.OwnerPassword = AppSettings.UserData.Password;
+            pdfSecurity.UserPassword = password;
+            #endregion
+
+            #region SavePdf
+            MemoryStream memoryStream = new MemoryStream();
+            pdfLoaded.Save(memoryStream);
+            AppSettings.DocumentSelect.PdfBase64 = Convert.ToBase64String(memoryStream.ToArray());
+            AppSettings.DocumentSelect.PasswordPdf = password;
+            var response = await _dataAccess.Update(AppSettings.DocumentSelect);
+            if(response.Success)
+            {
+                pdfDocumentStream = memoryStream;
+            }
+
+                #endregion
+
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
 
         #endregion
 

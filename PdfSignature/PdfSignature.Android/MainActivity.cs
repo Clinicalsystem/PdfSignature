@@ -5,6 +5,8 @@ using Android.Runtime;
 using PdfSignature.Android.Implementation;
 using PdfSignature.Implementation;
 using PdfSignature.Services;
+using Plugin.CurrentActivity;
+using Plugin.Fingerprint;
 
 namespace PdfSignature.Android
 {
@@ -14,11 +16,12 @@ namespace PdfSignature.Android
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
-
             Xamarin.Essentials.Platform.Init(this, savedInstanceState);
             global::Xamarin.Forms.Forms.Init(this, savedInstanceState);
             Xamarin.Forms.DependencyService.Register<IToast, ToastMessage>();
             Xamarin.Forms.DependencyService.Register<IFileManager, FileManager>();
+            CrossFingerprint.SetCurrentActivityResolver(() => CrossCurrentActivity.Current.Activity);
+            CrossCurrentActivity.Current.Init(this, savedInstanceState);
             LoadApplication(new App());
         }
         public override void OnRequestPermissionsResult(int requestCode, string[] permissions, [GeneratedEnum] Permission[] grantResults)

@@ -1,12 +1,18 @@
-﻿using PdfSignature.Modelos.Autentication;
+﻿using PdfSignature.Modelos;
+using PdfSignature.Modelos.Autentication;
 using PdfSignature.Services;
 using PdfSignature.Validators;
 using PdfSignature.Validators.Rules;
 using PdfSignature.Views;
 using PdfSignature.Views.Home;
+using Plugin.Fingerprint.Abstractions;
+using Plugin.Fingerprint;
 using System.Threading.Tasks;
 using Xamarin.Forms;
 using Xamarin.Forms.Internals;
+using Xamarin.Essentials;
+using Plugin.DeviceInfo;
+using PdfSignature.Modelos.Devices;
 
 namespace PdfSignature.ViewModels
 {
@@ -36,11 +42,10 @@ namespace PdfSignature.ViewModels
             this.InitializeProperties();
             this.AddValidationRules();
             this.LoginCommand = new Command(this.LoginClicked);
-            this.SignUpCommand = new Command(this.SignUpClicked);
             this.ForgotPasswordCommand = new Command(this.ForgotPasswordClicked);
-            this.SocialMediaLoginCommand = new Command(this.SocialLoggedIn);
             this._displayAlert = DependencyService.Get<IMessageService>();
             this.IsRememberCommand = new Command(this.IsRememberMet) ;
+            this.LoginHuellaCommand = new Command(this.LoginHuella);
         }
 
         #endregion
@@ -84,24 +89,21 @@ namespace PdfSignature.ViewModels
         /// <summary>
         /// Gets or sets the command that is executed when the Sign Up button is clicked.
         /// </summary>
-        public Command SignUpCommand { get; set; }
+        public Command LoginHuellaCommand { get; set; }
 
         /// <summary>
         /// Gets or sets the command that is executed when the Forgot Password button is clicked.
         /// </summary>
         public Command ForgotPasswordCommand { get; set; }
 
-        /// <summary>
-        /// Gets or sets the command that is executed when the social media login button is clicked.
-        /// </summary>
-        public Command SocialMediaLoginCommand { get; set; }
-
+       
         #endregion
 
         #region methods
 
         private void IsRememberMet()
         {
+           
             if(IsRemember)
             {
                 IsRemember = false;
@@ -159,13 +161,22 @@ namespace PdfSignature.ViewModels
                 {
 
                     AppSettings.AuthenticationUser = (ResponseAuthentication)response.Object;
-                    await ApiServiceFireBase.GetUser();
-                    IsLook = false;
-                    await _displayAlert.ShowAsync(response.Message);
-                    NavigationPage PdfSignaturePage = new NavigationPage(new HomeList());
-                    App.GlobalNavigation = PdfSignaturePage.Navigation;
-                    App.Current.MainPage = PdfSignaturePage;
-                    return;
+                   var resp = await ApiServiceFireBase.GetUser();
+                    if(resp.Success)
+                    {
+                        IsLook = false;
+                        _displayAlert.Toast(response.Message);
+                        NavigationPage PdfSignaturePage = new NavigationPage(new HomeList());
+                        App.GlobalNavigation = PdfSignaturePage.Navigation;
+                        App.Current.MainPage = PdfSignaturePage;
+                        return;
+                    }
+                    else
+                    {
+                        ApiServicesAutentication.Logout();
+                        await _displayAlert.ShowAsync($"{resp.Message}");
+                    }
+                   
                 }
                 else
                 {
@@ -181,34 +192,84 @@ namespace PdfSignature.ViewModels
                     await _displayAlert.ShowAsync(response.Message);
                     return;
                 }
+
+                
             }
         }
 
-        /// <summary>
-        /// Invoked when the Sign Up button is clicked.
-        /// </summary>
-        /// <param name="obj">The Object</param>
-        private void SignUpClicked(object obj)
-        {
-            // Do Something
-        }
-
-        /// <summary>
-        /// Invoked when the Forgot Password button is clicked.
-        /// </summary>
-        /// <param name="obj">The Object</param>
+       
         private async void ForgotPasswordClicked(object obj)
         {
             await App.GlobalNavigation.PushAsync(new ForgotPasswordPage(), true);
+        }
+
+        private async void LoginHuella(object obj)
+        {
+            IsLook = true;
+            response aut;
+            if (AppSettings.AuthenticationUser.Registered && IsHuella)
+            {
+                int intento = 0;
+                do
+                {
+                    intento++;
+                    aut = await IsAutentic("Se requiere su autenticación con huella");
+                    if (aut.Success)
+                    {
+                        IsLook = false;
+                        NavigationPage PdfSignaturePage = new NavigationPage(new HomeList());
+                        App.GlobalNavigation = PdfSignaturePage.Navigation;
+                        App.Current.MainPage = PdfSignaturePage;
+
+                    }
+
+                } while (intento == 5);
+                if(!aut.Success)
+                {
+                    IsLook = false;
+                    _displayAlert.Toast("Ocurrio un error al intentar iniciar la app con la huella, ingrese con su contraseña.");
+                    IsHuella = false;
+                }
+
+
+
+            }
+            else
+            {
+                IsLook = false;
+                IsHuella = false;
+                await  _displayAlert.ShowAsync("Ocurrio un error al intentar iniciar la app con la huella, ingrese con contraseña.");
+            }
         }
 
         /// <summary>
         /// Invoked when social media login button is clicked.
         /// </summary>
         /// <param name="obj">The Object</param>
-        private void SocialLoggedIn(object obj)
+        private async Task<response> IsAutentic(string message)
         {
-            // Do something
+            AuthenticationRequestConfiguration authRequestConfig = new AuthenticationRequestConfiguration("PdfSignature", message);
+            var auth = await CrossFingerprint.Current.AuthenticateAsync(authRequestConfig);
+            if (auth.Authenticated)
+            {
+                return new response
+                {
+                    Status = 200,
+                    Success = auth.Authenticated,
+                    Object = auth.Status
+                };
+            }
+            else
+            {
+                return new response
+                {
+                    Status = 400,
+                    Success = auth.Authenticated,
+                    Object = auth.Status,
+                    Message = auth.ErrorMessage
+                };
+            }
+
         }
 
         #endregion

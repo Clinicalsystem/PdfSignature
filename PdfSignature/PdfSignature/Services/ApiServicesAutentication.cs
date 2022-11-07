@@ -103,6 +103,50 @@ namespace PdfSignature.Services
 
         }
 
+        public static async Task<response> ChangePassword(ChangePassword changePassword)
+        {
+
+            try
+            {
+
+                HttpClient client = new HttpClient();
+                string body = JsonConvert.SerializeObject(changePassword);
+                StringContent content = new StringContent(body, Encoding.UTF8, "application/json");
+
+
+                HttpResponseMessage response = await client.PostAsync(AppSettings.ApiAuthentication(UriApi.ChangePasswor), content);
+                if (response.StatusCode.Equals(HttpStatusCode.OK))
+                {
+                    string jsonResult = await response.Content.ReadAsStringAsync();
+                    ResponseChangePassword oResponse = JsonConvert.DeserializeObject<ResponseChangePassword>(jsonResult);
+
+
+                    return new response { Success = true, Message = "Se ha enviado un correo para restablecer su contraseña, revise su bandeja o spam.", Object = oResponse, Status = 200 };
+                }
+                else
+                {
+                    string jsonResult = await response.Content.ReadAsStringAsync();
+                    var oResponse = JsonConvert.DeserializeObject<RootError>(jsonResult);
+                    string Message = string.Empty;
+                    if (oResponse.error.message.Contains("INVALID_ID_TOKEN"))
+                    {
+                        Message = "El usuario presento problemas para actualizar su password (INVALID_ID_TOKEN).";
+                    }
+                    else
+                    {
+                        Message = oResponse.error.message;
+                    }
+                    return new response { Success = false, Message = Message, Object = oResponse, Status = 400 };
+                }
+            }
+            catch (Exception ex)
+            {
+                return new response { Success = false, Message = ex.Message, Status = 401 };
+
+            }
+
+        }
+
         public static void Logout()
         {
 

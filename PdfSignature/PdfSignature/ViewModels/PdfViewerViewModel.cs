@@ -1204,15 +1204,7 @@ namespace PdfSignature.ViewModels
                 StampAnnotationSelectedCommand = new Command<object>(OnStampSelectedCommand, CanExecute);
                 StampAnnotationDeselectedCommand = new Command<object>(OnStampDeselectedCommand, CanExecute);
                 #endregion
-                if (AppSettings.DocumentSelect != null)
-                {
-                    byte[] bytes = Convert.FromBase64String(AppSettings.DocumentSelect.PdfBase64);
-                    PdfLoadedDocument loadedDocument = new PdfLoadedDocument(bytes);
-                    MemoryStream stream = new MemoryStream();
-                    loadedDocument.Save(stream);
-                    pdfDocumentStream = stream;
-
-                }
+               
             }
             catch (Exception ex)
             {
@@ -2297,7 +2289,8 @@ namespace PdfSignature.ViewModels
                     {
                         FileName = file.FileName,
                         Date = DateTime.Now,
-                        Path = file.FullPath
+                        Path = file.FullPath,
+                        LocalId = AppSettings.AuthenticationUser.LocalId,
 
                     };
                     stream = await file.OpenReadAsync();

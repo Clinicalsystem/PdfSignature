@@ -1,6 +1,10 @@
-﻿using PdfSignature.Services;
+﻿using PdfSignature.Modelos;
+using PdfSignature.Services;
 using PdfSignature.Validators;
 using PdfSignature.Validators.Rules;
+using Plugin.Fingerprint.Abstractions;
+using Plugin.Fingerprint;
+using System.Threading.Tasks;
 using Xamarin.Essentials;
 using Xamarin.Forms;
 using Xamarin.Forms.Internals;
@@ -18,7 +22,8 @@ namespace PdfSignature.ViewModels
         private ValidatableObject<string> email;
 
         private bool _isRemember;
-        
+        private bool _isHuella;
+
         #endregion
 
         #region Constructor
@@ -57,7 +62,24 @@ namespace PdfSignature.ViewModels
                 
             }
         }
+        public bool IsHuella 
+        {
+            get
+            {
+                return _isHuella;
+            }
 
+            set
+            {
+                if (_isHuella == value)
+                {
+                    return;
+                }
+
+                this.SetProperty(ref _isHuella, value);
+
+            }
+        }
         public bool IsRemember
         {
             get
@@ -98,6 +120,11 @@ namespace PdfSignature.ViewModels
         {
             this.Email = new ValidatableObject<string>();
             this._isRemember = Preferences.Get("IsRemember", false);
+            IsHuella = AppSettings.IsHuella;
+            if(IsHuella)
+            {
+                this.Email.Value = AppSettings.UserData.Email;
+            }
         }
 
         /// <summary>
@@ -108,6 +135,8 @@ namespace PdfSignature.ViewModels
             this.Email.Validations.Add(new IsNotNullOrEmptyRule<string> { ValidationMessage = "Email es Requerido" });
             this.Email.Validations.Add(new IsValidEmailRule<string> { ValidationMessage = "Email Invalido" });
         }
+
+        
 
         #endregion
     }

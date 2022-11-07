@@ -83,6 +83,8 @@
 
                                                 <!--  Entry to get password from user  -->
                                                 <border:SfBorder
+                                                    
+                                                    IsVisible="{Binding IsHuella, Converter={StaticResource InverseBoolConverter}}"
                                                     BackgroundColor="{DynamicResource Gray-Bg}"
                                                     BorderColor="{Binding Source={x:Reference PasswordEntry}, Path=IsFocused, Converter={StaticResource ColorConverter}, ConverterParameter=3}"
                                                     Style="{StaticResource LoginFormBorderlessEntryBorderStyle}">
@@ -114,53 +116,64 @@
                                                 <Label
                                                     x:Name="PasswordValidationLabel"
                                                     Margin="15,-3,0,0"
-                                                    IsVisible="{Binding Password.IsValid, Converter={StaticResource InverseBoolConverter}}"
                                                     Style="{StaticResource SimpleLabelStyle}"
                                                     Text="{Binding Password.Errors, Converter={StaticResource FirstValidationErrorConverter}}"
                                                     TextColor="{DynamicResource Red}"
                                                     VerticalOptions="FillAndExpand" />
 
-                                               
-                                                
-                                                
-                                                <StackLayout Orientation="Horizontal">
-                                                    <buttons:SfCheckBox
-                                                        x:Name="CheckIsRemenber"
-                                                        IsChecked="{Binding IsRemember}"
-                                                        Style="{StaticResource CheckBoxStyle}"
-                                                        FontSize="12"
-                                                        Margin="0,14"
-                                                        TickColor="{StaticResource Gray-Black}"
-                                                        CheckedColor="{StaticResource PrimaryColor}"/>
+
                                                     
-                                                    <buttons:SfButton
-                                                    x:Name="labelIsRemember"
-                                                    Margin="-4,16"
-                                                    Command="{Binding IsRememberCommand}"
-                                                    FontSize="12"
-                                                    HorizontalOptions="StartAndExpand"
-                                                    Style="{StaticResource TransparentButtonStyle}"
-                                                    Text="¿Mantener inicio de sesión?"
-                                                    TextColor="{DynamicResource Gray-800}"/>
+
+                                                    <StackLayout 
+                                                        Orientation="{OnIdiom Phone='Vertical', Default='Horizontal'}"
+                                                        IsVisible="{Binding IsHuella, Converter={StaticResource InverseBoolConverter}}">
+
+                                                        <StackLayout Orientation="Horizontal">
+                                                            <buttons:SfCheckBox
+                                                            x:Name="CheckIsRemenber"
+                                                            IsChecked="{Binding IsRemember}"
+                                                            Style="{StaticResource CheckBoxStyle}"
+                                                            FontSize="12"
+                                                            TickColor="{StaticResource Gray-Black}"
+                                                            CheckedColor="{StaticResource PrimaryColor}"/>
+
+                                                            <buttons:SfButton
+                                                            x:Name="labelIsRemember"
+                                                            Command="{Binding IsRememberCommand}"
+                                                            FontSize="12"
+                                                             HorizontalOptions="StartAndExpand"
+                                                            Style="{StaticResource TransparentButtonStyle}"
+                                                            Text="¿Mantener la sesión iniciada?"
+                                                            TextColor="{DynamicResource Gray-800}"/>
+                                                        </StackLayout>
 
                                                         <!--  Forgot password link  -->
                                                         <buttons:SfButton
-                                                    x:Name="ForgotPasswordLabel"
-                                                    Margin="0,16"
-                                                    Command="{Binding ForgotPasswordCommand}"
-                                                    FontSize="12"
-                                                    Style="{StaticResource TransparentButtonStyle}"
-                                                    Text="¿Olvido su Password?"
-                                                    TextColor="{DynamicResource Gray-800}"/>
+                                                            x:Name="ForgotPasswordLabel"
+                                                            Command="{Binding ForgotPasswordCommand}"
+                                                            Margin="38,0,0,0"
+                                                            FontSize="12"
+                                                            Style="{StaticResource TransparentButtonStyle}"
+                                                            Text="¿Olvido su Password?"
+                                                            TextColor="{DynamicResource Gray-800}"/>
 
                                                     </StackLayout>
+                                                    <!--  Huella button  -->
+                                                    <buttons:SfButton
+                                                    ImageSource="ic_huella.png" ShowIcon="True" ImageWidth="100" ImageAlignment="Top"
+                                                    IsVisible="{Binding IsHuella}"
+                                                    Command="{Binding LoginHuellaCommand}"
+                                                        HorizontalOptions="Center"
+                                                        VerticalOptions="Center"
+                                                        BackgroundColor="Transparent"/>
 
-                                                <!--  Login button  -->
+                                                    <!--  Login button  -->
                                                 <buttons:SfButton
                                                     x:Name="Login"
                                                     Margin="0,8,0,16"
                                                     Command="{Binding LoginCommand}"
                                                     IsTabStop="{Binding IsLook, Converter={StaticResource InverseBoolConverter}}"
+                                                    IsVisible="{Binding IsHuella, Converter={StaticResource InverseBoolConverter}}"
                                                     Style="{StaticResource GradientButtonStyle}"
                                                     Text="LOGIN"
                                                     WidthRequest="245" />

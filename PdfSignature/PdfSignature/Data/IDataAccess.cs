@@ -1,4 +1,5 @@
 ﻿using PdfSignature.Modelos;
+using PdfSignature.Modelos.Autentication;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -21,6 +22,8 @@ namespace PdfSignature.Data
         Task<response> GetSignatureList();
 
         Task<response> Delete<T>(T model);
+
+        Task<response> DeleteDataUSer(string localId);
 
     }
 }

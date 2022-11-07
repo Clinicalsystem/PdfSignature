@@ -4,11 +4,18 @@ using PdfSignature.Services;
 using PdfSignature.Views;
 using PdfSignature.Views.Home;
 using Syncfusion.Licensing;
+using System.Drawing;
+using System;
 using Xamarin.Essentials;
 using Xamarin.Forms;
 using Xamarin.Forms.PlatformConfiguration;
 using Xamarin.Forms.PlatformConfiguration.WindowsSpecific;
 using Application = Xamarin.Forms.Application;
+using PdfSignature.Modelos.Autentication;
+using Plugin.Fingerprint.Abstractions;
+using Plugin.Fingerprint;
+using System.Threading.Tasks;
+using System.Runtime.InteropServices;
 
 [assembly: ExportFont("Montserrat-Bold.ttf", Alias = "Montserrat-Bold")]
 [assembly: ExportFont("Montserrat-Medium.ttf", Alias = "Montserrat-Medium")]
@@ -40,19 +47,19 @@ namespace PdfSignature
             #endregion
             InitializeComponent();
 
-            Current.On<Windows>().SetImageDirectory("Assets");
+            //Current.On<Windows>().SetImageDirectory("Assets");
 
             if (Preferences.Get("IsRemember", false))
             {
-
-                if (AppSettings.AuthenticationUser.Registered)
+                var isHuella = Preferences.Get("IsHuella", false);
+                if (AppSettings.AuthenticationUser.Registered && !isHuella)
                 {
                     PdfSignaturePage = new NavigationPage(new HomeList());
                     GlobalNavigation = PdfSignaturePage.Navigation;
                     MainPage = PdfSignaturePage;
                     return;
                 }
-
+                
 
             }
 
@@ -60,6 +67,31 @@ namespace PdfSignature
             GlobalNavigation = loginPage.Navigation;
             MainPage = loginPage;
 
+        }
+        private async Task<response> IsAutentic(string message)
+        {
+            AuthenticationRequestConfiguration authRequestConfig = new AuthenticationRequestConfiguration("PdfSignature", message);
+            var auth = await CrossFingerprint.Current.AuthenticateAsync(authRequestConfig);
+            if (auth.Authenticated)
+            {
+                return new response
+                {
+                    Status = 200,
+                    Success = auth.Authenticated,
+                    Object = auth.Status
+                };
+            }
+            else
+            {
+                return new response
+                {
+                    Status = 400,
+                    Success = auth.Authenticated,
+                    Object = auth.Status,
+                    Message = auth.ErrorMessage
+                };
+            }
+            
         }
 
         protected override async void OnStart()

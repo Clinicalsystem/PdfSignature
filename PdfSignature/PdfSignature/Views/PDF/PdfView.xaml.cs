@@ -2,18 +2,15 @@
 using PdfSignature.Implementation;
 using PdfSignature.Services;
 using PdfSignature.ViewModels;
-using Syncfusion.Pdf;
 using Syncfusion.SfPdfViewer.XForms;
 using System;
 using System.IO;
-using System.Runtime.CompilerServices;
+using System.Threading;
 using System.Threading.Tasks;
 using Xamarin.Essentials;
 using Xamarin.Forms;
 using Xamarin.Forms.Internals;
-using Xamarin.Forms.Shapes;
 using Xamarin.Forms.Xaml;
-using static Xamarin.Forms.Internals.GIFBitmap;
 using Rect = Xamarin.Forms.Rect;
 
 namespace PdfSignature.Views.PDF
@@ -35,13 +32,23 @@ namespace PdfSignature.Views.PDF
         #endregion
         public PdfView()
         {
-            _messageService = new MessageService(); 
+            _messageService = new MessageService();
             PinchGesture.PinchUpdated += OnPinchUpdated;
-            
+
             InitializeComponent();
             pdfViewer.Toolbar.SetToolbarItemVisibility("save", false);
             pdfViewer.FormSettings.FlattenSignatureFields = true;
+            // pdfViewer.PasswordErrorOccurred += PdfViewer_PasswordErrorOccurred;
         }
+
+        private void PdfViewer_PasswordErrorOccurred(object sender, PasswordErrorOccurredEventArgs e)
+        {
+            CancellationTokenSource tokenSource = new CancellationTokenSource();
+            var bytes = Convert.FromBase64String(AppSettings.DocumentSelect.PdfBase64);
+            var open = pdfViewer.LoadDocumentAsync(new MemoryStream(bytes), AppSettings.DocumentSelect.PasswordPdf, tokenSource);
+
+        }
+
         protected override void OnAppearing()
         {
             base.OnAppearing();
@@ -81,15 +88,13 @@ namespace PdfSignature.Views.PDF
             }
         }
 
-           
-
         private async void pdfViewer_DocumentSaveInitiated(object sender, Syncfusion.SfPdfViewer.XForms.DocumentSaveInitiatedEventArgs args)
         {
             string _Path = string.Empty;
             Stream stream = args.SaveStream;
-            
+
             var document = AppSettings.DocumentSelect;
-           // string _Path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "PdfSignature");
+            // string _Path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "PdfSignature");
             string name = $"{document.FileName.Remove(document.FileName.Length - 4)}_Firmado.pdf";
             if (Device.RuntimePlatform == Device.Android)
             {
@@ -99,7 +104,7 @@ namespace PdfSignature.Views.PDF
                     case PermissionStatus.Granted:
                         _Path = await DependencyService.Get<IFileManager>().Save(stream as MemoryStream, name);
                         break;
-                   
+
                 }
             }
             else if (Device.RuntimePlatform == Device.iOS)
@@ -109,7 +114,7 @@ namespace PdfSignature.Views.PDF
             else
             {
                 //byte[] data = ReadFully(stream.BaseStream);
-             _Path =  await DependencyService.Get<IFileManager>().Save(stream as MemoryStream, name);
+                _Path = await DependencyService.Get<IFileManager>().Save(stream as MemoryStream, name);
             }
             AppSettings.PdfSavePath = _Path;
             await _messageService.ShowAsync($"Se guardo el archivo correctamente en la ruta: {_Path}");
@@ -146,25 +151,24 @@ namespace PdfSignature.Views.PDF
             return status;
         }
 
-
-         private async void OnTouchEffectAction(object sender, TouchActionEventArgs args)
-            {
-                // Convert Xamarin.Forms point to pixels
-                Point pt = args.Location;
+        private async void OnTouchEffectAction(object sender, TouchActionEventArgs args)
+        {
+            // Convert Xamarin.Forms point to pixels
+            Point pt = args.Location;
 
             string direc = string.Empty;
 
-                switch (args.Type)
-                {
-                    case TouchActionType.Pressed:
-                        // Find transformed bitmap rectangle
-                        rect = new Rect(pt.X, pt.Y, 10, 10);
-                        originalPoint = new Point(pt.X, pt.Y);
-                        touchId = args.Id;
-                   // model.OnTouchEffectCommand.Execute(rect);
+            switch (args.Type)
+            {
+                case TouchActionType.Pressed:
+                    // Find transformed bitmap rectangle
+                    rect = new Rect(pt.X, pt.Y, 10, 10);
+                    originalPoint = new Point(pt.X, pt.Y);
+                    touchId = args.Id;
+                    // model.OnTouchEffectCommand.Execute(rect);
                     break;
 
-                    case TouchActionType.Moved:
+                case TouchActionType.Moved:
                     if (touchId == args.Id && args.IsInContact)
                     {
                         // Adjust the matrix for the new position
@@ -202,14 +206,14 @@ namespace PdfSignature.Views.PDF
                             rect.Width = (pt.X - originalPoint.X);
                             rect.Height = (pt.Y - originalPoint.Y);
                             model.OnTouchEffectCommand.Execute(rect);
-                            
+
                         }
                     }
-                        break;
+                    break;
                 case TouchActionType.Entered:
                     break;
                 case TouchActionType.Released:
-                    if(IsPointValid(originalPoint) && IsPointValid(pt))
+                    if (IsPointValid(originalPoint) && IsPointValid(pt))
                     {
                         model.OnTouchEffectCommand.Execute(rect);
                         model.RectSignature = rect;
@@ -217,33 +221,31 @@ namespace PdfSignature.Views.PDF
                     }
                     else
                     {
-                       await _messageService.ShowAsync("No se puede dibujar la firma fuera del documento, por favor seleccione el área dentro del documento.");
+                        await _messageService.ShowAsync("No se puede dibujar la firma fuera del documento, por favor seleccione el área dentro del documento.");
                     }
 
                     break;
 
                 default:
-                        touchId = -1;
-                        break;
-                }
-          }
+                    touchId = -1;
+                    break;
+            }
+        }
         private bool IsPointValid(Point point)
         {
 
             Point pagePoint = pdfViewer.ConvertClientPointToPagePoint(point, pdfViewer.PageNumber);
-            if(pagePoint.X < 0 || pagePoint.Y < 0)
+            if (pagePoint.X < 0 || pagePoint.Y < 0)
             {
                 return false;
             }
             return true;
         }
 
-       
-
         private void SfComboBox_SelectionChanged(object sender, Syncfusion.XForms.ComboBox.SelectionChangedEventArgs e)
         {
             Syncfusion.XForms.ComboBox.SfComboBox sfCombo = sender as Syncfusion.XForms.ComboBox.SfComboBox;
-            switch(sfCombo.SelectedIndex)
+            switch (sfCombo.SelectedIndex)
             {
                 case 0:
                     model.CertSelect.Setting.StyleSignature = StyleText.ToUppper;
@@ -254,7 +256,7 @@ namespace PdfSignature.Views.PDF
                 case 2:
                     model.CertSelect.Setting.StyleSignature = StyleText.ToTitleCase;
                     break;
-                   
+
                 default:
                     break;
 
@@ -263,7 +265,6 @@ namespace PdfSignature.Views.PDF
 
         }
 
-      
 
         private void Closed_Clicked(object sender, EventArgs e)
         {

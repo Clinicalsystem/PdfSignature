@@ -1,4 +1,5 @@
 ﻿using PdfSignature.Modelos;
+using PdfSignature.Modelos.Autentication;
 using PdfSignature.Modelos.Files;
 using SQLite;
 using SQLiteNetExtensions.Extensions;
@@ -55,7 +56,39 @@ namespace PdfSignature.Data
 
             return Task.FromResult(_response);
         }
-       
+        public Task<response> Delete<T>(List<T> models)
+        {
+            response _response = new response();
+            int count = 0;
+            foreach(var itm in models)
+            {
+                connection.Delete(itm);
+                count++;
+            }
+            if (count > 0)
+            {
+                _response = new response()
+                {
+                    Status = 200,
+                    Success = true,
+                    Message = "El items fue eliminado.",
+                    Object = count
+                };
+            }
+            else
+            {
+                _response = new response()
+                {
+                    Status = 400,
+                    Success = false,
+                    Message = "No se puede procesar el requerimiento.",
+                    Object = count
+                };
+            }
+
+            return Task.FromResult(_response);
+        }
+
         public Task<response> GetDocument(int id)
         {
             response _response = new response();
@@ -113,7 +146,7 @@ namespace PdfSignature.Data
         public Task<response> GetDocumentList()
         {
             response _response = new response();
-            var item = connection.Table<DocumentFile>().ToList(); ;
+            var item = connection.GetAllWithChildren<DocumentFile>().Where(s => s.LocalId == AppSettings.AuthenticationUser.LocalId).ToList();
             if (item != null)
             {
                 _response = new response()
@@ -236,6 +269,55 @@ namespace PdfSignature.Data
             connection.Dispose();
         }
 
+        public async Task<response> DeleteDataUSer(string localId)
+        {
+            var itemSig = connection.GetAllWithChildren<Signature>().Where(s => s.LoaclId == localId).ToList();
+            var sig = await Delete(itemSig);
 
+            var itemDoc = connection.GetAllWithChildren<DocumentFile>().Where(s => s.LocalId == AppSettings.AuthenticationUser.LocalId).ToList();
+            var doc = await Delete(itemDoc);
+
+            if(doc.Success && sig.Success)
+            {
+                return new response
+                {
+                    Success = true,
+                    Status = 200,
+                    Message = "Todos los datos del usuario eliminados",
+                    Object = null
+                };
+            }
+            else if(doc.Success && !sig.Success)
+            {
+                return new response
+                {
+                    Success = true,
+                    Status = 201,
+                    Message = $"Se eliminaros los documentos frecuentes pero no se pudo eliminar los certificados asociados a este usuario. Error:{sig.Status} /n {sig.Message}",
+                    Object = null
+                };
+            }
+            else if (!doc.Success && sig.Success)
+            {
+                return new response
+                {
+                    Success = true,
+                    Status = 202,
+                    Message = $"Se eliminaros las firmas pero no se pudo eliminar los documentos frecuentes asociados a este usuario. Error:{doc.Status} \n {doc.Message}",
+                    Object = null
+                };
+            }
+            else
+            {
+                return new response
+                {
+                    Success = false,
+                    Status = 400,
+                    Message = $"No se pudo eliminar la información asociada a este usuario. Error: DF{doc.Status}, FE{sig.Status} \n DF: {doc.Message} \n FE: {sig.Message}",
+                    Object = null
+                };
+            }
+
+        }
     }
 }

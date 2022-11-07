@@ -57,7 +57,7 @@ namespace PdfSignature.iOS
             SfImageEditorRenderer.Init();
             SfListViewRenderer.Init();
             Xamarin.Forms.DependencyService.Register<IToast, ToastMessage>();
-           // Xamarin.Forms.DependencyService.Register<IFileManager, FileManager>();
+            // Xamarin.Forms.DependencyService.Register<IFileManager, FileManager>();
             LoadApplication(new App());
 
             return base.FinishedLaunching(app, options);

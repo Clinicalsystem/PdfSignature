@@ -1,0 +1,65 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             Title="Dispositivos Vinculados"
+             xmlns:fonts="clr-namespace:PdfSignature.Resources.Fonts" 
+             xmlns:converter="clr-namespace:PdfSignature.Converters" 
+             xmlns:viewModel="clr-namespace:PdfSignature.ViewModels"
+             x:Class="PdfSignature.Views.Perfil.LinkedDevices">
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <converter:IndexToColorConverter x:Key="IndexToColorConverter"/>
+            <converter:InverseBoolConverter x:Key="InverseBoolConverter" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
+    <ContentPage.BindingContext>
+        <viewModel:LinkedDeviceViewMoodel />
+    </ContentPage.BindingContext>
+    <ContentPage.Content>
+        
+        <StackLayout Padding="20">
+            
+            <CollectionView VerticalOptions="CenterAndExpand" x:Name="Devices" ItemsSource="{Binding PdfDevices}" >
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+
+                        <Frame 
+                            Padding="10"
+                            
+                            BackgroundColor="{DynamicResource PrimaryGradient}"
+                            CornerRadius="5"
+                            IsClippedToBounds="False">
+                            <StackLayout Orientation="Horizontal">
+                                <StackLayout>
+                                    <StackLayout >
+                                        <Label Text="{Binding OS}" Style="{DynamicResource TitleStyle}" HorizontalOptions="Start"/>
+                                        <StackLayout Orientation="Horizontal">
+                                        <Label Text="Versión:" Style="{DynamicResource TitleLabelStyle}" />
+                                        <Label Text="{Binding Version}" Style="{DynamicResource TitleLabelStyle}"/>
+                                        </StackLayout>
+                                    </StackLayout>
+                                    <StackLayout Orientation="Horizontal">
+                                        <Label Text="{Binding DeviceName}" Style="{DynamicResource TitleLabelStyle}"/>
+                                        <Label Text="Modelo:" Style="{DynamicResource TitleLabelStyle}"/>
+                                        <Label Text="{Binding Model}" Style="{DynamicResource TitleLabelStyle}"/>
+                                    </StackLayout>
+                                </StackLayout>
+                                <Button FontFamily="Icon" FontSize="Medium" Text="{x:Static fonts:IconFont.Trash}"
+                                        x:Name="Delete" 
+                                        HorizontalOptions="EndAndExpand"
+                                        Command="{Binding Path=BindingContext.DeleteCommand, Source={x:Reference Devices}}" 
+                                        CommandParameter="{x:Reference Delete}"
+                                        BackgroundColor="Transparent" />
+                            </StackLayout>
+
+                        </Frame>
+                    </DataTemplate>
+                        
+                </CollectionView.ItemTemplate>
+                
+            </CollectionView>
+            
+            
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>

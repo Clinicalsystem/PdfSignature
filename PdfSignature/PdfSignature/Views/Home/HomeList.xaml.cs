@@ -13,7 +13,7 @@ namespace PdfSignature.Views.Home
         public HomeList()
         {
             InitializeComponent();
-            Application.Current.On<Windows>().SetImageDirectory("Assets");
+            //Application.Current.On<Windows>().SetImageDirectory("Assets");
         }
         protected override async void OnAppearing()
         {

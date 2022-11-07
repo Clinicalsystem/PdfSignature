@@ -1,10 +1,7 @@
 ﻿using Newtonsoft.Json;
 using PdfSignature.Modelos.Autentication;
 using PdfSignature.Modelos.Files;
-using PdfSignature.Views;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using Xamarin.Essentials;
 
 namespace PdfSignature
@@ -19,29 +16,30 @@ namespace PdfSignature
         public static DocumentFile DocumentSelect;
         private static ResponseAuthentication _AuthenticationUser;
         private static string _path = string.Empty;
-        private static RegisterUser _dataUser;
+        private static UserData _dataUser;
+        private static bool _isHuella;
         public static readonly bool IsRemember = Preferences.Get("IsRemember", false);
         #endregion
-        public static ResponseAuthentication AuthenticationUser 
+        public static ResponseAuthentication AuthenticationUser
         {
-            get 
+            get
             {
-               
-                    if(Preferences.ContainsKey("UserAutentication"))
-                    {
-                        var user = Preferences.Get("UserAutentication", string.Empty);
-                        _AuthenticationUser = JsonConvert.DeserializeObject<ResponseAuthentication>(user);
-                    }
-                   
+
+                if (Preferences.ContainsKey("UserAutentication"))
+                {
+                    var user = Preferences.Get("UserAutentication", string.Empty);
+                    _AuthenticationUser = JsonConvert.DeserializeObject<ResponseAuthentication>(user);
+                }
+
                 return _AuthenticationUser;
             }
-            set 
-            { 
+            set
+            {
                 _AuthenticationUser = value;
                 Preferences.Set("UserAutentication", JsonConvert.SerializeObject(value));
             }
         }
-        public static RegisterUser UserData
+        public static UserData UserData
         {
             get
             {
@@ -49,7 +47,7 @@ namespace PdfSignature
                 if (Preferences.ContainsKey("UserData"))
                 {
                     var user = Preferences.Get("UserData", string.Empty);
-                    _dataUser = JsonConvert.DeserializeObject<RegisterUser>(user);
+                    _dataUser = JsonConvert.DeserializeObject<UserData>(user);
                 }
 
                 return _dataUser;
@@ -61,11 +59,11 @@ namespace PdfSignature
             }
         }
 
-        public static string PdfSavePath 
-        { 
+        public static string PdfSavePath
+        {
             get
             {
-                if(!string.IsNullOrEmpty(_path))
+                if (!string.IsNullOrEmpty(_path))
                 {
                     return _path;
                 }
@@ -84,12 +82,31 @@ namespace PdfSignature
             }
         }
 
+        public static bool IsHuella 
+        {
+            get
+            {
+                
+                if (Preferences.ContainsKey("IsHuella"))
+                {
+                    _isHuella = Preferences.Get("IsHuella", false);
+                }
+
+                return _isHuella;
+            }
+            set
+            {
+                _isHuella = value;
+                Preferences.Set("IsHuella", _isHuella);
+            }
+        }
+
         public static string ApiAuthentication(UriApi uriApi)
         {
             switch (uriApi)
             {
                 case UriApi.Loging:
-                    return  $"{UrlGoogleApis}accounts:signInWithPassword?key={KeyAplication}";
+                    return $"{UrlGoogleApis}accounts:signInWithPassword?key={KeyAplication}";
 
                 case UriApi.Sign:
                     return $"{UrlGoogleApis}accounts:signUp?key={KeyAplication}";
@@ -99,6 +116,8 @@ namespace PdfSignature
 
                 case UriApi.PasswordReset:
                     return $"{UrlGoogleApis}accounts:sendOobCode?key={KeyAplication}";
+                case UriApi.ChangePasswor:
+                    return $"{UrlGoogleApis}accounts:update?key={KeyAplication}";
 
                 default:
                     return String.Empty;
@@ -114,7 +133,8 @@ namespace PdfSignature
         Token,
         Loging,
         Sign,
-        PasswordReset
+        PasswordReset,
+        ChangePasswor
     }
 
     public enum StyleText

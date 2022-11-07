@@ -20,7 +20,8 @@
                      Order="Secondary"
                      Priority="0"/>
         <ToolbarItem Text="Bloquear Archivo"
-                     Command="{Binding FileOpenCommand}" 
+                     Command="{Binding SecurityCommand}"
+                     CommandParameter="{x:Reference pdfViewer}" 
                      Order="Secondary"
                      Priority="1"/>
         <ToolbarItem Text="Firmar Digitalmente"
@@ -50,6 +51,8 @@
                         PageViewMode="PageByPage"
                         IsToolbarVisible = "True" 
                         AnnotationMode="None"
+                        IsPasswordViewEnabled="true"
+                        
                         InputFileStream="{Binding pdfDocumentStream}">
                         
 

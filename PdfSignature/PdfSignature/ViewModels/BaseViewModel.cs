@@ -140,7 +140,7 @@ namespace PdfSignature.ViewModels
         {
             if (Device.RuntimePlatform == Device.UWP && Application.Current.MainPage.Navigation.NavigationStack.Count > 1)
             {
-                await App.GlobalNavigation.PopToRootAsync();
+                await App.GlobalNavigation.PopAsync();
             }
             else if (Device.RuntimePlatform != Device.UWP && Application.Current.MainPage.Navigation.NavigationStack.Count > 0)
             {

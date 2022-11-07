@@ -1,14 +1,17 @@
 ﻿using Newtonsoft.Json;
 using PdfSignature.Modelos;
 using PdfSignature.Modelos.Autentication;
+using PdfSignature.Modelos.Devices;
 using PdfSignature.Modelos.Files;
 using Plugin.Connectivity;
+using Plugin.DeviceInfo;
 using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.ApplicationModel.UserDataAccounts;
 
 namespace PdfSignature.Services
 {
@@ -36,7 +39,15 @@ namespace PdfSignature.Services
             {
 
                 HttpClient client = new HttpClient();
-                string body = JsonConvert.SerializeObject(user);
+                UserData userData = new UserData()
+                {
+                    Email = user.Email,
+                    License = new License { DeviceNumber= 3, Expire = DateTime.Now.AddMonths(1), Name = "Free", SignatureNumber = 1},
+                    Password = user.Password,
+                    PasswordVerifie = user.PasswordVerifie,
+                    UserName = user.UserName,
+                };
+                string body = JsonConvert.SerializeObject(userData);
                 StringContent content = new StringContent(body, Encoding.UTF8, "application/json");
                 string ApiUrl = string.Concat(AppSettings.ApiFirebase, $"Users/{Response.LocalId}.json?auth={AppSettings.AuthenticationUser.IdToken}");
 
@@ -75,14 +86,41 @@ namespace PdfSignature.Services
 
                     if (jsonstring != "null")
                     {
-                        var user = JsonConvert.DeserializeObject<RegisterUser>(jsonstring);
+                        var user = JsonConvert.DeserializeObject<UserData>(jsonstring);
+                        user.LocalId = AppSettings.AuthenticationUser.LocalId;
+                        if (CrossDeviceInfo.IsSupported)
+                        {
+                            PdfDevice pdfDevice = new PdfDevice(CrossDeviceInfo.Current);
+                            if (!user.PdfDevices.Exists(d => d.Id == pdfDevice.Id))
+                            {
+                                if(user.PdfDevices.Count < user.License.DeviceNumber)
+                                {
+                                    user.PdfDevices.Add(pdfDevice);
+                                    await UpdateUser(user);
+
+                                }
+                                else
+                                {
+                                    return new response
+                                    {
+                                        Status = 300,
+                                        Success = false,
+                                        Object = JsonConvert.DeserializeObject<UserData>(jsonstring),
+                                        Message = "La cuenta no posee licencias disponibles para crear dispositivos nuevos, realice upgrade o desvincule dispositivos de su cuenta."
+
+                                    };
+                                }
+                                
+                            }
+
+                        }
                         AppSettings.UserData = user;
                     }
                     return new response
                     {
                         Status = 200,
                         Success = true,
-                        Object = JsonConvert.DeserializeObject<RegisterUser>(jsonstring),
+                        Object = JsonConvert.DeserializeObject<UserData>(jsonstring),
                         Message = "Datos obtenidos exitosamente"
 
                         
@@ -112,7 +150,7 @@ namespace PdfSignature.Services
 
         }
 
-        public static async Task<bool> UpdateUser(RegisterUser user)
+        public static async Task<bool> UpdateUser(UserData user)
         {
 
             try

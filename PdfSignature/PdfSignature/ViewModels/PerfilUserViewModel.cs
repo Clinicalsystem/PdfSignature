@@ -2,15 +2,23 @@
 using PdfSignature.Modelos;
 using PdfSignature.Modelos.Files;
 using PdfSignature.Services;
+using PdfSignature.Views.Perfil;
+using Plugin.Fingerprint;
+using Plugin.Fingerprint.Abstractions;
 using Syncfusion.Pdf.Security;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Drawing;
 using System.IO;
 using System.Text;
+using System.Threading.Tasks;
+using Windows.Security.Credentials;
+using Windows.Security.Credentials.UI;
 using Xamarin.Essentials;
 using Xamarin.Forms;
 using Xamarin.Forms.Internals;
+using Xamarin.Forms.PlatformConfiguration;
 
 namespace PdfSignature.ViewModels
 {
@@ -25,6 +33,9 @@ namespace PdfSignature.ViewModels
         private ObservableCollection<Signature> _listSignatures;
         private bool _isVisibleModal;
         private Command<object> _deleteSignature;
+        private bool _isHuella;
+        private bool _isOn;
+        private Command<object> devicePageCommand;
         #region Constructor
 
         /// <summary>
@@ -49,12 +60,33 @@ namespace PdfSignature.ViewModels
             }
             set
             {
-                
-
                 this.SetProperty(ref _isVisibleModal, value);
             }
         }
+        public bool IsHuella
+        {
+            get
+            {
+                return _isHuella;
+            }
+            set
+            {
+                this.SetProperty(ref _isHuella, value);
+            }
+        }
 
+        public bool IsOn
+        {
+            get
+            {
+                return AppSettings.IsHuella;
+            }
+            set
+            {
+                AppSettings.IsHuella = value;   
+                this.SetProperty(ref _isOn, value);
+            }
+        }
         public ObservableCollection<Signature> ListSignatures
         {
             get
@@ -81,9 +113,16 @@ namespace PdfSignature.ViewModels
             get { return _deleteSignature; }
             set { _deleteSignature = value; }
         }
-
+        public Command<object> DevicePageCommand
+        {
+            get
+            {
+                return devicePageCommand ?? (devicePageCommand = new Command<object>(DevicePage));
+            }
+        }
         public Command EditProfileCommand { get; set; }
 
+        public Command<object> ActiveHuellaCommand { get; set; }
         /// <summary>
         /// Gets or sets the command is executed when the change password option is clicked.
         /// </summary>
@@ -122,11 +161,11 @@ namespace PdfSignature.ViewModels
         #endregion
 
         #region Methods
+        private async void DevicePage(object obj)
+        {
+            await App.GlobalNavigation.PushAsync(new LinkedDevices(), true);
+        }
 
-        /// <summary>
-        /// Invoked when the edit profile option clicked
-        /// </summary>
-        /// <param name="obj">The object</param>
         private void EditProfileClicked(object obj)
         {
             // Do something
@@ -142,6 +181,7 @@ namespace PdfSignature.ViewModels
         }
         private async void InitializeProperties()
         {
+            #region command
             EditProfileCommand = new Command(this.EditProfileClicked);
             ChangePasswordCommand = new Command(this.ChangePasswordClicked);
             NewSignatureCommand = new Command(this.NewSignatureClicked);
@@ -151,6 +191,10 @@ namespace PdfSignature.ViewModels
             SignatureListCommand = new Command(this.SignatureListClicked);
             LogoutCommand = new Command(this.LogoutClicked);
             DeleteSignatureCommand = new Command<object>(this.DeleteSignatureClicked);
+            ActiveHuellaCommand = new Command<object>(this.ActiveHuella);
+            #endregion
+
+            #region List Cert
             var listCert = await ApiServiceFireBase.GetSignatureList();
             if (listCert.Success)
             {
@@ -171,8 +215,96 @@ namespace PdfSignature.ViewModels
                 }
 
             }
+            #endregion
+
+            CheckFingerprint();
+
 
         }
+
+        private async void CheckFingerprint()
+        {
+
+            if (Device.RuntimePlatform == Device.iOS || Device.RuntimePlatform == Device.Android)
+            {
+                IsHuella = await CrossFingerprint.Current.IsAvailableAsync(true);
+
+            }
+        }
+        private async void ActiveHuella(object obj)
+        {
+            try
+            {
+                string password = await _displayAlert.Info("Ingrese contraseña de acceso.");
+                if (!string.IsNullOrEmpty(password) && password == AppSettings.UserData.Password)
+                {
+
+                 #region activar o desactivar huella
+                  bool activar = (bool)obj;
+                  if (activar)
+                  {
+                    response aut = await IsAutentic("Se reuiere autenticar su huella para activar esta funcionabilidad.");
+
+                    if (aut.Success)
+                    {
+                        IsOn = activar;
+                           
+                        _displayAlert.Toast("Se activo de manera satisfactoria el acceso con huella");
+                    }
+                    else
+                    {
+                            IsOn = !IsOn;
+                            await _displayAlert.ShowAsync($"No se logro reconocer su huella, no esta configurada en su dispositivo.");
+                    }
+                  }
+                  else
+                  {
+                        IsOn = activar;
+                    _displayAlert.Toast("Se desactivo de manera satisfactoria el acceso con huella");
+                  }
+                    #endregion
+
+                }
+                else
+                {
+                    IsOn = !IsOn;
+                    _displayAlert.Toast("Contraseña invalida");
+                }
+
+            }
+            catch (Exception ex)
+            {
+
+                await _displayAlert.ShowAsync($"Se produjo una excepción Code: {ex.GetHashCode()} \n{ex.Message}"); 
+            }
+           
+
+        }
+        private async Task<response> IsAutentic(string message)
+        {
+            AuthenticationRequestConfiguration authRequestConfig = new AuthenticationRequestConfiguration("PdfSignature", message);
+            var auth = await CrossFingerprint.Current.AuthenticateAsync(authRequestConfig);
+            if (auth.Authenticated)
+            {
+                return new response
+                {
+                    Status = 200,
+                    Success = auth.Authenticated,
+                    Object = auth.Status
+                };
+            }
+            else
+            {
+                return new response
+                {
+                    Status = 400,
+                    Success = auth.Authenticated,
+                    Object = auth.Status,
+                    Message = auth.ErrorMessage
+                };
+            }
+        }
+
         /// <summary>
         /// Invoked when the account link clicked
         /// </summary>
@@ -279,7 +411,7 @@ namespace PdfSignature.ViewModels
             }
             catch (Exception Ex)
             {
-                await _displayAlert.ShowAsync($"Se produjo una exsepción Code: {Ex.GetHashCode()} \n{Ex.Message}");
+                await _displayAlert.ShowAsync($"Se produjo una excepción Code: {Ex.GetHashCode()} \n{Ex.Message}");
                 StatusMessage = string.Empty;
                 IsLook = false;
                 return;

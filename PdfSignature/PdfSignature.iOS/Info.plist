@@ -28,11 +28,13 @@
 	<string>com.Syncfusion.PdfSignature</string>
 	<key>CFBundleVersion</key>
 	<string>1.0</string>
-    <key>UILaunchStoryboardName</key>
-    <string>LaunchScreen</string>
-    <key>CFBundleName</key>
-    <string>PdfSignature</string>
-    <key>XSAppIconAssets</key>
-    <string>Assets.xcassets/AppIcon.appiconset</string>
+	<key>UILaunchStoryboardName</key>
+	<string>LaunchScreen</string>
+	<key>CFBundleName</key>
+	<string>PdfSignature</string>
+	<key>XSAppIconAssets</key>
+	<string>Assets.xcassets/AppIcon.appiconset</string>
+	<key>NSFaceIDUsageDescription</key>
+	<string>Se requiere para iniciar sesión en el pdfSignature.</string>
 </dict>
 </plist>

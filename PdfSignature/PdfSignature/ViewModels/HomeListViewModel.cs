@@ -1,21 +1,14 @@
-﻿using PdfSignature.Modelos.Autentication;
+﻿using PdfSignature.Data;
+using PdfSignature.Modelos.Files;
 using PdfSignature.Services;
-using PdfSignature.Validators.Rules;
-using PdfSignature.Validators;
 using PdfSignature.Views;
+using PdfSignature.Views.PDF;
 using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Collections.ObjectModel;
+using System.IO;
 using Xamarin.Essentials;
 using Xamarin.Forms;
-using PdfSignature.Modelos.Files;
-using System.Collections.ObjectModel;
-using System.Threading.Tasks;
-using PdfSignature.Views.PDF;
-using PdfSignature.Data;
-using Syncfusion.SfPdfViewer.XForms;
-using System.IO;
-using System.Net.Http;
 
 namespace PdfSignature.ViewModels
 {
@@ -37,6 +30,7 @@ namespace PdfSignature.ViewModels
 
         private Command<object> _addFavoritsCommand;
         private Command<object> _deleteFavoritsCommand;
+
         //private ObservableCollection<Signature> _listSignatures;
 
         #endregion
@@ -48,7 +42,7 @@ namespace PdfSignature.ViewModels
         {
             _displayAlert = DependencyService.Get<IMessageService>();
             _dataAccess = DependencyService.Get<IDataAccess>();
-            
+
             InitializeProperties();
 
             #region InitializeCommand
@@ -67,9 +61,6 @@ namespace PdfSignature.ViewModels
         #region property
 
 
-        /// <summary>
-        /// Gets or sets the property that is bound with an entry that gets the password from user in the login page.
-        /// </summary>
         public ObservableCollection<Document> DocumentsFavoritos
         {
             get
@@ -110,7 +101,7 @@ namespace PdfSignature.ViewModels
 
         #region Command
 
-        
+
         public Command<object> DeleteDocumentCommand
         {
             get { return _deleteDocumentCommand; }
@@ -138,6 +129,7 @@ namespace PdfSignature.ViewModels
         public Command PerfilCommand { get; set; }
 
 
+
         public Command NewDocumentCommand { get; set; }
 
 
@@ -155,16 +147,16 @@ namespace PdfSignature.ViewModels
                 if (document != null)
                 {
                     StatusMessage = "Esperando, respuesta del usuario.";
-                    string[] button = new string[] { "¿Borrar Archivo Reciente?."};
+                    string[] button = new string[] { "¿Borrar Archivo Reciente?." };
                     var resp = await _displayAlert.ShowAsync(button);
-                    switch(resp)
+                    switch (resp)
                     {
                         case "Cancelar":
                             break;
                         default:
                             StatusMessage = "Borrando archivo.";
                             var delete = await _dataAccess.Delete(document);
-                            if(delete.Success)
+                            if (delete.Success)
                             {
                                 DocumentsRecientes.Remove(document);
                                 NotifyPropertyChanged("DocumentsRecientes");
@@ -195,12 +187,12 @@ namespace PdfSignature.ViewModels
                     StatusMessage = "Esperando, respuesta del usuario.";
                     document.Date = DateTime.Now;
                     bool questoion = await _displayAlert.QuestionAsync("¿Estas seguro de agregar este documento a favoritos?");
-                    
-                    if(questoion)
+
+                    if (questoion)
                     {
                         StatusMessage = "Almacenado en la nube.";
                         var response = await ApiServiceFireBase.InsertDocument(document);
-                        if(response.Success)
+                        if (response.Success)
                         {
                             StatusMessage = "Agregando a Favoritos.";
                             await _dataAccess.Delete(document);
@@ -213,9 +205,9 @@ namespace PdfSignature.ViewModels
                         else
                         {
                             StatusMessage = "Esperando, respuesta del usuario.";
-                            await _displayAlert.ShowAsync($"{response.Message} Code: {response.Status} \n{response.Object}");    
+                            await _displayAlert.ShowAsync($"{response.Message} Code: {response.Status} \n{response.Object}");
                         }
-                        
+
                     }
                 }
             }
@@ -237,11 +229,11 @@ namespace PdfSignature.ViewModels
                 if (document != null)
                 {
                     StatusMessage = "Esperando, respuesta del usuario.";
-                   
+
                     var resp = await _displayAlert.QuestionAsync("¿Estas seguro de eliminar el archivo de Favoritos?");
                     switch (resp)
                     {
-                        
+
                         case false:
                             StatusMessage = "Operación cancelada por el usuario.";
                             break;
@@ -277,8 +269,6 @@ namespace PdfSignature.ViewModels
             await App.GlobalNavigation.PushAsync(new PerfilUser(), true);
         }
 
-        
-
         private async void InitializeProperties()
         {
             var listDoc = await _dataAccess.GetDocumentList();
@@ -291,9 +281,9 @@ namespace PdfSignature.ViewModels
                 DocumentsRecientes = new ObservableCollection<DocumentFile>();
                 await _displayAlert.ShowAsync(listDoc.Message);
             }
-            
+
             var listFavorits = await ApiServiceFireBase.GetDocumentList();
-            if(listFavorits.Success)
+            if (listFavorits.Success)
             {
                 DocumentsFavoritos = new ObservableCollection<Document>((List<Document>)listFavorits.Object);
             }
@@ -305,7 +295,7 @@ namespace PdfSignature.ViewModels
 
         }
 
-        
+
         public async void OpenDocument(object obj)
         {
             IsLook = true;
@@ -319,18 +309,20 @@ namespace PdfSignature.ViewModels
             }
             catch (Exception ex)
             {
-                if(ex.Message.Contains("PdfSignature.Modelos.Files.DocumentFile"))
+                if (ex.Message.Contains("PdfSignature.Modelos.Files.DocumentFile"))
                 {
 
                     StatusMessage = "Cargando Archivo.";
                     Document document = (Document)(obj as Syncfusion.ListView.XForms.ItemTappedEventArgs).ItemData;
-                    AppSettings.DocumentSelect = new DocumentFile 
+                    AppSettings.DocumentSelect = new DocumentFile
                     {
                         Date = document.Date,
                         FireBaseID = document.FireBaseID,
                         FileName = document.FileName,
                         PasswordPdf = document.PasswordPdf,
-                        PdfBase64 = document.PdfBase64
+                        PdfBase64 = document.PdfBase64,
+                        LocalId = AppSettings.AuthenticationUser.LocalId,
+
                     };
                     await App.GlobalNavigation.PushAsync(new PdfView(), true);
 
@@ -358,7 +350,7 @@ namespace PdfSignature.ViewModels
                     PickerTitle = "Seleccione Archivo Pdf",
                     FileTypes = FilePickerFileType.Pdf
                 };
-                
+
                 FileResult file = await FilePicker.PickAsync(pickOptions);
                 if (file != null)
                 {
@@ -368,7 +360,8 @@ namespace PdfSignature.ViewModels
                     {
                         FileName = file.FileName,
                         Date = DateTime.Now,
-                        Path = file.FullPath.Replace("\\", $"/" )
+                        Path = file.FullPath.Replace("\\", $"/"),
+                        LocalId = AppSettings.AuthenticationUser.LocalId,
 
                     };
                     stream = await file.OpenReadAsync();
@@ -380,20 +373,20 @@ namespace PdfSignature.ViewModels
                     return;
                 }
                 //archivos recientes
-               
+
                 var bytes = StreamToByteArray(stream);
                 document.PdfBase64 = Convert.ToBase64String(bytes);
                 var resp = await _dataAccess.Insert(document);
-                if(resp.Success)
+                if (resp.Success)
                 {
                     DocumentsRecientes.Add(document);
                 }
-                
-               
 
 
-                
-                
+
+
+
+
                 AppSettings.DocumentSelect = document;
                 await App.GlobalNavigation.PushAsync(new PdfView(), true);
 

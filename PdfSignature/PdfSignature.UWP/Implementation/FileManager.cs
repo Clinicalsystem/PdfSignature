@@ -3,6 +3,7 @@ using PdfSignature.UWP.Implementation;
 using System;
 using System.IO;
 using System.Threading.Tasks;
+using Windows.Security.Credentials;
 using Windows.Storage;
 using Windows.UI.Xaml.Controls;
 using Xamarin.Forms;
@@ -118,6 +119,8 @@ namespace PdfSignature.UWP.Implementation
 
             return folderPDF.Path;
         }
+
+       
     }
 
 }

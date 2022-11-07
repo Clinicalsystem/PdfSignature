@@ -10,7 +10,9 @@
     xmlns:fonts="clr-namespace:PdfSignature.Resources.Fonts"
     xmlns:viewModel="clr-namespace:PdfSignature.ViewModels" 
     xmlns:converter="clr-namespace:PdfSignature.Converters" xmlns:listView="clr-namespace:Syncfusion.ListView.XForms;assembly=Syncfusion.SfListView.XForms">
-
+    <ContentPage.BindingContext>
+        <viewModel:PerfilUserViewModel />
+    </ContentPage.BindingContext>
     <ContentPage.ControlTemplate>
         <ControlTemplate>
             <StackLayout Spacing="0">
@@ -18,9 +20,7 @@
                 <controls:TitleView Title="Perfil de Usuario">
                     <controls:TitleView.LeadingView>
                         <buttons:SfButton
-                            x:Name="backButton"
                             Command="{TemplateBinding BindingContext.BackButtonCommand}"
-                            CommandParameter="{x:Reference backButton}"
                             Style="{StaticResource IconButtonStyle}"
                             Text="{StaticResource Back}" />
                     </controls:TitleView.LeadingView>
@@ -35,9 +35,7 @@
             <converter:InverseBoolConverter x:Key="InverseBoolConverter" />
         </ResourceDictionary>
     </ContentPage.Resources>
-    <ContentPage.BindingContext>
-        <viewModel:PerfilUserViewModel />
-    </ContentPage.BindingContext>
+    
 
     <ContentPage.Content>
         <Grid>
@@ -185,22 +183,22 @@
                     VerticalOptions="Center"
                     VerticalTextAlignment="Center" />
 
-                <!--  Grid for Notifications label and switch  -->
+                        <!--  Grid for Segurity label and switch  -->
                 <Grid
                     BackgroundColor="{DynamicResource Gray-Bg}"
                     ColumnDefinitions="Auto, *, Auto"
                     ColumnSpacing="0"
                     RowSpacing="0"
-                    IsVisible="{Binding HuellaSeting}"
+                    IsVisible="{Binding IsHuella}"
                     >
 
-                    <!--  Notifications icon  -->
+                            <!--  Huella icon  -->
                     <Label
                         Grid.Column="0"
                         Margin="16,0,0,0"
                         Style="{StaticResource IconLabelStyle}"
                         Text="{StaticResource Settings}" />
-                    <!--  Notification label  -->
+                    <!--  Huella label  -->
                     <Label
                         Grid.Column="1"
                         Margin="16,12"
@@ -209,13 +207,15 @@
                         Style="{StaticResource TitleLabelStyle}"
                         Text="Activar Acceso con Huella"
                         VerticalOptions="Center" />
-                    <!--  Notifications switch  -->
+                    <!--  Huella switch  -->
                     <buttons:SfSwitch
                         Grid.Column="2"
                         Margin="8,0"
+                        StateChanged="SfSwitch_StateChanged"
                         AllowIndeterminateState="False"
+                        IsOn="{Binding IsOn}"
                         HeightRequest="28"
-                        VisualType="Cupertino">
+                        VisualType="Fluent">
                         <VisualStateManager.VisualStateGroups>
                             <VisualStateGroup x:Name="CommonStates">
                                 <VisualState x:Name="On">
@@ -289,7 +289,7 @@
                     BackgroundColor="{DynamicResource Gray-Bg}"
                     ColumnDefinitions="Auto, *, Auto"
                     ColumnSpacing="0"
-                    Command="{Binding LinkAccountCommand}"
+                    Command="{Binding DevicePageCommand}"
                     RowSpacing="0"
                     Tapped="False">
 
@@ -544,6 +544,8 @@
                     </StackLayout>
             </Grid>
            </ContentView>
+            
+            
         </Grid>
         
 
