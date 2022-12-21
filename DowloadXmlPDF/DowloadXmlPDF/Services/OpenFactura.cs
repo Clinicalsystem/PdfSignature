@@ -4,8 +4,6 @@ using Newtonsoft.Json;
 using System.Net;
 using System.Text;
 using System.Text.Json;
-using System.Text.Json.Serialization;
-using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace DowloadXmlPDF.Services
 {
@@ -109,7 +107,7 @@ namespace DowloadXmlPDF.Services
 
                 ResponseDteList responseDteList = JsonConvert.DeserializeObject<ResponseDteList>(jsonstring);
 
-              
+
 
                 //if (Object.last_page > Object.current_page)
                 //{
@@ -293,7 +291,7 @@ namespace DowloadXmlPDF.Services
 
                 ResponseDteList responseDteList = JsonConvert.DeserializeObject<ResponseDteList>(jsonstring);
 
-                
+
 
                 //if (Object.last_page > Object.current_page)
                 //{
