@@ -1,19 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace MauiApp1.Models
+﻿namespace DowloadXmlPDF.Models.OF
 {
     public class DataEcommerce
     {
-       
+
         public string rut { get; set; }
         public string razonSocial { get; set; }
+        public string email { get; set; }
+        public string telefono { get; set; }
         public string direccion { get; set; }
+        public string cdgSIISucur { get; set; }
+        public string glosaDescriptiva { get; set; }
+        public string direccionRegional { get; set; }
         public string comuna { get; set; }
+        public string nombreFantasia { get; set; }
 
         public List<Actividades> actividades { get; set; }
 

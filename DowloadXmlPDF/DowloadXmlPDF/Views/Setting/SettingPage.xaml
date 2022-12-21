@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="DowloadXmlPDF.Views.Setting.SettingPage"
+              xmlns:viewModel="clr-namespace:DowloadXmlPDF.ViewModels"
+             Title="SettingPage">
+
+    <ContentPage.Content>
+        
+       <VerticalStackLayout Padding="15">
+        <Label Padding="15"
+            Text="Configuración de API"
+            VerticalOptions="Center" 
+            HorizontalOptions="Center" />
+            <HorizontalStackLayout>
+                <CheckBox IsChecked="{Binding IsDemo}"/>
+                <Label Text="Usar Api de demostración de Haulmer"/>
+            </HorizontalStackLayout>
+
+            <HorizontalStackLayout>
+                <VerticalStackLayout>
+                   <Label Text="User Api de Producción Propia"/>
+                   <Entry Placeholder="Ingrese su Api" Text="{Binding Apikey}" />
+                </VerticalStackLayout> 
+                
+            </HorizontalStackLayout>
+
+            
+        </VerticalStackLayout> 
+    </ContentPage.Content>
+    
+</ContentPage>

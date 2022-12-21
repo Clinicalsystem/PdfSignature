@@ -1,5 +1,5 @@
-﻿using MauiApp1.Models.OF;
-using MauiApp1.Services;
+﻿using DowloadXmlPDF.Models.OF;
+using DowloadXmlPDF.Services;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MauiApp1
+namespace DowloadXmlPDF
 {
     public class AppSettings
     {
@@ -46,7 +46,7 @@ namespace MauiApp1
                     var apy = Preferences.Get("ApiKey", string.Empty);
                     _ApiKey = JsonConvert.DeserializeObject<string>(apy);
                 }
-                else if(UrlApi.Contains("dev"))
+                else if(UrlApi == null || UrlApi.Contains("dev"))
                 {
                     _ApiKey = "928e15a2d14d4a6292345f04960f4bd3";
                 }
@@ -68,6 +68,10 @@ namespace MauiApp1
                 {
                     var api = Preferences.Get("UrlApi", string.Empty);
                     _UrlApi = JsonConvert.DeserializeObject<string>(api);
+                }
+                else
+                {
+                    _UrlApi = "https://dev-api.haulmer.com";
                 }
 
                 return _UrlApi;

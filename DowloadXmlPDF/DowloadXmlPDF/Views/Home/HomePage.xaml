@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="DowloadXmlPDF.Views.Home.HomePage"
+             xmlns:dataGrid="clr-namespace:Syncfusion.Maui.DataGrid;assembly=Syncfusion.Maui.DataGrid"
+             xmlns:syncfusion="clr-namespace:Syncfusion.Maui.ListView;assembly=Syncfusion.Maui.ListView"
+             xmlns:converter="clr-namespace:DowloadXmlPDF.Converter"
+             xmlns:progressBar="clr-namespace:Syncfusion.Maui.ProgressBar;assembly=Syncfusion.Maui.ProgressBar"
+             Title="HomePage">
+   <!---->
+        
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="Setting"
+                     Order="Primary"
+                     Command="{Binding SettingCommand}"/>
+    </ContentPage.ToolbarItems>
+    <ContentPage.Resources>
+        <converter:SummaryConverter x:Key="summaryConverter"/>
+        <converter:DteConverter x:Key="dteConverter"/>
+        <converter:HeightRequestConverter x:Key="heightRequestConverter"/>
+        <converter:DateConverter x:Key="dateConverter"/>
+    </ContentPage.Resources>
+    <ContentPage.Content>
+        <ScrollView>
+            <StackLayout Padding="10" VerticalOptions="FillAndExpand" >
+        <Label Margin="20"
+            Text="Descarga de documentos en formato PDF, XML o Json desde OpenFactura."
+            HorizontalOptions="Center" />
+                <HorizontalStackLayout HorizontalOptions="CenterAndExpand">
+                    
+                    <Frame Padding="0" Margin="3,10" BorderColor="Gray" WidthRequest="200">
+                        <StackLayout Orientation="Horizontal">
+                            <SearchBar HorizontalOptions="FillAndExpand" x:Name="Search" Placeholder="Buscar Cliente" FontSize="15" TextChanged="Search_TextChanged"
+                                   SearchCommand="{Binding SearchCommand}" SearchCommandParameter="{Binding Source={x:Reference Search}, Path=Text}" ></SearchBar>
+                        </StackLayout>
+                    </Frame>
+
+
+
+                    <Button Text="Filtros" WidthRequest="150"/>
+                </HorizontalStackLayout>
+                
+                <StackLayout  VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand" x:Name="sfStack">
+                    <Grid  BackgroundColor="WhiteSmoke" Padding="10" VerticalOptions="Center" x:Name="sfGrid"
+                           MaximumWidthRequest="1360" RowDefinitions="40, Auto"
+                           HeightRequest="{Binding Source={x:Reference sfStack}, Path=Height, Converter={StaticResource heightRequestConverter}, ConverterParameter=0}">
+                        <StackLayout Orientation="Horizontal">
+                            <Label Text="0" Padding="10,0,10,0" VerticalOptions="Center"/>
+                            <StackLayout >
+                                <Label Text="{Binding DteCargados, StringFormat='Documentos {0}'}" HorizontalOptions="Center"/>
+                                <progressBar:SfLinearProgressBar Minimum="0"
+                                                             TrackHeight="10"
+                                                        Progress="{Binding DteCargados}"
+                                                        Maximum="{Binding DteTotal}"/>
+                            </StackLayout>
+
+                            <Label Text="{Binding DteTotal}"  VerticalOptions="Center" Padding="10,0,10,0"/>
+                            <HorizontalStackLayout HorizontalOptions="EndAndExpand" IsVisible="{Binding IsVisibleDowload}">
+                                <Label Text="Descargar:" VerticalOptions="Center" Padding="40,0"/>
+                                <Button Text="XML"/>
+                                <Button Text="PDF" />
+                                <Button Text="Json" />
+
+                            </HorizontalStackLayout>
+                        </StackLayout>
+
+                        <dataGrid:SfDataGrid x:Name="dataGrid" 
+                                     SortingMode="Single" Grid.Row="1"
+                                     SelectionMode="Single"
+                                     AutoGenerateColumnsMode="None"
+                                     HorizontalOptions="Center"
+                                     VerticalOptions="StartAndExpand"
+                                     IgnoreSafeArea="False"
+                                     HeightRequest="{Binding Source={x:Reference sfGrid}, Path=Height, Converter={StaticResource heightRequestConverter}, ConverterParameter=70}"
+                                     ColumnWidthMode="None"
+                                     
+                                     ItemsSource="{Binding DteLists}">
+                        <dataGrid:SfDataGrid.Columns>
+
+                            <dataGrid:DataGridCheckBoxColumn HeaderText="Dowload" Width="100" MappingName="IsSelected" />
+                                <dataGrid:DataGridTextColumn MappingName="Folio" Width="100"/>
+                                <dataGrid:DataGridTextColumn HeaderText="Rut" Width="120" MappingName="RutDv"/>
+                            <dataGrid:DataGridTextColumn HeaderText="Receptor" Width="250" MappingName="RznSocRecep"/>
+                            
+                            <dataGrid:DataGridTextColumn MappingName="TipoDTE" DisplayBinding="{Binding TipoDTE, Converter={StaticResource dteConverter}}" Width="180"/>
+
+                            <dataGrid:DataGridTextColumn HeaderText="Fecha de Emisión" CellTextAlignment="Center" HeaderTextAlignment="Center" Width="150" MappingName="FchEmis"
+                                                         DisplayBinding="{Binding FchEmis, Converter={StaticResource dateConverter}}"/>
+                                <dataGrid:DataGridTextColumn MappingName="MntNeto" CellTextAlignment="End" HeaderTextAlignment="End" Width="150"
+                                                     DisplayBinding="{Binding MntNeto, Converter={StaticResource summaryConverter}}"/>
+                                <dataGrid:DataGridTextColumn MappingName="MntTotal" CellTextAlignment="End" HeaderTextAlignment="End" Width="150"
+                                                     DisplayBinding="{Binding MntTotal, Converter={StaticResource summaryConverter}}"/>
+                                <dataGrid:DataGridTextColumn MappingName="MntTotal" CellTextAlignment="End" HeaderTextAlignment="End" Width="150"
+                                                     DisplayBinding="{Binding MntTotal, Converter={StaticResource summaryConverter}}"/>
+                        </dataGrid:SfDataGrid.Columns>
+                    </dataGrid:SfDataGrid>
+                    <CheckBox x:Name="SelectAll" Grid.Row="1"
+                                  Margin="-8,12"
+                                  CheckedChanged="SelectAll_CheckedChanged" 
+                                  HorizontalOptions="Start" VerticalOptions="Start"/>
+
+                        </Grid>
+
+                </StackLayout>
+    </StackLayout>
+        </ScrollView>
+    </ContentPage.Content>
+    
+</ContentPage>

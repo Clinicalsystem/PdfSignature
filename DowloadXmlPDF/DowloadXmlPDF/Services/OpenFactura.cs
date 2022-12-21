@@ -1,5 +1,5 @@
-﻿using MauiApp1.Models;
-using MauiApp1.Models.OF;
+﻿using DowloadXmlPDF.Models;
+using DowloadXmlPDF.Models.OF;
 using Newtonsoft.Json;
 using System.Net;
 using System.Text;
@@ -7,7 +7,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 
-namespace MauiApp1.Services
+namespace DowloadXmlPDF.Services
 {
     public class OpenFactura : IOpenFactura
     {

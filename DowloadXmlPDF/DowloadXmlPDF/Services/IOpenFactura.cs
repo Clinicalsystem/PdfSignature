@@ -1,7 +1,7 @@
-﻿using MauiApp1.Models;
-using MauiApp1.Models.OF;
+﻿using DowloadXmlPDF.Models;
+using DowloadXmlPDF.Models.OF;
 
-namespace MauiApp1.Services
+namespace DowloadXmlPDF.Services
 {
     public interface IOpenFactura
     {

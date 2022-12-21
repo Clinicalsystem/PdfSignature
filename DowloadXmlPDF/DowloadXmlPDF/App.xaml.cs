@@ -1,7 +1,6 @@
-﻿using MauiApp1.Views.Home;
-using MauiApp1.Views.Setting;
+﻿using DowloadXmlPDF.Views.Home;
 
-namespace MauiApp1;
+namespace DowloadXmlPDF;
 
 public partial class App : Application
 {
@@ -9,12 +8,12 @@ public partial class App : Application
     public static IServiceProvider ServiceProvider { get; set; }
     private NavigationPage navigationPage { get; set; }
     public App(IServiceProvider sp, HomePage home)
-	{
-		InitializeComponent();
+    {
+        InitializeComponent();
         ServiceProvider = sp;
         navigationPage = new NavigationPage(home);
         GlobalNavigation = navigationPage.Navigation;
 
         MainPage = navigationPage;
-	}
+    }
 }
