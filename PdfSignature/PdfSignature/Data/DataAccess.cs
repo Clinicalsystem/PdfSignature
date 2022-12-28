@@ -177,7 +177,6 @@ namespace PdfSignature.Data
             var item = connection.GetAllWithChildren<Signature>().Where(s => s.LoaclId ==  AppSettings.AuthenticationUser.LocalId).ToList();
             if (item != null)
             {
-                
                 _response = new response()
                 {
                     Status = 200,
