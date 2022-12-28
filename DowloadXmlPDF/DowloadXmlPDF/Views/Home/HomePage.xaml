@@ -1,19 +1,15 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="DowloadXmlPDF.Views.Home.HomePage"
+             x:Class="DowloadXmlPdf.Views.Home.HomePage"
              xmlns:dataGrid="clr-namespace:Syncfusion.Maui.DataGrid;assembly=Syncfusion.Maui.DataGrid"
              xmlns:syncfusion="clr-namespace:Syncfusion.Maui.ListView;assembly=Syncfusion.Maui.ListView"
-             xmlns:converter="clr-namespace:DowloadXmlPDF.Converter"
+             xmlns:converter="clr-namespace:DowloadXmlPdf.Converter"
              xmlns:progressBar="clr-namespace:Syncfusion.Maui.ProgressBar;assembly=Syncfusion.Maui.ProgressBar"
              Title="HomePage">
    <!---->
         
-    <ContentPage.ToolbarItems>
-        <ToolbarItem Text="Setting"
-                     Order="Primary"
-                     Command="{Binding SettingCommand}"/>
-    </ContentPage.ToolbarItems>
+   
     <ContentPage.Resources>
         <converter:SummaryConverter x:Key="summaryConverter"/>
         <converter:DteConverter x:Key="dteConverter"/>
@@ -57,7 +53,7 @@
                             <Label Text="{Binding DteTotal}"  VerticalOptions="Center" Padding="10,0,10,0"/>
                             <HorizontalStackLayout HorizontalOptions="EndAndExpand" IsVisible="{Binding IsVisibleDowload}">
                                 <Label Text="Descargar:" VerticalOptions="Center" Padding="40,0"/>
-                                <Button Text="XML"/>
+                                <Button Text="XML" />
                                 <Button Text="PDF" />
                                 <Button Text="Json" />
 
@@ -70,7 +66,6 @@
                                      AutoGenerateColumnsMode="None"
                                      HorizontalOptions="Center"
                                      VerticalOptions="StartAndExpand"
-                                     IgnoreSafeArea="False"
                                      HeightRequest="{Binding Source={x:Reference sfGrid}, Path=Height, Converter={StaticResource heightRequestConverter}, ConverterParameter=70}"
                                      ColumnWidthMode="None"
                                      

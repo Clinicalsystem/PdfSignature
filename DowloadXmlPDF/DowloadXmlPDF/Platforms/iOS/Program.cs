@@ -1,7 +1,7 @@
 ﻿using ObjCRuntime;
 using UIKit;
 
-namespace DowloadXmlPDF;
+namespace DowloadXmlPdf;
 
 public class Program
 {

@@ -329,13 +329,13 @@ namespace PdfSignature.ViewModels
                 }
                 else
                 {
-                    await _displayAlert.ShowAsync(response.Message);
+                    await _displayAlert.Show(response.Message);
                 }
             }
             catch (Exception ex)
             {
 
-                await _displayAlert.ShowAsync(ex.Message);
+                await _displayAlert.Show(ex.Message);
             }
         }
 
@@ -544,7 +544,7 @@ namespace PdfSignature.ViewModels
 
             catch (Exception ex)
             {
-                _displayAlert.ShowAsync(ex.Message);
+                _displayAlert.Show(ex.Message);
 
             }
         }
@@ -588,7 +588,7 @@ namespace PdfSignature.ViewModels
                             magickFormat = MagickFormat.Jpeg;
                             break;
                         default:
-                            await _displayAlert.ShowAsync("El archivo seleccionado no se encuentra en formato jpg, .png ó heif validos como una imagen.");
+                            await _displayAlert.Show("El archivo seleccionado no se encuentra en formato jpg, .png ó heif validos como una imagen.");
                             return;
                     }
                     #endregion
@@ -634,7 +634,7 @@ namespace PdfSignature.ViewModels
             }
             catch (Exception Ex)
             {
-                await _displayAlert.ShowAsync($"Se produjo una excepción Code: {Ex.GetHashCode()} \n{Ex.Message}");
+                await _displayAlert.Show($"Se produjo una excepción Code: {Ex.GetHashCode()} \n{Ex.Message}");
 
                 return;
             }
@@ -763,7 +763,7 @@ namespace PdfSignature.ViewModels
                     }
                     
                 }
-                await _displayAlert.ShowAsync($"Se produjo una excepción al intentar Compartir el archivo. Code: {ex.GetHashCode()} \n{ex.Message}");
+                await _displayAlert.Show($"Se produjo una excepción al intentar Compartir el archivo. Code: {ex.GetHashCode()} \n{ex.Message}");
             }
         }
 
@@ -790,7 +790,7 @@ namespace PdfSignature.ViewModels
             }
             else
             {
-                await _displayAlert.ShowAsync($"{resp.Message} Code: {resp.Status} \n{resp.Object}");
+                await _displayAlert.Show($"{resp.Message} Code: {resp.Status} \n{resp.Object}");
             }
             IsVisibleModal = true;
         }
@@ -888,7 +888,7 @@ namespace PdfSignature.ViewModels
                 if(!string.IsNullOrEmpty(_Path))
                 {
                     AppSettings.PdfSavePath = _Path;
-                    await _displayAlert.ShowAsync($"Se guardo el archivo correctamente en la ruta: {_Path}");
+                    await _displayAlert.Show($"Se guardo el archivo correctamente en la ruta: {_Path}");
                 
                 }
                 
@@ -899,7 +899,7 @@ namespace PdfSignature.ViewModels
             catch (Exception ex)
             {
 
-                await _displayAlert.ShowAsync($"Se produjo una excepción al intentar bloquear el archivo. Code: {ex.GetHashCode()} \n{ex.Message}");
+                await _displayAlert.Show($"Se produjo una excepción al intentar bloquear el archivo. Code: {ex.GetHashCode()} \n{ex.Message}");
             }
         }
 
@@ -912,13 +912,13 @@ namespace PdfSignature.ViewModels
 
             if (status == PermissionStatus.Denied && Device.RuntimePlatform == Device.Android)
             {
-                await _displayAlert.ShowAsync("El Usuario denego el permiso para guardar archivos en el dispostivo.");
+                await _displayAlert.Show("El Usuario denego el permiso para guardar archivos en el dispostivo.");
                 return status;
             }
 
             if (Permissions.ShouldShowRationale<Permissions.StorageWrite>())
             {
-                await _displayAlert.ShowAsync("Se requiere su permiso para almacenar los archivos firmados en el dispositivo, por favor conceda el permiso.");
+                await _displayAlert.Show("Se requiere su permiso para almacenar los archivos firmados en el dispositivo, por favor conceda el permiso.");
             }
 
             status = await Permissions.RequestAsync<Permissions.StorageWrite>();

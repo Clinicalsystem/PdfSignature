@@ -1,6 +1,6 @@
 ﻿using Foundation;
 
-namespace DowloadXmlPDF;
+namespace DowloadXmlPdf;
 
 [Register("AppDelegate")]
 public class AppDelegate : MauiUIApplicationDelegate

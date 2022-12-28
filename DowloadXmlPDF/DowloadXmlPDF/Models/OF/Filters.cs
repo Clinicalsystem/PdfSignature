@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace DowloadXmlPDF.Models.OF
+namespace DowloadXmlPdf.Models.OF
 {
     public class Filters
     {

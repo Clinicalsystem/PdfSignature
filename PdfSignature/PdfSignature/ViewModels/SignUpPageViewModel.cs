@@ -162,7 +162,7 @@ namespace PdfSignature.ViewModels
                     Password.Item2.Value = string.Empty;
                     IsCompletet = true;
                     Name.Value = string.Empty;
-                    await _displayAlert.ShowAsync("Registro Completado");
+                    _displayAlert.Toast("Registro Completado");
                     
                     
                 }

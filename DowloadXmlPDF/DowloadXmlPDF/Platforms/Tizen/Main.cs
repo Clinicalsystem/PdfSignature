@@ -2,7 +2,7 @@ using System;
 using Microsoft.Maui;
 using Microsoft.Maui.Hosting;
 
-namespace DowloadXmlPDF;
+namespace DowloadXmlPdf;
 
 class Program : MauiApplication
 {

@@ -28,11 +28,6 @@ namespace PdfSignature.Services
 
         public async Task Show(string message)
         {
-            await App.Current.MainPage.DisplayAlert("PdfSignature", message, "Ok");
-        }
-
-        public async Task ShowAsync(string message)
-        {
             await App.Current.MainPage.DisplayAlert("PdfSignature", message,"Ok");
         }
 

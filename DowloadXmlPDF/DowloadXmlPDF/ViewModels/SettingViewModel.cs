@@ -1,52 +1,46 @@
-﻿using DowloadXmlPDF.Models.OF;
-using DowloadXmlPDF.Services;
-using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using DowloadXmlPdf.Models.OF;
+using DowloadXmlPdf.Services;
 
-namespace DowloadXmlPDF.ViewModels
+namespace DowloadXmlPdf.ViewModels
 {
-    public class SettingViewModel: BaseViewModel
+    public class SettingViewModel : BaseViewModel
     {
         private readonly IOpenFactura _openFactura;
         public SettingViewModel(IOpenFactura openFactura)
         {
-                _openFactura = openFactura;
+            _openFactura = openFactura;
 
-                if (Preferences.ContainsKey("Demo"))
+            if (Preferences.ContainsKey("Demo"))
+            {
+                IsDemo = Preferences.Get("Demo", true);
+                if (_demo)
                 {
-                    IsDemo = Preferences.Get("Demo", true);
-                    if(_demo)
-                    {
-                         AppSettings.UrlApi = ApiUrlDemo;
-                         GetEcommerce(ApiKeyDemo);
-                         
+                    AppSettings.UrlApi = ApiUrlDemo;
+                    GetEcommerce(ApiKeyDemo);
+
                     //DisplayAlert.Show("Esta usando la Api de la versión demo.");
-                    }
-                    else
-                    {
-                    AppSettings.UrlApi = ApiUrl;
-                    GetEcommerce(Apikey);
-                    
-                    }
-                
                 }
                 else
                 {
-                    IsDemo = true;
-                    AppSettings.UrlApi = ApiUrlDemo;
-                    GetEcommerce(ApiKeyDemo);
-                    
-                 //DisplayAlert.Show("Esta usando la Api de la versión demo.");
+                    AppSettings.UrlApi = ApiUrl;
+                    GetEcommerce(Apikey);
+
                 }
+
+            }
+            else
+            {
+                IsDemo = true;
+                AppSettings.UrlApi = ApiUrlDemo;
+                GetEcommerce(ApiKeyDemo);
+
+                //DisplayAlert.Show("Esta usando la Api de la versión demo.");
+            }
 
         }
         #region Fields
         private string _ApiKey;
-        
+
         public string ApiUrlDemo = "https://dev-api.haulmer.com/V2/dte";
 
         public string ApiUrl = "https://api.haulmer.com/V2/dte";
@@ -85,24 +79,24 @@ namespace DowloadXmlPDF.ViewModels
 
             }
         }
-        
+
 
         public string Apikey
         {
-            get 
-            { 
-                return _ApiKey; 
+            get
+            {
+                return _ApiKey;
             }
-            set 
+            set
             {
                 AppSettings.ApiKey = _ApiKey;
-                
+
                 SetProperty(ref _ApiKey, value);
-            
+
             }
         }
 
-        
+
 
         #endregion
 
@@ -114,13 +108,13 @@ namespace DowloadXmlPDF.ViewModels
         private async void GetEcommerce(string api)
         {
             var data = await _openFactura.GetEcommerceData(api);
-            if(data.Success)
+            if (data.Success)
             {
                 Ecommerce = (DataEcommerce)data.Object;
             }
             else
             {
-              //  _DisplayAler.Show(data.Message);
+                //  _DisplayAler.Show(data.Message);
             }
 
         }

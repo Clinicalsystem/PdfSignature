@@ -1,4 +1,4 @@
-﻿namespace DowloadXmlPDF.Models.OF
+﻿namespace DowloadXmlPdf.Models.OF
 {
     public class DataEcommerce
     {

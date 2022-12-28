@@ -1,5 +1,5 @@
-﻿using DowloadXmlPDF.Models.OF;
-using DowloadXmlPDF.Services;
+﻿using DowloadXmlPdf.Models.OF;
+using DowloadXmlPdf.Services;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DowloadXmlPDF
+namespace DowloadXmlPdf
 {
     public class AppSettings
     {

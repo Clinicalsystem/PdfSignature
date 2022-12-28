@@ -1209,7 +1209,7 @@ namespace PdfSignature.ViewModels
             catch (Exception ex)
             {
 
-                _displayAlert.ShowAsync($"Se produjo una excepción, al intentar mostrar el archivo. \n{ex.Message}");
+                _displayAlert.Show($"Se produjo una excepción, al intentar mostrar el archivo. \n{ex.Message}");
             }
 
         }
@@ -2313,7 +2313,7 @@ namespace PdfSignature.ViewModels
             }
             catch (Exception ex)
             {
-                await _displayAlert.ShowAsync($"Se produjo una excepción al intentar abrir el archivo. Code: {ex.GetHashCode()} \n{ex.Message}");
+                await _displayAlert.Show($"Se produjo una excepción al intentar abrir el archivo. Code: {ex.GetHashCode()} \n{ex.Message}");
 
                 return;
             }

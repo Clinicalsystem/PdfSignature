@@ -1,9 +1,9 @@
-﻿using DowloadXmlPDF.Services;
+﻿using DowloadXmlPdf.Services;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
 
-namespace DowloadXmlPDF.ViewModels
+namespace DowloadXmlPdf.ViewModels
 {
     /// <summary>
     /// This viewmodel extends in another viewmodels.

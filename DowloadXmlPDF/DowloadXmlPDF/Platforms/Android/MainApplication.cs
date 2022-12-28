@@ -1,7 +1,7 @@
 ﻿using Android.App;
 using Android.Runtime;
 
-namespace DowloadXmlPDF;
+namespace DowloadXmlPdf;
 
 [Application]
 public class MainApplication : MauiApplication

@@ -170,7 +170,7 @@ namespace PdfSignature.ViewModels
             catch (Exception ex)
             {
 
-                await _displayAlert.ShowAsync($"Se produjo una excepción al intentar borrar el archivo. Code: {ex.GetHashCode()} \n{ex.Message}");
+                await _displayAlert.Show($"Se produjo una excepción al intentar borrar el archivo. Code: {ex.GetHashCode()} \n{ex.Message}");
             }
             StatusMessage = string.Empty;
             IsLook = false;
@@ -205,7 +205,7 @@ namespace PdfSignature.ViewModels
                         else
                         {
                             StatusMessage = "Esperando, respuesta del usuario.";
-                            await _displayAlert.ShowAsync($"{response.Message} Code: {response.Status} \n{response.Object}");
+                            await _displayAlert.Show($"{response.Message} Code: {response.Status} \n{response.Object}");
                         }
 
                     }
@@ -214,7 +214,7 @@ namespace PdfSignature.ViewModels
             catch (Exception ex)
             {
 
-                await _displayAlert.ShowAsync(ex.Message);
+                await _displayAlert.Show(ex.Message);
             }
             StatusMessage = string.Empty;
             IsLook = false;
@@ -249,7 +249,7 @@ namespace PdfSignature.ViewModels
                             else
                             {
                                 StatusMessage = "Esperando, respuesta del usuario.";
-                                await _displayAlert.ShowAsync($"{delete.Message} Code:{delete.Status} \n{delete.Object}");
+                              await _displayAlert.Show($"{delete.Message} Code:{delete.Status} \n{delete.Object}");
                             }
                             break;
                     }
@@ -258,7 +258,7 @@ namespace PdfSignature.ViewModels
             catch (Exception ex)
             {
                 StatusMessage = "Esperando, respuesta del usuario.";
-                await _displayAlert.ShowAsync($"Se produjo una excepción al intentar eliminar el archivo. Code: {ex.GetHashCode()} \n{ex.Message}");
+                await _displayAlert.Show($"Se produjo una excepción al intentar eliminar el archivo. Code: {ex.GetHashCode()} \n{ex.Message}");
             }
             StatusMessage = string.Empty;
             IsLook = false;
@@ -279,7 +279,7 @@ namespace PdfSignature.ViewModels
             else
             {
                 DocumentsRecientes = new ObservableCollection<DocumentFile>();
-                await _displayAlert.ShowAsync(listDoc.Message);
+                await _displayAlert.Show(listDoc.Message);
             }
 
             var listFavorits = await ApiServiceFireBase.GetDocumentList();
@@ -290,7 +290,7 @@ namespace PdfSignature.ViewModels
             else
             {
                 DocumentsFavoritos = new ObservableCollection<Document>();
-                await _displayAlert.ShowAsync($"{listFavorits.Message} Code: {listFavorits.Status} \n{listFavorits.Object}");
+                await _displayAlert.Show($"{listFavorits.Message} Code: {listFavorits.Status} \n{listFavorits.Object}");
             }
 
         }
@@ -330,7 +330,7 @@ namespace PdfSignature.ViewModels
                 else
                 {
                     StatusMessage = "Esperando, respuesta del usuario.";
-                    await _displayAlert.ShowAsync($"Se produjo una excepción al intentar abrir el archivo. Code: {ex.GetHashCode()} \n{ex.Message}");
+                    await _displayAlert.Show($"Se produjo una excepción al intentar abrir el archivo. Code: {ex.GetHashCode()} \n{ex.Message}");
                 }
             }
             StatusMessage = string.Empty;
@@ -394,7 +394,7 @@ namespace PdfSignature.ViewModels
             catch (Exception ex)
             {
                 StatusMessage = "Esperando, respuesta del usuario.";
-                await _displayAlert.ShowAsync($"Se produjo una excepción al intentar abrir el archivo. Code: {ex.GetHashCode()} \n{ex.Message}");
+                await _displayAlert.Show($"Se produjo una excepción al intentar abrir el archivo. Code: {ex.GetHashCode()} \n{ex.Message}");
             }
             StatusMessage = string.Empty;
             IsLook = false;

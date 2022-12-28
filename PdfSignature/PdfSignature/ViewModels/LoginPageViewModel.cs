@@ -174,7 +174,7 @@ namespace PdfSignature.ViewModels
                     else
                     {
                         ApiServicesAutentication.Logout();
-                        await _displayAlert.ShowAsync($"{resp.Message}");
+                        await _displayAlert.Show($"{resp.Message}");
                     }
                    
                 }
@@ -189,7 +189,7 @@ namespace PdfSignature.ViewModels
                         Email.IsValid = false;
                     }
                     IsLook = false;
-                    await _displayAlert.ShowAsync(response.Message);
+                    await _displayAlert.Show(response.Message);
                     return;
                 }
 
@@ -238,7 +238,7 @@ namespace PdfSignature.ViewModels
             {
                 IsLook = false;
                 IsHuella = false;
-                await  _displayAlert.ShowAsync("Ocurrio un error al intentar iniciar la app con la huella, ingrese con contraseña.");
+                await  _displayAlert.Show("Ocurrio un error al intentar iniciar la app con la huella, ingrese con contraseña.");
             }
         }
 

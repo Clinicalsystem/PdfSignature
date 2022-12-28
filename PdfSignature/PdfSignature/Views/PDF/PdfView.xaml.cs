@@ -117,7 +117,7 @@ namespace PdfSignature.Views.PDF
                 _Path = await DependencyService.Get<IFileManager>().Save(stream as MemoryStream, name);
             }
             AppSettings.PdfSavePath = _Path;
-            await _messageService.ShowAsync($"Se guardo el archivo correctamente en la ruta: {_Path}");
+            await _messageService.Show($"Se guardo el archivo correctamente en la ruta: {_Path}");
 
         }
         private byte[] ReadFully(Stream input)
@@ -137,13 +137,13 @@ namespace PdfSignature.Views.PDF
 
             if (status == PermissionStatus.Denied && Device.RuntimePlatform == Device.Android)
             {
-                await _messageService.ShowAsync("El Usuario denego el permiso para guardar archivos en el dispostivo.");
+                await _messageService.Show("El Usuario denego el permiso para guardar archivos en el dispostivo.");
                 return status;
             }
 
             if (Permissions.ShouldShowRationale<Permissions.StorageWrite>())
             {
-                await _messageService.ShowAsync("Se requiere su permiso para almacenar los archivos firmados en el dispositivo, por favor conceda el permiso.");
+                await _messageService.Show("Se requiere su permiso para almacenar los archivos firmados en el dispositivo, por favor conceda el permiso.");
             }
 
             status = await Permissions.RequestAsync<Permissions.StorageWrite>();
@@ -221,7 +221,7 @@ namespace PdfSignature.Views.PDF
                     }
                     else
                     {
-                        await _messageService.ShowAsync("No se puede dibujar la firma fuera del documento, por favor seleccione el área dentro del documento.");
+                        await _messageService.Show("No se puede dibujar la firma fuera del documento, por favor seleccione el área dentro del documento.");
                     }
 
                     break;

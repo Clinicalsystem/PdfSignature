@@ -1,4 +1,4 @@
-﻿namespace DowloadXmlPDF;
+﻿namespace DowloadXmlPdf;
 
 public partial class MainPage : ContentPage
 {

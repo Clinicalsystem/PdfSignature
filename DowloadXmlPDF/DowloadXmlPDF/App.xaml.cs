@@ -1,19 +1,17 @@
-﻿using DowloadXmlPDF.Views.Home;
+﻿using DowloadXmlPdf.Views.Home;
 
-namespace DowloadXmlPDF;
+namespace DowloadXmlPdf;
 
 public partial class App : Application
 {
-    public static INavigation GlobalNavigation { get; set; }
-    public static IServiceProvider ServiceProvider { get; set; }
-    private NavigationPage navigationPage { get; set; }
-    public App(IServiceProvider sp, HomePage home)
+
+    public App(IServiceProvider sp)
     {
         InitializeComponent();
         ServiceProvider = sp;
-        navigationPage = new NavigationPage(home);
-        GlobalNavigation = navigationPage.Navigation;
 
-        MainPage = navigationPage;
+        MainPage = new AppShell();
     }
+
+    public static IServiceProvider ServiceProvider { get; set; }
 }

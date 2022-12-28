@@ -1,11 +1,11 @@
-﻿using DowloadXmlPDF.Models;
-using DowloadXmlPDF.Models.OF;
+﻿using DowloadXmlPdf.Models;
+using DowloadXmlPdf.Models.OF;
 using Newtonsoft.Json;
 using System.Net;
 using System.Text;
 using System.Text.Json;
 
-namespace DowloadXmlPDF.Services
+namespace DowloadXmlPdf.Services
 {
     public class OpenFactura : IOpenFactura
     {

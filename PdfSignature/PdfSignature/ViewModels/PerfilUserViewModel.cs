@@ -211,7 +211,7 @@ namespace PdfSignature.ViewModels
                 }
                 else
                 {
-                    await _displayAlert.ShowAsync($"{resp.Message} Code: {resp.Status} \n{resp.Object}");
+                    await _displayAlert.Show($"{resp.Message} Code: {resp.Status} \n{resp.Object}");
                 }
 
             }
@@ -254,7 +254,7 @@ namespace PdfSignature.ViewModels
                     else
                     {
                             IsOn = !IsOn;
-                            await _displayAlert.ShowAsync($"No se logro reconocer su huella, no esta configurada en su dispositivo.");
+                            await _displayAlert.Show($"No se logro reconocer su huella, no esta configurada en su dispositivo.");
                     }
                   }
                   else
@@ -275,7 +275,7 @@ namespace PdfSignature.ViewModels
             catch (Exception ex)
             {
 
-                await _displayAlert.ShowAsync($"Se produjo una excepción Code: {ex.GetHashCode()} \n{ex.Message}"); 
+                await _displayAlert.Show($"Se produjo una excepción Code: {ex.GetHashCode()} \n{ex.Message}"); 
             }
            
 
@@ -336,7 +336,7 @@ namespace PdfSignature.ViewModels
                         case "application/x-pkcs12":
                             break;
                         default:
-                            await _displayAlert.ShowAsync("El archivo seleccionado se encuentra en formato pfx o p12 validos como certificado digital");
+                            await _displayAlert.Show("El archivo seleccionado se encuentra en formato pfx o p12 validos como certificado digital");
                             return;
                     }
                     #endregion
@@ -350,7 +350,7 @@ namespace PdfSignature.ViewModels
                     string serial = Encoding.UTF8.GetString(pdfCert.SerialNumber);
                     if (pdfCert == null || pdfCert.IssuerName == null)
                     {
-                        await _displayAlert.ShowAsync("La contraseña ingresada es invalida, verfique e intente nuevamente.");
+                        await _displayAlert.Show("La contraseña ingresada es invalida, verfique e intente nuevamente.");
                         return;
                     }
 
@@ -373,7 +373,7 @@ namespace PdfSignature.ViewModels
                     };
                     if(listCert.Exists(c=> c.Name == signatureNew.Name && c.Expire == signatureNew.Expire && c.Password == signatureNew.Password))
                     {
-                        await _displayAlert.ShowAsync("La firma seleccionada ya se encuentra cargada en nuestro sistema.");
+                        await _displayAlert.Show("La firma seleccionada ya se encuentra cargada en nuestro sistema.");
                         return;
                     }
                     #endregion
@@ -391,7 +391,7 @@ namespace PdfSignature.ViewModels
                     }
                     else
                     {
-                        await _displayAlert.ShowAsync($"{resp.Message} Code:{resp.Status} \n{resp.Object}");
+                        await _displayAlert.Show($"{resp.Message} Code:{resp.Status} \n{resp.Object}");
                     }
 
                     StatusMessage = string.Empty;
@@ -411,7 +411,7 @@ namespace PdfSignature.ViewModels
             }
             catch (Exception Ex)
             {
-                await _displayAlert.ShowAsync($"Se produjo una excepción Code: {Ex.GetHashCode()} \n{Ex.Message}");
+                await _displayAlert.Show($"Se produjo una excepción Code: {Ex.GetHashCode()} \n{Ex.Message}");
                 StatusMessage = string.Empty;
                 IsLook = false;
                 return;
@@ -434,7 +434,7 @@ namespace PdfSignature.ViewModels
             }
             else if(password != null)
             {
-                await _displayAlert.ShowAsync("La contraseña ingresada es invalida, verfique e intente nuevamente.");
+                await _displayAlert.Show("La contraseña ingresada es invalida, verfique e intente nuevamente.");
                 return;
             }
 

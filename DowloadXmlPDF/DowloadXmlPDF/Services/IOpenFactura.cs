@@ -1,7 +1,7 @@
-﻿using DowloadXmlPDF.Models;
-using DowloadXmlPDF.Models.OF;
+﻿using DowloadXmlPdf.Models;
+using DowloadXmlPdf.Models.OF;
 
-namespace DowloadXmlPDF.Services
+namespace DowloadXmlPdf.Services
 {
     public interface IOpenFactura
     {

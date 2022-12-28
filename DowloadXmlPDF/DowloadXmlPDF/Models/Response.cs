@@ -1,4 +1,4 @@
-﻿namespace DowloadXmlPDF.Models
+﻿namespace DowloadXmlPdf.Models
 {
     public class Response
     {
